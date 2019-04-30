@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using Stream.Rest;
+using StreamChat.Rest;
 using System;
 using System.Collections.Generic;
 
