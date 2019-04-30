@@ -31,6 +31,7 @@ namespace StreamChat
         readonly RestClient _client;
         readonly string _apiSecret;
         readonly string _apiKey;
+        readonly string _token;
 
         public Client(string apiKey, string apiSecret, ClientOptions opts = null)
         {
@@ -42,18 +43,19 @@ namespace StreamChat
             _apiSecret = apiSecret;
             _options = opts ?? ClientOptions.Default;
             _client = new RestClient(GetBaseUrl(), TimeSpan.FromMilliseconds(_options.Timeout));
+            var payload = new
+            {
+                server = true
+            };
+            _token = this.JWToken(payload);
         }
 
-        public string CreateUserSessionToken(string userId, DateTime? expiration, IDictionary<string, object> extraData = null)
+        public string CreateUserToken(string userId, DateTime? expiration)
         {
             var payload = new Dictionary<string, object>
             {
                 {"user_id", userId}
             };
-            if (extraData != null)
-            {
-                extraData.ForEach(x => payload[x.Key] = x.Value);
-            }
             if (expiration.HasValue)
             {
                 payload["exp"] = (Int32)(expiration.Value.ToUniversalTime().Subtract(epoch).TotalSeconds);
@@ -106,15 +108,6 @@ namespace StreamChat
             return _client.Execute(request);
         }
 
-        internal string JWToken()
-        {
-            var payload = new
-            {
-                server = true
-            };
-            return this.JWToken(payload);
-        }
-
         internal string JWToken(object payload)
         {
             var segments = new List<string>();
@@ -144,8 +137,10 @@ namespace StreamChat
         private RestRequest BuildRestRequest(string fullPath, HttpMethod method)
         {
             var request = new RestRequest(fullPath, method);
-            request.AddHeader("Authorization", JWToken());
+            request.AddHeader("Authorization", _token);
             request.AddHeader("stream-auth-type", "jwt");
+            request.AddHeader("Content-type", "application/json");
+            request.AddHeader("X-Stream-Client", "stream-net-client");
             request.AddQueryParameter("api_key", _apiKey);
             return request;
         }
