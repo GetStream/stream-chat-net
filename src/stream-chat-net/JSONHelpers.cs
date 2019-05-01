@@ -40,7 +40,11 @@ namespace StreamChat
 
         private void AddToJObject(ref JObject root)
         {
+#if NETSTANDARD1_6
+            PropertyInfo[] properties = this.GetType().GetTypeInfo().GetProperties();
+#else
             PropertyInfo[] properties = this.GetType().GetProperties();
+#endif
             foreach (var prop in properties)
             {
                 string propName = prop.Name;
@@ -68,7 +72,11 @@ namespace StreamChat
     {
         internal static void AddToJObject<T>(T obj, ref JObject root)
         {
+#if NETSTANDARD1_6
+            PropertyInfo[] properties = typeof(T).GetTypeInfo().GetProperties();
+#else
             PropertyInfo[] properties = typeof(T).GetProperties();
+#endif
             foreach (var prop in properties)
             {
                 string propName = prop.Name;
@@ -93,7 +101,11 @@ namespace StreamChat
 
         internal static GenericData FromJObject<T>(ref T obj, JObject json)
         {
+#if NETSTANDARD1_6
+            PropertyInfo[] properties = typeof(T).GetTypeInfo().GetProperties();
+#else
             PropertyInfo[] properties = typeof(T).GetProperties();
+#endif
             Dictionary<string, PropertyInfo> objProps = new Dictionary<string, PropertyInfo>();
             GenericData extra = new GenericData();
 
