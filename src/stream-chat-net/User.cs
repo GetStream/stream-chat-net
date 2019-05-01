@@ -18,28 +18,28 @@ namespace StreamChat
 
     public class User : CustomDataBase
     {
-        [JsonProp(Tag = "id")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
         public string ID { get; set; }
 
-        [JsonProp(Tag = "role")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "role")]
         public string Role { get; set; }
 
-        [JsonProp(Tag = "created_at")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
         public DateTime? CreatedAt { get; set; }
 
-        [JsonProp(Tag = "updated_at")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
         public DateTime? UpdatedAt { get; set; }
 
-        [JsonProp(Tag = "last_active")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "last_active")]
         public DateTime? LastActive { get; set; }
 
-        [JsonProp(Tag = "deleted_at")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
         public DateTime? DeletedAt { get; set; }
 
-        [JsonProp(Tag = "deactivated_at")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deactivated_at")]
         public DateTime? DeactivatedAt { get; set; }
 
-        [JsonProp(Tag = "online")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "online")]
         public bool? Online { get; set; }
 
 
@@ -48,7 +48,7 @@ namespace StreamChat
         internal static User FromJObject(JObject jObj)
         {
             var result = new User();
-            result._data = JsonHelpers.FromJObject(ref result, jObj);
+            result._data = JsonHelpers.FromJObject(result, jObj);
             return result;
         }
     }

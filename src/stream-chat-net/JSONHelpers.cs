@@ -6,14 +6,6 @@ using Newtonsoft.Json.Linq;
 
 namespace StreamChat
 {
-    public sealed class JsonPropAttribute : Attribute
-    {
-        public string Tag { get; set; }
-        public bool IgnoreNull { get; set; } = true;
-
-        public JsonPropAttribute() { }
-    }
-
     public class CustomDataBase
     {
         protected GenericData _data = new GenericData();
@@ -32,74 +24,15 @@ namespace StreamChat
 
         public JObject ToJObject()
         {
-            var root = new JObject();
-            this.AddToJObject(ref root);
-            this._data.AddToJObject(ref root);
+            var root = JObject.FromObject(this);
+            this._data.AddToJObject(root);
             return root;
-        }
-
-        private void AddToJObject(ref JObject root)
-        {
-#if NETSTANDARD1_6
-            PropertyInfo[] properties = this.GetType().GetTypeInfo().GetProperties();
-#else
-            PropertyInfo[] properties = this.GetType().GetProperties();
-#endif
-            foreach (var prop in properties)
-            {
-                string propName = prop.Name;
-                bool ignoreNull = true;
-                foreach (var attr in prop.GetCustomAttributes(true))
-                {
-                    JsonPropAttribute result = attr as JsonPropAttribute;
-                    if (result != null)
-                    {
-                        propName = result.Tag;
-                        ignoreNull = result.IgnoreNull;
-                        break;
-                    }
-                }
-                var propVal = prop.GetValue(this);
-                if (propVal != null || (propVal == null && !ignoreNull))
-                {
-                    root.Add(new JProperty(propName, propVal));
-                }
-            }
         }
     }
 
     internal class JsonHelpers
     {
-        internal static void AddToJObject<T>(T obj, ref JObject root)
-        {
-#if NETSTANDARD1_6
-            PropertyInfo[] properties = typeof(T).GetTypeInfo().GetProperties();
-#else
-            PropertyInfo[] properties = typeof(T).GetProperties();
-#endif
-            foreach (var prop in properties)
-            {
-                string propName = prop.Name;
-                bool ignoreNull = true;
-                foreach (var attr in prop.GetCustomAttributes(true))
-                {
-                    JsonPropAttribute result = attr as JsonPropAttribute;
-                    if (result != null)
-                    {
-                        propName = result.Tag;
-                        ignoreNull = result.IgnoreNull;
-                        break;
-                    }
-                }
-                var propVal = prop.GetValue(obj);
-                if (propVal != null || (propVal == null && !ignoreNull))
-                {
-                    root.Add(new JProperty(propName, propVal));
-                }
-            }
-        }
-
-        internal static GenericData FromJObject<T>(ref T obj, JObject json)
+        internal static GenericData FromJObject<T>(T obj, JObject json)
         {
 #if NETSTANDARD1_6
             PropertyInfo[] properties = typeof(T).GetTypeInfo().GetProperties();
@@ -114,10 +47,10 @@ namespace StreamChat
                 string propName = prop.Name;
                 foreach (var attr in prop.GetCustomAttributes(true))
                 {
-                    JsonPropAttribute result = attr as JsonPropAttribute;
+                    JsonPropertyAttribute result = attr as JsonPropertyAttribute;
                     if (result != null)
                     {
-                        propName = result.Tag;
+                        propName = result.PropertyName;
                         break;
                     }
                 }

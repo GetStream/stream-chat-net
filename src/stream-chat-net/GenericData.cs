@@ -26,15 +26,13 @@ namespace StreamChat
         internal JObject ToJObject()
         {
             var root = new JObject();
-            this.AddToJObject(ref root);
+            this.AddToJObject(root);
             return root;
         }
 
-        internal void AddToJObject(ref JObject root)
+        internal void AddToJObject(JObject root)
         {
-            var tmp = root;
-            this._data.ForEach(x => tmp.Add(x.Key, x.Value));
-            root = tmp;
+            this._data.ForEach(x => root.Add(x.Key, x.Value));
         }
     }
 }

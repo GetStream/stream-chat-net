@@ -35,19 +35,19 @@ namespace StreamChatTests
             var d1 = new Device()
             {
                 ID = System.Guid.NewGuid().ToString(),
-                PushProvider = Device.APN,
+                PushProvider = PushProvider.APN,
                 UserID = user1
             };
             var d2 = new Device()
             {
                 ID = System.Guid.NewGuid().ToString(),
-                PushProvider = Device.Firebase,
+                PushProvider = PushProvider.Firebase,
                 UserID = user1
             };
             var d3 = new Device()
             {
                 ID = System.Guid.NewGuid().ToString(),
-                PushProvider = Device.APN,
+                PushProvider = PushProvider.APN,
                 UserID = user2
             };
             await this._client.AddDevice(d1);
