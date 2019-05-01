@@ -42,12 +42,8 @@ namespace StreamChat
         public async Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false)
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id), HttpMethod.DELETE);
-            var payload = new
-            {
-                mark_messages_deleted = markMessagesDeleted,
-                hard_delete = hardDelete
-            };
-            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+            request.AddQueryParameter("mark_messages_deleted", markMessagesDeleted.ToString().ToLower());
+            request.AddQueryParameter("hard_delete", hardDelete.ToString().ToLower());
 
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
