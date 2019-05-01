@@ -50,6 +50,14 @@ namespace StreamChat
             _token = this.JWToken(payload);
         }
 
+        public Users Users
+        {
+            get
+            {
+                return new Users(this);
+            }
+        }
+
         public string CreateUserToken(string userId, DateTime? expiration)
         {
             var payload = new Dictionary<string, object>
@@ -139,7 +147,6 @@ namespace StreamChat
             var request = new RestRequest(fullPath, method);
             request.AddHeader("Authorization", _token);
             request.AddHeader("stream-auth-type", "jwt");
-            request.AddHeader("Content-type", "application/json");
             request.AddHeader("X-Stream-Client", "stream-net-client");
             request.AddQueryParameter("api_key", _apiKey);
             return request;
