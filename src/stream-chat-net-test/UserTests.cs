@@ -15,13 +15,7 @@ namespace StreamChatTests
         [SetUp]
         public void Setup()
         {
-            _endpoint = new Client("pewr3y7sksbu",
-                "yxa2r93542v6bgj63gx5ayfk5buam5v82zudmc8tyt28qn9krmyfhrzx8bfavk6w",
-                new ClientOptions()
-                {
-                    Location = ApiLocation.USEast,
-                    Timeout = 10000
-                }).Users;
+            _endpoint = Credentials.Instance.Client.Users;
         }
 
         [Test]
