@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace StreamChat
 {
-    public class PushProvider
+    public struct PushProvider
     {
         public const string APN = "apn";
         public const string Firebase = "firebase";

@@ -3,7 +3,7 @@
 *.csproj.user
 *.user
 *bin*
-*obj*
+*obj/
 *.mdf
 *.ldf
 *.gitattributes

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ namespace StreamChat
             this._data.SetData<T>(name, data);
         }
 
-        public JObject ToJObject()
+        internal JObject ToJObject()
         {
             var root = JObject.FromObject(this);
             this._data.AddToJObject(root);
@@ -44,9 +45,16 @@ namespace StreamChat
 
             foreach (var prop in properties)
             {
+                bool ignore = false;
                 string propName = prop.Name;
                 foreach (var attr in prop.GetCustomAttributes(true))
                 {
+                    JsonIgnoreAttribute ignoreAttr = attr as JsonIgnoreAttribute;
+                    if (ignoreAttr != null)
+                    {
+                        ignore = true;
+                        break;
+                    }
                     JsonPropertyAttribute result = attr as JsonPropertyAttribute;
                     if (result != null)
                     {
@@ -54,9 +62,11 @@ namespace StreamChat
                         break;
                     }
                 }
-                objProps.Add(propName, prop);
+                if (!ignore)
+                    objProps.Add(propName, prop);
             }
-            foreach (var jsonProp in json.Properties())
+            var jsonProps = json.Properties();
+            foreach (var jsonProp in jsonProps)
             {
                 PropertyInfo objProp;
                 if (objProps.TryGetValue(jsonProp.Name, out objProp))

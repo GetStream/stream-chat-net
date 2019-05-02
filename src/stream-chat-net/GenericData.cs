@@ -23,6 +23,11 @@ namespace StreamChat
             this._data[name] = JValue.FromObject(data);
         }
 
+        public void RemoveData(string name)
+        {
+            this._data.Remove(name);
+        }
+
         internal JObject ToJObject()
         {
             var root = new JObject();

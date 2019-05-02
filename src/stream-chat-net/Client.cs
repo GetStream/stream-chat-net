@@ -106,6 +106,11 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
+        public Channel Channel(string channelType, string channelID = null, GenericData data = null)
+        {
+            return new Channel(this, channelType, channelID, data);
+        }
+
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
         {
             return BuildRestRequest(path, method);
