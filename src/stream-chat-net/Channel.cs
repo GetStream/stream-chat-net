@@ -43,18 +43,13 @@ namespace StreamChat
             };
             this.SetData("created_by", dummyUser);
             this.SetData("members", members);
-            return await this.Query(false, false, false);
+            return await this.Query(new ChannelQueryParams());
         }
 
-        public async Task<ChannelState> Query(bool watch = false, bool state = true, bool presence = false)
+        public async Task<ChannelState> Query(ChannelQueryParams queryParams)
         {
-            var payload = new
-            {
-                watch = watch,
-                state = state,
-                presence = presence,
-                data = this._data.ToJObject()
-            };
+            var payload = JObject.FromObject(queryParams);
+            payload.Add("data", this._data.ToJObject());
 
             string tpl = "channels/{0}{1}/query";
             string idStr = this.ID == null ? "" : "/" + this.ID;

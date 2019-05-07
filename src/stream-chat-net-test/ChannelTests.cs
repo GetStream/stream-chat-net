@@ -114,7 +114,7 @@ namespace StreamChatTests
 
             await channel.AddMembers(newMembers.Select(u => u.ID));
 
-            var chanState = await channel.Query(false, false, false);
+            var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(4, chanState.Channel.MemberCount);
             Assert.AreEqual(4, chanState.Members.Count);
 
@@ -160,7 +160,7 @@ namespace StreamChatTests
 
             await channel.RemoveMembers(new string[] { user3.ID });
 
-            var chanState = await channel.Query(false, false, false);
+            var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(3, chanState.Channel.MemberCount);
             Assert.AreEqual(3, chanState.Members.Count);
 
@@ -206,7 +206,7 @@ namespace StreamChatTests
 
             await channel.AddModerators(new string[] { user2.ID });
 
-            var chanState = await channel.Query(false, false, false);
+            var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(4, chanState.Channel.MemberCount);
             Assert.AreEqual(4, chanState.Members.Count);
 
@@ -258,7 +258,7 @@ namespace StreamChatTests
 
             await channel.DemoteModerators(new string[] { user2.ID });
 
-            var chanState = await channel.Query(false, false, false);
+            var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(4, chanState.Channel.MemberCount);
             Assert.AreEqual(4, chanState.Members.Count);
 
