@@ -64,7 +64,7 @@ namespace StreamChat
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 var stateObj = JObject.Parse(response.Content);
                 stateObj.Remove("duration");
@@ -86,7 +86,7 @@ namespace StreamChat
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
         }
 
@@ -100,7 +100,7 @@ namespace StreamChat
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
         }
 
@@ -114,7 +114,7 @@ namespace StreamChat
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
         }
 
@@ -128,7 +128,7 @@ namespace StreamChat
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
         }
     }

@@ -22,39 +22,39 @@ namespace StreamChat
         public DateTime? UpdatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "name")]
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "typing_events")]
-        public bool TypingEvents { get; internal set; }
+        public bool TypingEvents { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "read_events")]
-        public bool ReadEvents { get; internal set; }
+        public bool ReadEvents { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "connect_events")]
-        public bool ConnectEvents { get; internal set; }
+        public bool ConnectEvents { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "search")]
-        public bool Search { get; internal set; }
+        public bool Search { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reactions")]
-        public bool Reactions { get; internal set; }
+        public bool Reactions { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "replies")]
-        public bool Replies { get; internal set; }
+        public bool Replies { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "mutes")]
-        public bool Mutes { get; internal set; }
+        public bool Mutes { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "message_retention")]
-        public string MessageRetention { get; internal set; }
+        public string MessageRetention { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "max_message_length")]
-        public int MaxMessageLength { get; internal set; }
+        public int MaxMessageLength { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod")]
-        public string Automod { get; internal set; }
+        public string Automod { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
-        public List<Command> Commands { get; internal set; }
+        public List<Command> Commands { get; set; }
     }
 }

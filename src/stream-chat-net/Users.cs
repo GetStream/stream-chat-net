@@ -28,7 +28,7 @@ namespace StreamChat
 
             var response = await this._client.MakeRequest(request);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
                 return Users.GetResults(response.Content);
             throw StreamChatException.FromResponse(response);
         }
@@ -62,7 +62,7 @@ namespace StreamChat
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
                 return Users.GetUserFromResponse(response.Content);
 
             throw StreamChatException.FromResponse(response);

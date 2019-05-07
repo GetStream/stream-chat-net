@@ -4,6 +4,18 @@ using Newtonsoft.Json;
 
 namespace StreamChat
 {
+    public struct Commands
+    {
+        public const string All = "all";
+        public const string FunSet = "fun_set";
+        public const string ModerationSet = "moderation_set";
+        public const string Giphy = "giphy";
+        public const string Imgur = "imgur";
+        public const string Flag = "flag";
+        public const string Ban = "ban";
+        public const string Mute = "mute";
+    }
+
     public class Command
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "name")]
