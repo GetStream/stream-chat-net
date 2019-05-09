@@ -181,6 +181,25 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null)
+        {
+            var payload = new JObject();
+            payload.Add(new JProperty("data", customData.ToJObject()));
+            if (msg != null)
+                payload.Add(new JProperty("message", msg.ToJObject()));
+
+            var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
+            request.SetJsonBody(payload.ToString());
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                return UpdateChannelResponse.FromJObject(respObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task AddMembers(IEnumerable<string> userIDs)
         {
             var payload = new

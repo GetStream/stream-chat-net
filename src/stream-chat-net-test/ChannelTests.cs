@@ -484,6 +484,54 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestUpdate()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var customData = new GenericData();
+            customData.SetData("foo", "bar");
+            await this._client.Users.Update(user1);
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+
+            await channel.Create(user1.ID);
+
+            var newData = new GenericData();
+            newData.SetData("updated", "stuff");
+            var updateChanResponse = await channel.Update(newData);
+
+            Assert.IsNotNull(updateChanResponse);
+            Assert.IsNull(updateChanResponse.Message);
+            Assert.IsNotNull(updateChanResponse.Channel);
+            Assert.IsNull(updateChanResponse.Channel.GetData<string>("foo"));
+            Assert.AreEqual("stuff", updateChanResponse.Channel.GetData<string>("updated"));
+
+            newData = new GenericData();
+            newData.SetData("more complex", new Dictionary<string, int>() { { "field", 123 } });
+            var msg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString(),
+                User = user1
+            };
+
+            updateChanResponse = await channel.Update(newData, msg);
+            Assert.IsNotNull(updateChanResponse);
+            Assert.IsNotNull(updateChanResponse.Channel);
+            Assert.IsNull(updateChanResponse.Channel.GetData<string>("foo"));
+            Assert.IsNull(updateChanResponse.Channel.GetData<string>("updated"));
+            Assert.AreEqual(123, updateChanResponse.Channel.GetData<Dictionary<string, int>>("more complex")["field"]);
+            Assert.IsNotNull(updateChanResponse.Message);
+            Assert.AreEqual(msg.Text, updateChanResponse.Message.Text);
+            Assert.AreEqual(user1.ID, updateChanResponse.Message.User.ID);
+
+            var chanState = await channel.Query(new ChannelQueryParams());
+            Assert.AreEqual(123, chanState.Channel.GetData<Dictionary<string, int>>("more complex")["field"]);
+        }
+
+        [Test]
         public async Task TestAddMembers()
         {
             var user1 = new User()

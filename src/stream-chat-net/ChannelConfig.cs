@@ -11,10 +11,8 @@ namespace StreamChat
         public const string AI = "ai";
     }
 
-    public class ChannelConfig
+    public abstract class ChannelConfigBase
     {
-        public ChannelConfig() { }
-
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
         public DateTime? CreatedAt { get; internal set; }
 
@@ -53,8 +51,21 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod")]
         public string Automod { get; set; }
+    }
+
+    public class ChannelConfig : ChannelConfigBase
+    {
+        public ChannelConfig() { }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
+        public List<string> Commands { get; set; }
+    }
+
+    public class ChannelConfigWithInfo : ChannelConfigBase
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
         public List<Command> Commands { get; set; }
+
+        public ChannelConfigWithInfo() { }
     }
 }

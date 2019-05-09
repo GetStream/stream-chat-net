@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace StreamChat
 {
-    public class ChannelType : ChannelConfig
+    public class ChannelType : ChannelConfigWithInfo
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "permissions")]
         public List<Permission> Permissions { get; set; }

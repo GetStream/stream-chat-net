@@ -41,7 +41,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "mentioned_users")]
         public List<string> MentionedUsers { get; internal set; }
 
-
         public MessageInput() { }
 
         internal new JObject ToJObject()

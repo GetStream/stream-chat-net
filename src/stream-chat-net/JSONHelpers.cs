@@ -47,7 +47,8 @@ namespace StreamChat
             {
                 bool ignore = false;
                 string propName = prop.Name;
-                foreach (var attr in prop.GetCustomAttributes(true))
+                var attrs = prop.GetCustomAttributes(true);
+                foreach (var attr in attrs)
                 {
                     JsonIgnoreAttribute ignoreAttr = attr as JsonIgnoreAttribute;
                     if (ignoreAttr != null)
@@ -63,7 +64,7 @@ namespace StreamChat
                     }
                 }
                 if (!ignore)
-                    objProps.Add(propName, prop);
+                    objProps.TryAdd(propName, prop);
             }
             var jsonProps = json.Properties();
             foreach (var jsonProp in jsonProps)

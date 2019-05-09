@@ -87,4 +87,76 @@ namespace StreamChat
             return result;
         }
     }
+
+    public class ChannelObjectWithInfo : ChannelObject
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "config")]
+        public new ChannelConfigWithInfo Config { get; set; }
+
+        public ChannelObjectWithInfo() { }
+
+        internal new static ChannelObjectWithInfo FromJObject(JObject jObj)
+        {
+            var result = new ChannelObjectWithInfo();
+            result._data = JsonHelpers.FromJObject(result, jObj);
+
+            var mbrs = result._data.GetData<JArray>("members");
+            if (mbrs != null)
+            {
+                var members = new List<ChannelMember>();
+                foreach (var mbr in mbrs)
+                {
+                    var memberObj = mbr as JObject;
+                    members.Add(ChannelMember.FromJObject(memberObj));
+                }
+                result.Members = members;
+                result._data.RemoveData("members");
+            }
+
+            var userObj = result._data.GetData<JObject>("created_by");
+            if (userObj != null)
+            {
+                result.CreatedBy = User.FromJObject(userObj);
+                result._data.RemoveData("created_by");
+            }
+
+            return result;
+        }
+    }
+
+    public class UpdateChannelResponse
+    {
+
+        [JsonIgnore]
+        public ChannelObject Channel { get; internal set; }
+
+        [JsonIgnore]
+        public Message Message { get; internal set; }
+
+
+        public UpdateChannelResponse() { }
+
+        internal JObject ToJObject()
+        {
+            var root = JObject.FromObject(this);
+            if (this.Message != null)
+                root.Add("message", this.Message.ToJObject());
+            if (this.Channel != null)
+                root.Add("channel", this.Channel.ToJObject());
+            return root;
+        }
+
+        internal static UpdateChannelResponse FromJObject(JObject jObj)
+        {
+            var result = new UpdateChannelResponse();
+            var data = JsonHelpers.FromJObject(result, jObj);
+            var msgObj = data.GetData<JObject>("message");
+            if (msgObj != null)
+                result.Message = Message.FromJObject(msgObj);
+            var chanObj = data.GetData<JObject>("channel");
+            if (chanObj != null)
+                result.Channel = ChannelObject.FromJObject(chanObj);
+            return result;
+        }
+    }
 }

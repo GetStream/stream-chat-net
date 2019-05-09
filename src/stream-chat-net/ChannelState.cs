@@ -11,7 +11,7 @@ namespace StreamChat
         public ChannelState() { }
 
         [JsonIgnore]
-        public ChannelObject Channel { get; internal set; }
+        public ChannelObjectWithInfo Channel { get; internal set; }
 
         [JsonIgnore]
         public List<Message> Messages { get; internal set; }
@@ -58,7 +58,7 @@ namespace StreamChat
 
             var chanObj = data.GetData<JObject>("channel");
             if (chanObj != null)
-                result.Channel = ChannelObject.FromJObject(chanObj);
+                result.Channel = ChannelObjectWithInfo.FromJObject(chanObj);
 
             var msgs = data.GetData<JArray>("messages");
             if (msgs != null)

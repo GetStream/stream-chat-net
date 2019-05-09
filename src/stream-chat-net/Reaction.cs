@@ -48,10 +48,10 @@ namespace StreamChat
     {
 
         [JsonIgnore]
-        public Message Message { get; set; }
+        public Message Message { get; internal set; }
 
         [JsonIgnore]
-        public Reaction Reaction { get; set; }
+        public Reaction Reaction { get; internal set; }
 
 
         public ReactionResponse() { }
