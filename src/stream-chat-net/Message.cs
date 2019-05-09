@@ -18,55 +18,56 @@ namespace StreamChat
     public class Message : CustomDataBase
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
-        public string ID { get; set; }
+        public string ID { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "text")]
-        public string Text { get; set; }
+        public string Text { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "command")]
-        public string Command { get; set; }
+        public string Command { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "html")]
-        public string HTML { get; set; }
+        public string HTML { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "type")]
-        public string Type { get; set; }
+        public string Type { get; internal set; }
 
         [JsonIgnore]
-        public User User { get; set; }
+        public User User { get; internal set; }
 
         [JsonIgnore]
-        public List<Attachment> Attachments { get; set; }
+        public List<Attachment> Attachments { get; internal set; }
 
         [JsonIgnore]
-        public List<Reaction> LatestReactions { get; set; }
+        public List<Reaction> LatestReactions { get; internal set; }
 
         [JsonIgnore]
-        public List<Reaction> OwnReactions { get; set; }
+        public List<Reaction> OwnReactions { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reaction_counts")]
-        public Dictionary<string, int> ReactionCounts { get; set; }
+        public Dictionary<string, int> ReactionCounts { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "parent_id")]
-        public string ParentID { get; set; }
+        public string ParentID { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "shown_in_channel")]
-        public bool ShownInChannel { get; set; }
+        public bool ShownInChannel { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reply_count")]
-        public int? ReplyCount { get; set; }
+        public int? ReplyCount { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        public DateTime? DeletedAt { get; internal set; }
 
         [JsonIgnore]
-        public List<User> MentionedUsers { get; set; }
+        public List<User> MentionedUsers { get; internal set; }
+
 
         public Message() { }
 

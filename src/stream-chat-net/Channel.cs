@@ -47,7 +47,7 @@ namespace StreamChat
             return await this.Query(new ChannelQueryParams());
         }
 
-        public async Task<Message> SendMessage(Message msg, string userID)
+        public async Task<Message> SendMessage(MessageInput msg, string userID)
         {
             if (msg.User == null)
             {

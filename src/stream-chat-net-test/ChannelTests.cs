@@ -98,7 +98,7 @@ namespace StreamChatTests
             var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
 
-            var inMsg = new Message()
+            var inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
@@ -168,7 +168,7 @@ namespace StreamChatTests
             var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
 
-            var inMsg = new Message()
+            var inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
@@ -222,7 +222,7 @@ namespace StreamChatTests
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
-            var inMsg = new Message()
+            var inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
@@ -294,7 +294,7 @@ namespace StreamChatTests
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
-            var inMsg = new Message()
+            var inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
@@ -394,19 +394,19 @@ namespace StreamChatTests
                 await channel.AddMembers(new string[] { u.ID });
             }
 
-            var inMsg = new Message()
+            var inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
 
             var msg1 = await channel.SendMessage(inMsg, user1.ID);
-            inMsg = new Message()
+            inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
             var msg2 = await channel.SendMessage(inMsg, user2.ID);
 
-            inMsg = new Message()
+            inMsg = new MessageInput()
             {
                 Text = Guid.NewGuid().ToString()
             };
