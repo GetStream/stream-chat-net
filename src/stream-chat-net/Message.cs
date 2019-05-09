@@ -54,7 +54,7 @@ namespace StreamChat
         public bool ShownInChannel { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reply_count")]
-        public int ReplyCount { get; set; }
+        public int? ReplyCount { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
         public DateTime? CreatedAt { get; set; }

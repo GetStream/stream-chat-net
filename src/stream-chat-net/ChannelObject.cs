@@ -11,31 +11,43 @@ namespace StreamChat
         public ChannelObject() { }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
-        public string ID { get; internal set; }
+        public string ID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "type")]
-        public string Type { get; internal set; }
+        public string Type { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "cid")]
-        public string CID { get; internal set; }
+        public string CID { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
+        public DateTime? CreatedAt { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
+        public DateTime? DeletedAt { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "last_message_at")]
-        public DateTime? LastMessageAt { get; internal set; }
+        public DateTime? LastMessageAt { get; set; }
 
         [JsonIgnore]
-        public User CreatedBy { get; internal set; }
+        public User CreatedBy { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "frozen")]
-        public bool Frozen { get; internal set; }
+        public bool Frozen { get; set; }
 
         [JsonIgnore]
-        public List<ChannelMember> Members { get; internal set; }
+        public List<ChannelMember> Members { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "member_count")]
-        public int MemberCount { get; internal set; }
+        public int MemberCount { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "Invites")]
+        public List<string> Invites { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "config")]
-        public ChannelConfig Config { get; internal set; }
+        public ChannelConfig Config { get; set; }
 
         internal new JObject ToJObject()
         {
