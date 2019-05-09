@@ -25,6 +25,15 @@ namespace StreamChat
             alg = "HS256"
         };
 
+        private Uri BaseUrl
+        {
+            get
+            {
+                string region = Locations[_options.Location];
+                return new Uri(string.Format(BaseUrlFormat, region));
+            }
+        }
+
         static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         readonly ClientOptions _options;
@@ -42,7 +51,7 @@ namespace StreamChat
             _apiKey = apiKey;
             _apiSecret = apiSecret;
             _options = opts ?? ClientOptions.Default;
-            _client = new RestClient(GetBaseUrl(), TimeSpan.FromMilliseconds(_options.Timeout));
+            _client = new RestClient(BaseUrl, TimeSpan.FromMilliseconds(_options.Timeout));
             var payload = new
             {
                 server = true
@@ -210,11 +219,6 @@ namespace StreamChat
                 segments.Add(Base64UrlEncode(signature));
             }
             return string.Join(".", segments.ToArray());
-        }
-        private Uri GetBaseUrl()
-        {
-            string region = Locations[_options.Location];
-            return new Uri(string.Format(BaseUrlFormat, region));
         }
 
         private RestRequest BuildRestRequest(string fullPath, HttpMethod method)

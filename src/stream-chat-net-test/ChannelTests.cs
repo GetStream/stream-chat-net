@@ -356,6 +356,134 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestQueryChannel()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var user3 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.User,
+            };
+            var user4 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Guest,
+            };
+
+            var members = new User[] { user1, user2, user3, user4 };
+
+            await this._client.Users.UpdateMany(members);
+
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+
+            await channel.Create(user1.ID);
+
+            foreach (var u in members)
+            {
+                await channel.AddMembers(new string[] { u.ID });
+            }
+
+            var inMsg = new Message()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var msg1 = await channel.SendMessage(inMsg, user1.ID);
+            inMsg = new Message()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var msg2 = await channel.SendMessage(inMsg, user2.ID);
+
+            inMsg = new Message()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var msg3 = await channel.SendMessage(inMsg, user3.ID);
+
+            var qParams = new ChannelQueryParams();
+            var chanState = await channel.Query(qParams);
+
+            Assert.NotNull(chanState.Members);
+            Assert.AreEqual(0, chanState.Messages.Count);
+            Assert.IsNull(chanState.Watchers);
+
+            Assert.AreEqual(4, chanState.Members.Count);
+            Assert.AreEqual(user1.ID, chanState.Members[0].User.ID);
+            Assert.AreEqual(user2.ID, chanState.Members[1].User.ID);
+            Assert.AreEqual(user3.ID, chanState.Members[2].User.ID);
+            Assert.AreEqual(user4.ID, chanState.Members[3].User.ID);
+
+            qParams.MembersPagination = new PaginationParams()
+            {
+                Limit = 2
+            };
+            qParams.State = true;
+            chanState = await channel.Query(qParams);
+
+            Assert.NotNull(chanState.Members);
+            Assert.IsNull(chanState.Watchers);
+
+            Assert.AreEqual(2, chanState.Members.Count);
+            Assert.AreEqual(user1.ID, chanState.Members[0].User.ID);
+            Assert.AreEqual(user2.ID, chanState.Members[1].User.ID);
+
+            qParams.MembersPagination = new PaginationParams()
+            {
+                Offset = 2,
+                Limit = 1
+            };
+            chanState = await channel.Query(qParams);
+
+            Assert.NotNull(chanState.Members);
+            Assert.IsNull(chanState.Watchers);
+
+            Assert.AreEqual(1, chanState.Members.Count);
+            Assert.AreEqual(user3.ID, chanState.Members[0].User.ID);
+
+            qParams = new ChannelQueryParams()
+            {
+                State = true,
+            };
+
+            chanState = await channel.Query(qParams);
+            Assert.AreEqual(3, chanState.Messages.Count);
+
+            Assert.AreEqual(msg1.ID, chanState.Messages[0].ID);
+            Assert.AreEqual(msg2.ID, chanState.Messages[1].ID);
+            Assert.AreEqual(msg3.ID, chanState.Messages[2].ID);
+
+            qParams.MessagesPagination = new MessagePaginationParams()
+            {
+                Limit = 1
+            };
+
+            chanState = await channel.Query(qParams);
+            Assert.AreEqual(1, chanState.Messages.Count);
+
+            var pivot = chanState.Messages[0];
+            qParams.MessagesPagination = new MessagePaginationParams()
+            {
+                Limit = 2,
+                IDLT = pivot.ID
+            };
+            chanState = await channel.Query(qParams);
+            Assert.AreEqual(2, chanState.Messages.Count);
+            Assert.IsNull(chanState.Messages.Find(x => x.CreatedAt.Value.CompareTo(pivot.CreatedAt) == 1));
+        }
+
+        [Test]
         public async Task TestAddMembers()
         {
             var user1 = new User()
