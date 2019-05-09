@@ -102,6 +102,7 @@ namespace StreamChatTests
             {
                 Text = Guid.NewGuid().ToString()
             };
+            inMsg.SetData("foo", "barsky");
 
             var outMsg = await channel.SendMessage(inMsg, user1.ID);
 
@@ -112,6 +113,7 @@ namespace StreamChatTests
             Assert.AreEqual(inMsg.Text, outMsg.Text);
             Assert.NotNull(outMsg.User);
             Assert.AreEqual(inMsg.User.ID, outMsg.User.ID);
+            Assert.AreEqual("barsky", outMsg.GetData<string>("foo"));
 
             var chanState = await channel.Query(new ChannelQueryParams(false, true));
 
@@ -119,6 +121,7 @@ namespace StreamChatTests
             Assert.NotNull(chanState.Messages);
             Assert.AreEqual(1, chanState.Messages.Count);
             Assert.AreEqual(outMsg.ID, chanState.Messages[0].ID);
+            Assert.AreEqual("barsky", chanState.Messages[0].GetData<string>("foo"));
         }
 
         [Test]
@@ -139,6 +142,7 @@ namespace StreamChatTests
             {
                 Type = EventType.MessageNew
             };
+            inEvt.SetData("foo", new int[] { 1 });
 
             var outEvt = await channel.SendEvent(inEvt, user1.ID);
 
@@ -147,8 +151,209 @@ namespace StreamChatTests
             Assert.NotNull(outEvt.User);
             Assert.AreEqual(inEvt.Type, outEvt.Type);
             Assert.AreEqual(inEvt.User.ID, outEvt.User.ID);
+            Assert.AreEqual(1, outEvt.GetData<int[]>("foo")[0]);
         }
 
+        [Test]
+        public async Task TestSendReaction()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Update(user1);
+
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new Message()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+
+            var inReaction = new Reaction()
+            {
+                Type = "like"
+            };
+            inReaction.SetData("foo", "bar");
+
+            var reactionResp = await channel.SendReaction(outMsg.ID, inReaction, user1.ID);
+
+            Assert.NotNull(reactionResp);
+            Assert.NotNull(reactionResp.Message);
+            Assert.AreEqual(reactionResp.Message.ID, outMsg.ID);
+            Assert.AreEqual(1, reactionResp.Message.ReactionCounts["like"]);
+            Assert.AreEqual(1, reactionResp.Message.LatestReactions.Count);
+            Assert.NotNull(reactionResp.Reaction);
+            Assert.AreEqual(inReaction.Type, reactionResp.Reaction.Type);
+            Assert.NotNull(reactionResp.Reaction.CreatedAt);
+            Assert.AreEqual(reactionResp.Reaction.User.ID, user1.ID);
+            Assert.AreEqual(reactionResp.Reaction.MessageID, outMsg.ID);
+            Assert.AreEqual("bar", reactionResp.Reaction.GetData<string>("foo"));
+
+            var reactions = await channel.GetReactions(outMsg.ID);
+            Assert.NotNull(reactions);
+            Assert.AreEqual(1, reactions.Count);
+        }
+
+        [Test]
+        public async Task TestDeleteReaction()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var members = new User[] { user1, user2 };
+
+            await this._client.Users.UpdateMany(members);
+            var channel = _client.Channel("messaging");
+
+            await channel.Create(user1.ID, members.Select(u => u.ID));
+
+            var inMsg = new Message()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+
+            var reaction1 = new Reaction()
+            {
+                Type = "like"
+            };
+            reaction1.SetData("foo", "bar");
+
+            await channel.SendReaction(outMsg.ID, reaction1, user1.ID);
+
+            var reaction2 = new Reaction()
+            {
+                Type = "love"
+            };
+            reaction2.SetData("some", "data");
+
+            await channel.SendReaction(outMsg.ID, reaction2, user1.ID);
+
+            var reaction3 = new Reaction()
+            {
+                Type = "like"
+            };
+
+            await channel.SendReaction(outMsg.ID, reaction3, user2.ID);
+
+            Assert.ThrowsAsync<StreamChatException>(async () =>
+            {
+                await channel.DeleteReaction(outMsg.ID, reaction2.Type, user2.ID);
+            });
+
+            var reactionResponse = await channel.DeleteReaction(outMsg.ID, reaction2.Type, user1.ID);
+            Assert.NotNull(reactionResponse);
+            Assert.AreEqual(outMsg.ID, reactionResponse.Message.ID);
+            Assert.AreEqual(reaction2.Type, reactionResponse.Reaction.Type);
+            Assert.AreEqual(user1.ID, reactionResponse.Reaction.User.ID);
+
+            var reactions = await channel.GetReactions(outMsg.ID);
+            Assert.NotNull(reactions);
+            Assert.AreEqual(2, reactions.Count);
+            Assert.AreEqual(reaction3.Type, reactions[0].Type);
+            Assert.AreEqual(user2.ID, reactions[0].User.ID);
+            Assert.AreEqual(reaction1.Type, reactions[1].Type);
+            Assert.AreEqual(user1.ID, reactions[1].User.ID);
+        }
+
+        [Test]
+        public async Task TestGetReactions()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var members = new User[] { user1, user2 };
+
+            await this._client.Users.UpdateMany(members);
+            var channel = _client.Channel("messaging");
+
+            await channel.Create(user1.ID, members.Select(u => u.ID));
+
+            var inMsg = new Message()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+
+            var reaction1 = new Reaction()
+            {
+                Type = "like"
+            };
+            reaction1.SetData("foo", "bar");
+
+            await channel.SendReaction(outMsg.ID, reaction1, user1.ID);
+
+            var reaction2 = new Reaction()
+            {
+                Type = "love"
+            };
+            reaction2.SetData("some", "data");
+
+            await channel.SendReaction(outMsg.ID, reaction2, user1.ID);
+
+            var reaction3 = new Reaction()
+            {
+                Type = "like"
+            };
+
+            await channel.SendReaction(outMsg.ID, reaction3, user2.ID);
+
+            var reactions = await channel.GetReactions(outMsg.ID);
+            Assert.NotNull(reactions);
+            Assert.AreEqual(3, reactions.Count);
+
+            Assert.AreEqual(reaction3.Type, reactions[0].Type);
+            Assert.AreEqual(user2.ID, reactions[0].User.ID);
+
+            Assert.AreEqual(reaction2.Type, reactions[1].Type);
+            Assert.AreEqual(user1.ID, reactions[1].User.ID);
+
+            Assert.AreEqual(reaction1.Type, reactions[2].Type);
+            Assert.AreEqual(user1.ID, reactions[2].User.ID);
+
+            reactions = await channel.GetReactions(outMsg.ID, 0, 2);
+            Assert.NotNull(reactions);
+            Assert.AreEqual(2, reactions.Count);
+
+            Assert.AreEqual(reaction3.Type, reactions[0].Type);
+            Assert.AreEqual(user2.ID, reactions[0].User.ID);
+
+            Assert.AreEqual(reaction2.Type, reactions[1].Type);
+            Assert.AreEqual(user1.ID, reactions[1].User.ID);
+
+            reactions = await channel.GetReactions(outMsg.ID, 2);
+            Assert.NotNull(reactions);
+            Assert.AreEqual(1, reactions.Count);
+
+            Assert.AreEqual(reaction1.Type, reactions[0].Type);
+            Assert.AreEqual(user1.ID, reactions[0].User.ID);
+        }
 
         [Test]
         public async Task TestAddMembers()

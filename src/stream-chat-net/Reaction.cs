@@ -26,17 +26,56 @@ namespace StreamChat
             var root = JObject.FromObject(this);
             if (this.User != null)
                 root.Add("user", this.User.ToJObject());
+            this._data.AddToJObject(root);
             return root;
         }
 
         internal static Reaction FromJObject(JObject jObj)
         {
             var result = new Reaction();
-            var data = JsonHelpers.FromJObject(result, jObj);
-            var userObj = data.GetData<JObject>("user");
+            result._data = JsonHelpers.FromJObject(result, jObj);
+            var userObj = result._data.GetData<JObject>("user");
             if (userObj != null)
+            {
                 result.User = User.FromJObject(userObj);
+                result._data.RemoveData("user");
+            }
+            return result;
+        }
+    }
 
+    public class ReactionResponse
+    {
+
+        [JsonIgnore]
+        public Message Message { get; set; }
+
+        [JsonIgnore]
+        public Reaction Reaction { get; set; }
+
+
+        public ReactionResponse() { }
+
+        internal JObject ToJObject()
+        {
+            var root = JObject.FromObject(this);
+            if (this.Message != null)
+                root.Add("message", this.Message.ToJObject());
+            if (this.Reaction != null)
+                root.Add("reaction", this.Reaction.ToJObject());
+            return root;
+        }
+
+        internal static ReactionResponse FromJObject(JObject jObj)
+        {
+            var result = new ReactionResponse();
+            var data = JsonHelpers.FromJObject(result, jObj);
+            var msgObj = data.GetData<JObject>("message");
+            if (msgObj != null)
+                result.Message = Message.FromJObject(msgObj);
+            var reactionObj = data.GetData<JObject>("reaction");
+            if (reactionObj != null)
+                result.Reaction = Reaction.FromJObject(reactionObj);
             return result;
         }
     }

@@ -94,6 +94,68 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<ReactionResponse> SendReaction(string messageID, Reaction reaction, string userID)
+        {
+            if (reaction.User == null)
+            {
+                reaction.User = new User();
+            }
+            reaction.User.ID = userID;
+
+            var payload = new JObject(new JProperty("reaction", reaction.ToJObject()));
+
+            var endpoint = string.Format("messages/{0}/reaction", messageID);
+            var request = this._client.BuildAppRequest(endpoint, HttpMethod.POST);
+            request.SetJsonBody(payload.ToString());
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                return ReactionResponse.FromJObject(respObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<ReactionResponse> DeleteReaction(string messageID, string reactionType, string userID)
+        {
+            var endpoint = string.Format("messages/{0}/reaction/{1}", messageID, reactionType);
+            var request = this._client.BuildAppRequest(endpoint, HttpMethod.DELETE);
+            request.AddQueryParameter("user_id", userID);
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var respObj = JObject.Parse(response.Content);
+                return ReactionResponse.FromJObject(respObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<List<Reaction>> GetReactions(string messageID, int offset = 0, int limit = 50)
+        {
+            var endpoint = string.Format("messages/{0}/reactions", messageID);
+            var request = this._client.BuildAppRequest(endpoint, HttpMethod.GET);
+            request.AddQueryParameter("offset", offset.ToString());
+            request.AddQueryParameter("limit", limit.ToString());
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var reactionObjs = respObj.Property("reactions").Value as JArray;
+
+                var result = new List<Reaction>();
+                foreach (var reactionTok in reactionObjs)
+                {
+                    var r = reactionTok as JObject;
+                    result.Add(Reaction.FromJObject(r));
+                }
+                return result;
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task<ChannelState> Query(ChannelQueryParams queryParams)
         {
             var payload = JObject.FromObject(queryParams);
