@@ -5,6 +5,7 @@
         GET,
         POST,
         DELETE,
-        PUT
+        PUT,
+        PATCH
     }
 }

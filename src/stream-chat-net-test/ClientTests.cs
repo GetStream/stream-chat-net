@@ -22,6 +22,24 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestAppSettings()
+        {
+            var inSettings = new AppSettings()
+            {
+                WebhookURL = "http://localhost:123",
+                DisableAuth = true
+            };
+            await this._client.UpdateAppSettings(inSettings);
+
+            var appSettings = await this._client.GetAppSettings();
+            Assert.NotNull(appSettings);
+            Assert.AreEqual(inSettings.WebhookURL, appSettings.WebhookURL);
+            Assert.AreEqual(inSettings.DisableAuth, appSettings.DisableAuth);
+            Assert.NotNull(appSettings.ChannelConfigs);
+            Assert.True(appSettings.ChannelConfigs.ContainsKey("messaging"));
+        }
+
+        [Test]
         public async Task TestDevices()
         {
             //since testing device endpoints all rely on each other, we have a bit of a

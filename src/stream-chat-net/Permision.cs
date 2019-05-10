@@ -51,4 +51,18 @@ namespace StreamChat
 
         public Permission() { }
     }
+
+    public class PermissionWithInfo : Permission
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
+        public DateTime? CreatedAt { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
+        public DateTime? UpdatedAt { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
+        public DateTime? DeletedAt { get; internal set; }
+
+        public PermissionWithInfo() { }
+    }
 }

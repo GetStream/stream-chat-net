@@ -73,6 +73,16 @@ namespace StreamChat.Rest
             }
         }
 
+        private async Task<RestResponse> ExecutePatch(Uri url, RestRequest request)
+        {
+            using (var client = BuildClient(request))
+            {
+                var payload = request.JsonBody ?? "{}";
+                HttpResponseMessage response = await client.PatchAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
+                return await RestResponse.FromResponseMessage(response);
+            }
+        }
+
         private async Task<RestResponse> ExecuteDelete(Uri url, RestRequest request)
         {
             using (var client = BuildClient(request))
@@ -108,6 +118,8 @@ namespace StreamChat.Rest
                     return this.ExecutePost(url, request);
                 case HttpMethod.PUT:
                     return this.ExecutePut(url, request);
+                case HttpMethod.PATCH:
+                    return this.ExecutePatch(url, request);
                 default:
                     return this.ExecuteGet(url, request);
             }

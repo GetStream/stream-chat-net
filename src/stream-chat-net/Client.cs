@@ -80,6 +80,30 @@ namespace StreamChat
             return this.JWToken(payload);
         }
 
+        public async Task UpdateAppSettings(AppSettings settings)
+        {
+            var request = BuildAppRequest("app", HttpMethod.PATCH);
+            request.SetJsonBody(JsonConvert.SerializeObject(settings));
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<AppSettingsWithDetails> GetAppSettings()
+        {
+            var request = BuildAppRequest("app", HttpMethod.GET);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var obj = JObject.Parse(response.Content);
+                return (AppSettingsWithDetails)obj.Property("app").Value.ToObject(typeof(AppSettingsWithDetails));
+            }
+
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task<ChannelTypeOutput> CreateChannelType(ChannelTypeInput channelType)
         {
             if (channelType.Commands == null || channelType.Commands.Count == 0)
