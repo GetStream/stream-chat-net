@@ -12,14 +12,18 @@ namespace StreamChatTests
     public class UserTests
     {
         private Users _endpoint;
+        private Client _client;
+
+
         [SetUp]
         public void Setup()
         {
-            _endpoint = Credentials.Instance.Client.Users;
+            _client = Credentials.Instance.Client;
+            _endpoint = _client.Users;
         }
 
         [Test]
-        public async Task TestUsersUpdate()
+        public async Task TestUpdate()
         {
             var user = new User()
             {
@@ -41,7 +45,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUsersUpdateMany()
+        public async Task TestUpdateMany()
         {
             var user1 = new User()
             {
@@ -76,7 +80,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUsersDelete()
+        public async Task TestDelete()
         {
             var user = new User()
             {
@@ -100,7 +104,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUsersDeactivate()
+        public async Task TestDeactivate()
         {
             var user = new User()
             {
@@ -124,7 +128,62 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUsersQuery()
+        public async Task TestExport()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var members = new User[] { user1, user2 };
+
+            await this._client.Users.UpdateMany(members);
+            var channel = _client.Channel("messaging");
+
+            await channel.Create(user1.ID, members.Select(u => u.ID));
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var msg1 = await channel.SendMessage(inMsg, user1.ID);
+
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var msg2 = await channel.SendMessage(inMsg, user1.ID);
+
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var reply1 = await channel.SendMessage(inMsg, user1.ID, msg1.ID);
+
+            var inReact = new Reaction()
+            {
+                Type = "like"
+            };
+            var react1 = await channel.SendReaction(msg2.ID, inReact, user1.ID);
+
+            var exportedUser = await this._endpoint.Export(user1.ID);
+            Assert.IsNotNull(exportedUser.User);
+            Assert.AreEqual(user1.ID, exportedUser.User.ID);
+            Assert.AreEqual(3, exportedUser.Messages.Count);
+            Assert.AreEqual(1, exportedUser.Reactions.Count);
+            Assert.AreEqual(inReact.Type, exportedUser.Reactions[0].Type);
+            Assert.AreEqual(msg2.ID, exportedUser.Reactions[0].MessageID);
+        }
+
+        [Test]
+        public async Task TestQuery()
         {
             var user1 = new User()
             {
@@ -227,6 +286,47 @@ namespace StreamChatTests
             await this._endpoint.Update(user1);
             await this._endpoint.Ban(user1.ID, Guid.NewGuid().ToString(), 5);
             await this._endpoint.Unban(user1.ID);
+        }
+
+        [Test]
+        public async Task TestMute()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+            await this._endpoint.UpdateMany(new User[] { user1 });
+
+            var muteResp = await this._endpoint.Mute(user2.ID, user1.ID);
+            Assert.NotNull(muteResp.OwnUser);
+            Assert.NotNull(muteResp.Mute);
+            Assert.AreEqual(user1.ID, muteResp.OwnUser.ID);
+            Assert.AreEqual(user2.ID, muteResp.Mute.Target.ID);
+            Assert.AreEqual(user1.ID, muteResp.Mute.User.ID);
+        }
+
+        [Test]
+        public async Task TestUnmute()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+            await this._endpoint.UpdateMany(new User[] { user1 });
+
+            await this._endpoint.Unmute(user2.ID, user1.ID);
         }
     }
 }

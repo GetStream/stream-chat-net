@@ -71,13 +71,9 @@ namespace StreamChat
             {
                 PropertyInfo objProp;
                 if (objProps.TryGetValue(jsonProp.Name, out objProp))
-                {
                     objProp.SetValue(obj, jsonProp.Value.ToObject(objProp.PropertyType));
-                }
                 else
-                {
                     extra.SetData(jsonProp.Name, jsonProp.Value);
-                }
             }
             return extra;
         }

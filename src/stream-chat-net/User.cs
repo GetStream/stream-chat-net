@@ -25,19 +25,19 @@ namespace StreamChat
         public string Role { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "last_active")]
-        public DateTime? LastActive { get; set; }
+        public DateTime? LastActive { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        public DateTime? DeletedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deactivated_at")]
-        public DateTime? DeactivatedAt { get; set; }
+        public DateTime? DeactivatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "online")]
         public bool? Online { get; set; }

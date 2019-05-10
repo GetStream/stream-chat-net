@@ -68,6 +68,16 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<ExportedUser> Export(string id)
+        {
+            var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/export", HttpMethod.GET);
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return ExportedUser.FromJObject(JObject.Parse(response.Content));
+
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task Ban(string targetUserID, string reason, int timeoutMinutes = 0)
         {
             await this.Ban(targetUserID, reason, null, timeoutMinutes);
@@ -106,6 +116,37 @@ namespace StreamChat
 
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<MuteResponse> Mute(string targetID, string id)
+        {
+            var payload = new
+            {
+                target_id = targetID,
+                user_id = id
+            };
+            var request = this._client.BuildAppRequest("moderation/mute", HttpMethod.POST);
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+                return MuteResponse.FromJObject(JObject.Parse(response.Content));
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task Unmute(string targetID, string id)
+        {
+            var payload = new
+            {
+                target_id = targetID,
+                user_id = id
+            };
+            var request = this._client.BuildAppRequest("moderation/unmute", HttpMethod.POST);
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
         }
 
