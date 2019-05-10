@@ -68,6 +68,47 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task Ban(string targetUserID, string reason, int timeoutMinutes = 0)
+        {
+            await this.Ban(targetUserID, reason, null, timeoutMinutes);
+        }
+
+        public async Task Ban(string targetUserID, string reason, Channel channel, int timeoutMinutes = 0)
+        {
+            var payload = new Dictionary<string, object>()
+            {
+                {"target_user_id", targetUserID},
+                {"reason", reason},
+                {"timeout", timeoutMinutes},
+            };
+            if (channel != null)
+            {
+                payload["type"] = channel.Type;
+                payload["id"] = channel.ID;
+            }
+            var request = this._client.BuildAppRequest("moderation/ban", HttpMethod.POST);
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task Unban(string targetUserID, Channel channel = null)
+        {
+            var request = this._client.BuildAppRequest("moderation/ban", HttpMethod.DELETE);
+            request.AddQueryParameter("target_user_id", targetUserID);
+            if (channel != null)
+            {
+                request.AddQueryParameter("type", channel.Type);
+                request.AddQueryParameter("id", channel.ID);
+            }
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamChatException.FromResponse(response);
+        }
+
         public async Task<IEnumerable<User>> Query(QueryUserOptions opts)
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(), HttpMethod.GET);

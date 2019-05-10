@@ -23,7 +23,7 @@ namespace StreamChatTests
         {
             var user = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
             user.SetData("name", "BOB");
@@ -45,14 +45,14 @@ namespace StreamChatTests
         {
             var user1 = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
             user1.SetData("name", "BOB");
 
             var user2 = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.ChannelMember,
             };
             user2.SetData("details", new Dictionary<string, string>()
@@ -80,7 +80,7 @@ namespace StreamChatTests
         {
             var user = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
             user.SetData("name", "BOB");
@@ -104,7 +104,7 @@ namespace StreamChatTests
         {
             var user = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
             user.SetData("name", "BOB");
@@ -128,14 +128,14 @@ namespace StreamChatTests
         {
             var user1 = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
             user1.SetData("name", "BOB");
 
             var user2 = new User()
             {
-                ID = System.Guid.NewGuid().ToString(),
+                ID = Guid.NewGuid().ToString(),
                 Role = Role.ChannelMember,
             };
             user2.SetData("name", "Alice");
@@ -202,6 +202,31 @@ namespace StreamChatTests
             u1 = results.First();
             Assert.AreEqual(u1.ID, user1.ID);
             Assert.AreEqual(u1.GetData<string>("name"), "BOB");
+        }
+
+        [Test]
+        public async Task TestBan()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            await this._endpoint.Update(user1);
+            await this._endpoint.Ban(user1.ID, Guid.NewGuid().ToString(), 5);
+        }
+
+        [Test]
+        public async Task TestUnban()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            await this._endpoint.Update(user1);
+            await this._endpoint.Ban(user1.ID, Guid.NewGuid().ToString(), 5);
+            await this._endpoint.Unban(user1.ID);
         }
     }
 }

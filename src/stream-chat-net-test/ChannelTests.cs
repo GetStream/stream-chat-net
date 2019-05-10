@@ -911,5 +911,54 @@ namespace StreamChatTests
             // Assert.IsTrue(u2.IsModerator);
             Assert.AreEqual(ChannelRole.Member, u2.Role);
         }
+
+        [Test]
+        public async Task TestBanUser()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var members = new User[] { user1, user2 };
+
+            await this._client.Users.UpdateMany(members);
+            var channel = _client.Channel("messaging");
+
+            await channel.Create(user1.ID, members.Select(u => u.ID));
+            await channel.BanUser(user2.ID, Guid.NewGuid().ToString(), 3);
+        }
+
+        [Test]
+        public async Task TestUnbanUser()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var members = new User[] { user1, user2 };
+
+            await this._client.Users.UpdateMany(members);
+            var channel = _client.Channel("messaging");
+
+            await channel.Create(user1.ID, members.Select(u => u.ID));
+            await channel.BanUser(user2.ID, Guid.NewGuid().ToString(), 3);
+            await channel.UnbanUser(user2.ID);
+        }
     }
 }
