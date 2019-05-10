@@ -20,16 +20,6 @@ namespace StreamChat
             return list.Count();
         }
 
-#if !NETCORE
-        internal static bool TryAdd<TKey,TValue>(this Dictionary<TKey,TValue> dict, TKey key, TValue value)
-        {
-            if (dict.ContainsKey(key))
-                return false
-            dict[key] = value;
-            return true;
-        }
-#endif
-
         internal static bool IsBuiltInType(this Type type)
         {
 #if NETCORE

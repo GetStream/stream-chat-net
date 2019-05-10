@@ -63,8 +63,8 @@ namespace StreamChat
                         break;
                     }
                 }
-                if (!ignore)
-                    objProps.TryAdd(propName, prop);
+                if (!ignore && !objProps.ContainsKey(propName))
+                    objProps.Add(propName, prop);
             }
             var jsonProps = json.Properties();
             foreach (var jsonProp in jsonProps)
