@@ -190,6 +190,27 @@ namespace StreamChat
             return new Channel(this, channelType, channelID, data);
         }
 
+        public async Task<List<ChannelState>> QueryChannels(QueryChannelsOptions opts)
+        {
+            var request = this.BuildAppRequest("channels", HttpMethod.GET);
+            opts.Apply(request);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var root = JObject.Parse(response.Content);
+                var chans = root.Property("channels").Value as JArray;
+                var result = new List<ChannelState>();
+                foreach (var chan in chans)
+                {
+                    var chanObj = chan as JObject;
+                    result.Add(ChannelState.FromJObject(chanObj));
+                }
+                return result;
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
         {
             return BuildRestRequest(path, method);

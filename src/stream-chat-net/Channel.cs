@@ -200,6 +200,14 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task Delete()
+        {
+            var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.DELETE);
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamChatException.FromResponse(response);
+        }
+
         public async Task AddMembers(IEnumerable<string> userIDs)
         {
             var payload = new

@@ -532,6 +532,33 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestDelete()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var customData = new GenericData();
+            customData.SetData("foo", "bar");
+            await this._client.Users.Update(user1);
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+
+            var chanState = await channel.Create(user1.ID);
+            Assert.IsNull(chanState.Channel.DeletedAt);
+
+            await channel.Delete();
+
+            var chanStates = await this._client.QueryChannels(QueryChannelsOptions.Default.WithFilter(new Dictionary<string, object>()
+            {
+                {"id", channel.ID}
+            }));
+
+            Assert.AreEqual(0, chanStates.Count);
+        }
+
+        [Test]
         public async Task TestAddMembers()
         {
             var user1 = new User()
