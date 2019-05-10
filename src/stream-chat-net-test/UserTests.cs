@@ -301,7 +301,7 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.ChannelMember,
             };
-            await this._endpoint.UpdateMany(new User[] { user1 });
+            await this._endpoint.UpdateMany(new User[] { user1, user2 });
 
             var muteResp = await this._endpoint.Mute(user2.ID, user1.ID);
             Assert.NotNull(muteResp.OwnUser);
@@ -324,9 +324,22 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.ChannelMember,
             };
-            await this._endpoint.UpdateMany(new User[] { user1 });
+            await this._endpoint.UpdateMany(new User[] { user1, user2 });
 
             await this._endpoint.Unmute(user2.ID, user1.ID);
+        }
+
+        [Test]
+        public async Task TestMarkAllRead()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            await this._endpoint.Update(user1);
+
+            await this._endpoint.MarkAllRead(user1.ID);
         }
     }
 }

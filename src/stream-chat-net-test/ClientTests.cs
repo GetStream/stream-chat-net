@@ -92,6 +92,75 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestUpdateMessage()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Update(user1);
+
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            inMsg.SetData("foo", "barsky");
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+
+            var newMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString(),
+                ID = outMsg.ID,
+                User = new User()
+                {
+                    ID = outMsg.User.ID
+                }
+            };
+            newMsg.SetData("new", "stuff");
+
+            var updatedMessage = await this._client.UpdateMessage(newMsg);
+            Assert.AreEqual(outMsg.ID, updatedMessage.ID);
+            Assert.AreEqual(newMsg.Text, updatedMessage.Text);
+            Assert.IsNull(updatedMessage.GetData<string>("foo"));
+            Assert.AreEqual("stuff", updatedMessage.GetData<string>("new"));
+        }
+
+        [Test]
+        public async Task TestDeleteMessage()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Update(user1);
+
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            inMsg.SetData("foo", "barsky");
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+            Assert.IsNull(outMsg.DeletedAt);
+
+            var deletedMsg = await this._client.DeleteMessage(outMsg.ID);
+            Assert.AreEqual(outMsg.ID, deletedMsg.ID);
+            Assert.AreEqual(outMsg.Text, deletedMsg.Text);
+            Assert.IsNotNull(deletedMsg.DeletedAt);
+        }
+
+        [Test]
         [Ignore("Fails randomly because of app polling")]
         public async Task TestChannelType()
         {

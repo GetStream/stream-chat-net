@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Text;
-using StreamChat.Rest;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using StreamChat.Rest;
 
 namespace StreamChat
 {
@@ -233,6 +233,51 @@ namespace StreamChat
                 return result;
             }
             throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<Message> UpdateMessage(MessageInput msg)
+        {
+            if (string.IsNullOrEmpty(msg.ID))
+                throw new ArgumentException("message.id must be set");
+            var payload = new JObject(new JProperty("message", msg.ToJObject()));
+
+            var endpoint = string.Format("messages/{0}", msg.ID);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.POST);
+            request.SetJsonBody(payload.ToString());
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var msgObj = respObj.Property("message").Value as JObject;
+                return Message.FromJObject(msgObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<Message> DeleteMessage(string messageID)
+        {
+            var endpoint = string.Format("messages/{0}", messageID);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.DELETE);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var msgObj = respObj.Property("message").Value as JObject;
+                return Message.FromJObject(msgObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public bool VerifyWebhook(string requestBody, string xSignature)
+        {
+            using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(this._apiSecret)))
+            {
+                var sigBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(requestBody));
+                var sig = BitConverter.ToString(sigBytes).Replace("-", string.Empty).ToLower();
+                return sig == xSignature;
+            }
         }
 
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
