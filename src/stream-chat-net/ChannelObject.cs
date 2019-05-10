@@ -43,7 +43,7 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "member_count")]
         public int MemberCount { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "Invites")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "invites")]
         public List<string> Invites { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "config")]

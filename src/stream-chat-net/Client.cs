@@ -128,7 +128,7 @@ namespace StreamChat
         {
             var endpoint = string.Format("channeltypes/{0}", type);
             var request = BuildAppRequest(endpoint, HttpMethod.PUT);
-            channelType.Name = null;
+            channelType.Name = "";
             request.SetJsonBody(JsonConvert.SerializeObject(channelType));
 
             var response = await this.MakeRequest(request);
@@ -185,7 +185,7 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public Channel Channel(string channelType, string channelID = null, GenericData data = null)
+        public Channel Channel(string channelType, string channelID = "", GenericData data = null)
         {
             return new Channel(this, channelType, channelID, data);
         }

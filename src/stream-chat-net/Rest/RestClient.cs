@@ -57,7 +57,8 @@ namespace StreamChat.Rest
         {
             using (var client = BuildClient(request))
             {
-                HttpResponseMessage response = await client.PostAsync(url, new StringContent(request.JsonBody, Encoding.UTF8, "application/json"));
+                var payload = request.JsonBody ?? "{}";
+                HttpResponseMessage response = await client.PostAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
                 return await RestResponse.FromResponseMessage(response);
             }
         }
@@ -66,7 +67,8 @@ namespace StreamChat.Rest
         {
             using (var client = BuildClient(request))
             {
-                HttpResponseMessage response = await client.PutAsync(url, new StringContent(request.JsonBody, Encoding.UTF8, "application/json"));
+                var payload = request.JsonBody ?? "{}";
+                HttpResponseMessage response = await client.PutAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
                 return await RestResponse.FromResponseMessage(response);
             }
         }

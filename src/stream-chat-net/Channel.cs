@@ -24,7 +24,7 @@ namespace StreamChat
 
         readonly Client _client;
 
-        internal Channel(Client client, string type, string id = null, GenericData data = null)
+        internal Channel(Client client, string type, string id = "", GenericData data = null)
         {
             _client = client;
             if (string.IsNullOrWhiteSpace(type))
@@ -69,6 +69,12 @@ namespace StreamChat
                 return Message.FromJObject(msgObj);
             }
             throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<Message> SendMessage(MessageInput msg, string userID, string parentID)
+        {
+            msg.ParentID = parentID;
+            return await this.SendMessage(msg, userID);
         }
 
         public async Task<Event> SendEvent(Event evt, string userID)
@@ -174,7 +180,7 @@ namespace StreamChat
                 var stateObj = JObject.Parse(response.Content);
                 stateObj.Remove("duration");
                 var chanState = ChannelState.FromJObject(stateObj);
-                if (this.ID == null)
+                if (string.IsNullOrEmpty(this.ID))
                     this.ID = chanState.Channel.ID;
                 return chanState;
             }
@@ -205,6 +211,14 @@ namespace StreamChat
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.DELETE);
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task Truncate()
+        {
+            var request = this._client.BuildAppRequest(this.Endpoint + "/truncate", HttpMethod.POST);
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
         }
 
@@ -262,6 +276,52 @@ namespace StreamChat
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<Event> MarkRead(string userID, string messageID = "")
+        {
+            var payload = new
+            {
+                user = new
+                {
+                    id = userID
+                },
+                message_id = messageID
+            };
+            var request = this._client.BuildAppRequest(this.Endpoint + "/read", HttpMethod.POST);
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var evtObj = respObj.Property("event").Value as JObject;
+                return Event.FromJObject(evtObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<List<Message>> GetReplies(string parentID, MessagePaginationParams pagination)
+        {
+            var endpoint = string.Format("messages/{0}/replies", parentID);
+            var request = this._client.BuildAppRequest(endpoint, HttpMethod.GET);
+            pagination.Apply(request);
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var msgs = respObj.Property("messages").Value as JArray;
+                var result = new List<Message>();
+
+                foreach (var msg in msgs)
+                {
+                    var msgObj = msg as JObject;
+                    result.Add(Message.FromJObject(msgObj));
+                }
+                return result;
+            }
+            throw StreamChatException.FromResponse(response);
         }
     }
 }

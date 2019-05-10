@@ -495,7 +495,7 @@ namespace StreamChatTests
             var customData = new GenericData();
             customData.SetData("foo", "bar");
             await this._client.Users.Update(user1);
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString(), customData);
 
             await channel.Create(user1.ID);
 
@@ -540,8 +540,6 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            var customData = new GenericData();
-            customData.SetData("foo", "bar");
             await this._client.Users.Update(user1);
             var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
 
@@ -556,6 +554,168 @@ namespace StreamChatTests
             }));
 
             Assert.AreEqual(0, chanStates.Count);
+        }
+
+        [Test]
+        public async Task TestTruncate()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.ChannelMember,
+            };
+
+            var user3 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.User,
+            };
+            var user4 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Guest,
+            };
+
+            var members = new User[] { user1, user2, user3, user4 };
+
+            await this._client.Users.UpdateMany(members);
+
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+
+            await channel.Create(user1.ID);
+
+            foreach (var u in members)
+            {
+                await channel.AddMembers(new string[] { u.ID });
+            }
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var msg1 = await channel.SendMessage(inMsg, user1.ID);
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var msg2 = await channel.SendMessage(inMsg, user2.ID);
+
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            var msg3 = await channel.SendMessage(inMsg, user3.ID);
+
+            var chanState = await channel.Query(new ChannelQueryParams(false, true));
+            Assert.AreEqual(3, chanState.Messages.Count);
+
+            await channel.Truncate();
+
+            chanState = await channel.Query(new ChannelQueryParams(false, true));
+
+            Assert.AreEqual(0, chanState.Messages.Count);
+        }
+
+        [Test]
+        public async Task TestMarkRead()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Update(user1);
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+
+            await channel.Create(user1.ID);
+
+            var readEvent = await channel.MarkRead(user1.ID);
+            Assert.NotNull(readEvent);
+            Assert.AreEqual(EventType.MessageRead, readEvent.Type);
+            Assert.AreEqual(user1.ID, readEvent.User.ID);
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var msg1 = await channel.SendMessage(inMsg, user1.ID);
+
+            readEvent = await channel.MarkRead(user1.ID, msg1.ID);
+            Assert.NotNull(readEvent);
+            Assert.AreEqual(EventType.MessageRead, readEvent.Type);
+            Assert.AreEqual(user1.ID, readEvent.User.ID);
+        }
+
+        [Test]
+        public async Task TestGetReplies()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Update(user1);
+            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+
+            await channel.Create(user1.ID);
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var msg1 = await channel.SendMessage(inMsg, user1.ID);
+
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var reply1 = await channel.SendMessage(inMsg, user1.ID, msg1.ID);
+
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var reply2 = await channel.SendMessage(inMsg, user1.ID, msg1.ID);
+
+            inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+
+            var reply3 = await channel.SendMessage(inMsg, user1.ID, msg1.ID);
+
+            var replies = await channel.GetReplies(msg1.ID, MessagePaginationParams.Default);
+            Assert.AreEqual(3, replies.Count);
+            Assert.AreEqual(3, replies.FindAll(m => m.ParentID == msg1.ID).Count);
+            Assert.AreEqual(reply1.ID, replies[0].ID);
+            Assert.AreEqual(reply2.ID, replies[1].ID);
+            Assert.AreEqual(reply3.ID, replies[2].ID);
+
+            var pagination = new MessagePaginationParams()
+            {
+                Limit = 1
+            };
+            replies = await channel.GetReplies(msg1.ID, pagination);
+            Assert.AreEqual(1, replies.Count);
+            Assert.AreEqual(reply3.ID, replies[0].ID);
+
+            pagination.IDLT = reply2.ID;
+            replies = await channel.GetReplies(msg1.ID, pagination);
+            Assert.AreEqual(1, replies.Count);
+            Assert.AreEqual(reply1.ID, replies[0].ID);
         }
 
         [Test]

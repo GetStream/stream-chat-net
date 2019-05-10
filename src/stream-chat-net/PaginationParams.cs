@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using StreamChat.Rest;
 
 namespace StreamChat
 {
@@ -34,6 +35,28 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id_lt")]
         public string IDLT { get; set; }
 
+        [JsonIgnore]
+        public static MessagePaginationParams Default
+        {
+            get
+            {
+                return new MessagePaginationParams()
+                {
+                    Limit = 20
+                };
+            }
+        }
+
         public MessagePaginationParams() { }
+
+        internal void Apply(RestRequest request)
+        {
+            request.AddQueryParameter("limit", this.Limit.ToString());
+            request.AddQueryParameter("offset", this.Offset.ToString());
+            request.AddQueryParameter("id_gte", this.IDGTE ?? "");
+            request.AddQueryParameter("id_gt", this.IDGT ?? "");
+            request.AddQueryParameter("id_lte", this.IDLTE ?? "");
+            request.AddQueryParameter("id_lt", this.IDLT ?? "");
+        }
     }
 }
