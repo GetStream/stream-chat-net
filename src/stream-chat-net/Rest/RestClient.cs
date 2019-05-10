@@ -78,7 +78,9 @@ namespace StreamChat.Rest
             using (var client = BuildClient(request))
             {
                 var payload = request.JsonBody ?? "{}";
-                HttpResponseMessage response = await client.PatchAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
+                var monkeyWork = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), url);
+                monkeyWork.Content = new StringContent(payload, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.SendAsync(monkeyWork);
                 return await RestResponse.FromResponseMessage(response);
             }
         }
