@@ -67,7 +67,7 @@ namespace StreamChat
             }
         }
 
-        public string CreateUserToken(string userId, DateTime? expiration)
+        public string CreateUserToken(string userId, DateTime? expiration = null)
         {
             var payload = new Dictionary<string, object>
             {
@@ -150,10 +150,12 @@ namespace StreamChat
 
         public async Task<ChannelTypeOutput> UpdateChannelType(string type, ChannelTypeInput channelType)
         {
+            var payload = JObject.FromObject(channelType);
+            payload.Remove("name");
+
             var endpoint = string.Format("channeltypes/{0}", type);
             var request = BuildAppRequest(endpoint, HttpMethod.PUT);
-            channelType.Name = "";
-            request.SetJsonBody(JsonConvert.SerializeObject(channelType));
+            request.SetJsonBody(payload.ToString());
 
             var response = await this.MakeRequest(request);
 
