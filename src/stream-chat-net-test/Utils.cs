@@ -6,7 +6,7 @@ namespace StreamChatTests
     {
         public static Credentials Instance = new Credentials();
 
-        public StreamChat.Client Client
+        public StreamChat.IClient Client
         {
             get
             {

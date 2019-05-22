@@ -8,7 +8,7 @@ using StreamChat.Rest;
 
 namespace StreamChat
 {
-    public class Users
+    public class Users : IUsers
     {
         readonly Client _client;
 

@@ -11,8 +11,8 @@ namespace StreamChatTests
     [TestFixture]
     public class UserTests
     {
-        private Users _endpoint;
-        private Client _client;
+        private IUsers _endpoint;
+        private IClient _client;
 
 
         [SetUp]

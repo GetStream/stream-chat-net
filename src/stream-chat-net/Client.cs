@@ -10,7 +10,7 @@ using StreamChat.Rest;
 
 namespace StreamChat
 {
-    public class Client
+    public class Client : IClient
     {
         internal const string BaseUrlFormat = "https://chat-{0}.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
@@ -59,7 +59,7 @@ namespace StreamChat
             _token = this.JWToken(payload);
         }
 
-        public Users Users
+        public IUsers Users
         {
             get
             {
@@ -211,7 +211,7 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public Channel Channel(string channelType, string channelID = "", GenericData data = null)
+        public IChannel Channel(string channelType, string channelID = "", GenericData data = null)
         {
             return new Channel(this, channelType, channelID, data);
         }

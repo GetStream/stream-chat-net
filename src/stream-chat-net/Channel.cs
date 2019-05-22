@@ -7,7 +7,7 @@ using StreamChat.Rest;
 
 namespace StreamChat
 {
-    public class Channel : CustomDataBase
+    public class Channel : CustomDataBase, IChannel
     {
         public string Type { get; internal set; }
         public string ID { get; internal set; }

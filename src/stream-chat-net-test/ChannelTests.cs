@@ -14,7 +14,8 @@ namespace StreamChatTests
     [TestFixture]
     public class MessageTests
     {
-        private Client _client;
+        private IClient _client;
+
         [SetUp]
         public void Setup()
         {
