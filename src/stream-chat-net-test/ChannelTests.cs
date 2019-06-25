@@ -35,7 +35,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
             user2.SetData("details", new Dictionary<string, string>()
             {
@@ -213,7 +213,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var members = new User[] { user1, user2 };
@@ -285,7 +285,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var members = new User[] { user1, user2 };
@@ -368,7 +368,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var user3 = new User()
@@ -569,7 +569,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var user3 = new User()
@@ -731,15 +731,8 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
-
-            var members = new User[] { user1, user2 };
-
-            await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
-
-            await channel.Create(user1.ID, members.Select(u => u.ID));
 
             var user3 = new User()
             {
@@ -751,11 +744,14 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Guest,
             };
+            var members = new User[] { user1, user2, user3, user4 };
 
-            var newMembers = new User[] { user3, user4 };
-            await this._client.Users.UpdateMany(newMembers);
+            await this._client.Users.UpdateMany(members);
+            var channel = _client.Channel("messaging", System.Guid.NewGuid().ToString());
 
-            await channel.AddMembers(newMembers.Select(u => u.ID));
+            await channel.Create(user1.ID);
+
+            await channel.AddMembers(members.Select(u => u.ID));
 
             var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(4, chanState.Channel.MemberCount);
@@ -779,7 +775,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var user3 = new User()
@@ -797,7 +793,7 @@ namespace StreamChatTests
 
             await this._client.Users.UpdateMany(members);
 
-            var channel = _client.Channel("messaging");
+            var channel = _client.Channel("messaging", System.Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -825,7 +821,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var user3 = new User()
@@ -874,7 +870,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var user3 = new User()
@@ -925,7 +921,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var members = new User[] { user1, user2 };
@@ -934,7 +930,7 @@ namespace StreamChatTests
             var channel = _client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
-            await channel.BanUser(user2.ID, Guid.NewGuid().ToString(), 3);
+            await channel.BanUser(user2.ID, user1.ID, Guid.NewGuid().ToString(), 3);
         }
 
         [Test]
@@ -949,7 +945,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var members = new User[] { user1, user2 };
@@ -958,7 +954,7 @@ namespace StreamChatTests
             var channel = _client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
-            await channel.BanUser(user2.ID, Guid.NewGuid().ToString(), 3);
+            await channel.BanUser(user2.ID, user1.ID, Guid.NewGuid().ToString(), 3);
             await channel.UnbanUser(user2.ID);
         }
     }

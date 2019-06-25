@@ -11,11 +11,12 @@ namespace StreamChat
 
         Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false);
         Task<User> Deactivate(string id, bool markMessagesDeleted = false);
+        Task<User> Reactivate(string id, bool restoreMessages = false);
 
         Task<ExportedUser> Export(string id);
 
-        Task Ban(string targetUserID, string reason, int timeoutMinutes = 0);
-        Task Ban(string targetUserID, string reason, Channel channel, int timeoutMinutes = 0);
+        Task Ban(string targetUserID, string id, string reason, int timeoutMinutes = 0);
+        Task Ban(string targetUserID, string id, string reason, Channel channel, int timeoutMinutes = 0);
         Task Unban(string targetUserID, Channel channel = null);
 
         Task<MuteResponse> Mute(string targetID, string id);
