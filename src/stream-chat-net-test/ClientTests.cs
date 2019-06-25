@@ -26,7 +26,7 @@ namespace StreamChatTests
         {
             var inSettings = new AppSettings()
             {
-                WebhookURL = "http://localhost:123",
+                WebhookURL = "http://www.example.com",
                 DisableAuth = true
             };
             await this._client.UpdateAppSettings(inSettings);

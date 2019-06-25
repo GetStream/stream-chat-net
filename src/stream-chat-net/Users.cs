@@ -68,6 +68,22 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<User> Reactivate(string id, bool restoreMessages = false)
+        {
+            var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/reactivate", HttpMethod.POST);
+            var payload = new
+            {
+                restore_messages = restoreMessages,
+            };
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+                return Users.GetUserFromResponse(response.Content);
+
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task<ExportedUser> Export(string id)
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/export", HttpMethod.GET);
@@ -78,18 +94,19 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task Ban(string targetUserID, string reason, int timeoutMinutes = 0)
+        public async Task Ban(string targetUserID, string id, string reason, int timeoutMinutes = 0)
         {
-            await this.Ban(targetUserID, reason, null, timeoutMinutes);
+            await this.Ban(targetUserID, id, reason, null, timeoutMinutes);
         }
 
-        public async Task Ban(string targetUserID, string reason, Channel channel, int timeoutMinutes = 0)
+        public async Task Ban(string targetUserID, string id, string reason, Channel channel, int timeoutMinutes = 0)
         {
             var payload = new Dictionary<string, object>()
             {
                 {"target_user_id", targetUserID},
                 {"reason", reason},
                 {"timeout", timeoutMinutes},
+                {"user_id", id},
             };
             if (channel != null)
             {

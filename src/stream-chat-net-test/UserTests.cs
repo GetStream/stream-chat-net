@@ -57,7 +57,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
             user2.SetData("details", new Dictionary<string, string>()
             {
@@ -128,6 +128,36 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestReactivate()
+        {
+            var user = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            user.SetData("name", "BOB");
+            user.SetData("details", new Dictionary<string, string>()
+            {
+                {"foo", "bar"}
+            });
+
+            await this._endpoint.Update(user);
+
+            var result = await this._endpoint.Deactivate(user.ID);
+            Assert.AreEqual(result.ID, user.ID);
+            Assert.NotNull(result.DeactivatedAt);
+
+            result = await this._endpoint.Reactivate(user.ID);
+            Assert.AreEqual(result.ID, user.ID);
+            Assert.Null(result.DeactivatedAt);
+
+            Assert.ThrowsAsync<StreamChatException>(async () =>
+            {
+                await this._endpoint.Reactivate(user.ID);
+            });
+        }
+
+        [Test]
         public async Task TestExport()
         {
             var user1 = new User()
@@ -139,7 +169,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
 
             var members = new User[] { user1, user2 };
@@ -195,7 +225,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
             user2.SetData("name", "Alice");
 
@@ -266,26 +296,36 @@ namespace StreamChatTests
         [Test]
         public async Task TestBan()
         {
-            var user1 = new User()
+            var targetUser = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.User,
+            };
+            var user = new User()
             {
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
-            await this._endpoint.Update(user1);
-            await this._endpoint.Ban(user1.ID, Guid.NewGuid().ToString(), 5);
+            await this._endpoint.UpdateMany(new User[] { targetUser, user });
+            await this._endpoint.Ban(targetUser.ID, user.ID, Guid.NewGuid().ToString(), 5);
         }
 
         [Test]
         public async Task TestUnban()
         {
-            var user1 = new User()
+            var targetUser = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.User,
+            };
+            var user = new User()
             {
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
-            await this._endpoint.Update(user1);
-            await this._endpoint.Ban(user1.ID, Guid.NewGuid().ToString(), 5);
-            await this._endpoint.Unban(user1.ID);
+            await this._endpoint.UpdateMany(new User[] { targetUser, user });
+            await this._endpoint.Ban(targetUser.ID, user.ID, Guid.NewGuid().ToString(), 5);
+            await this._endpoint.Unban(targetUser.ID);
         }
 
         [Test]
@@ -299,7 +339,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
             await this._endpoint.UpdateMany(new User[] { user1, user2 });
 
@@ -322,7 +362,7 @@ namespace StreamChatTests
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
-                Role = Role.ChannelMember,
+                Role = Role.User,
             };
             await this._endpoint.UpdateMany(new User[] { user1, user2 });
 

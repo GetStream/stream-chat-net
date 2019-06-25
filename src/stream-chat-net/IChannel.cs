@@ -34,7 +34,7 @@ namespace StreamChat
         Task<Event> MarkRead(string userID, string messageID = "");
         Task<List<Message>> GetReplies(string parentID, MessagePaginationParams pagination);
 
-        Task BanUser(string targetID, string reason, int timeoutMinutes = 0);
+        Task BanUser(string targetID, string id, string reason, int timeoutMinutes = 0);
         Task UnbanUser(string targetID);
     }
 }

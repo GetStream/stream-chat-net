@@ -324,9 +324,9 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task BanUser(string targetID, string reason, int timeoutMinutes = 0)
+        public async Task BanUser(string targetID, string id, string reason, int timeoutMinutes = 0)
         {
-            await this._client.Users.Ban(targetID, reason, this, timeoutMinutes);
+            await this._client.Users.Ban(targetID, id, reason, this, timeoutMinutes);
         }
 
         public async Task UnbanUser(string targetID)
