@@ -78,6 +78,16 @@ var june = ...
 var users = await client.Users.UpdateMany(new User[] { bob, jane, june });
 ```
 
+### GDPR-like User endpoints
+
+```c#
+// exports data for one user
+await client.Export("bob-1");
+
+// deactivates a user
+await client.Deactivate("bob-1");
+```
+
 ### Channel types CRUD
 
 ```c#
