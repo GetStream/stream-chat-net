@@ -128,7 +128,7 @@ namespace StreamChat
     {
 
         [JsonIgnore]
-        public ChannelObject Channel { get; internal set; }
+        public ChannelObjectWithInfo Channel { get; internal set; }
 
         [JsonIgnore]
         public Message Message { get; internal set; }
@@ -155,7 +155,7 @@ namespace StreamChat
                 result.Message = Message.FromJObject(msgObj);
             var chanObj = data.GetData<JObject>("channel");
             if (chanObj != null)
-                result.Channel = ChannelObject.FromJObject(chanObj);
+                result.Channel = ChannelObjectWithInfo.FromJObject(chanObj);
             return result;
         }
     }
