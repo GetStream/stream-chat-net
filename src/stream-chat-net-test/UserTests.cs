@@ -80,6 +80,29 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestUpdatePartial()
+        {
+            var user = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            user.SetData("field", "value");
+
+            await this._endpoint.Update(user);
+            var result = this._endpoint.UpdatePartial(new UpdatePartialRequest() {
+                ID = user.ID,
+                Set = new Object(){
+                    field = "updated",
+                }
+            });
+
+            Assert.AreEqual(result.ID, user.ID);
+            Assert.AreEqual(result.Role, user.Role);
+            Assert.AreEqual(result.GetData<string>("field"), "updated");
+        }
+
+        [Test]
         public async Task TestDelete()
         {
             var user = new User()
