@@ -70,7 +70,7 @@ namespace StreamChat
 
         public Event() { }
 
-        internal new JObject ToJObject()
+        public new JObject ToJObject()
         {
             var root = JObject.FromObject(this);
             if (this.Message != null)
@@ -90,7 +90,7 @@ namespace StreamChat
             return root;
         }
 
-        internal static Event FromJObject(JObject jObj)
+        public static Event FromJObject(JObject jObj)
         {
             var result = new Event();
             result._data = JsonHelpers.FromJObject(result, jObj);
