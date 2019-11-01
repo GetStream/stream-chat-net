@@ -52,4 +52,15 @@ namespace StreamChat
             return result;
         }
     }
+
+    public class UserPartialRequest : CustomDataBase {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
+        public string ID { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
+        public Object Set {get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "unset")]
+        public Object Unset {get; set; }
+    }
 }
