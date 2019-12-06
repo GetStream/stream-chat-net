@@ -39,10 +39,14 @@ namespace StreamChat
             return users.FirstOrDefault();
         }
 
-        public async Task<Users> UpdateManyPartial(IEnumerable<UserPartialRequest> updates) 
+        public async Task<IEnumerable<User>> UpdateManyPartial(IEnumerable<UserPartialRequest> updates) 
         {
-            var payload = new JObject(new JProperty("users", updates.ToJObject());
-            var request = this._client.BuildAppRequest(Users.Endpoint(), HttpMethod.PATH);
+            var usersDict = new JObject();
+            updates.ForEach(u => usersDict.Add(new JProperty(u.ID, u.ToJObject())));
+
+            var payload = new JObject(new JProperty("users", usersDict));
+
+            var request = this._client.BuildAppRequest(Users.Endpoint(), HttpMethod.PATCH);
             request.SetJsonBody(payload.ToString());
             var response = await this._client.MakeRequest(request);
 
@@ -53,7 +57,8 @@ namespace StreamChat
 
         public async Task<User> UpdatePartial(UserPartialRequest update) 
         {
-            return this.UpdateManyPartial(new UpdatePartialRequest[] {update});
+            var user = await this.UpdateManyPartial(new UserPartialRequest[] { update });
+            return user.FirstOrDefault();
         }
 
         public async Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false)
