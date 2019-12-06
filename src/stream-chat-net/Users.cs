@@ -50,8 +50,9 @@ namespace StreamChat
             request.SetJsonBody(payload.ToString());
             var response = await this._client.MakeRequest(request);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 return Users.GetResults(response.Content);
+
             throw StreamChatException.FromResponse(response);
         }
 
