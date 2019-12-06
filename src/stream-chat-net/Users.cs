@@ -41,10 +41,10 @@ namespace StreamChat
 
         public async Task<IEnumerable<User>> UpdateManyPartial(IEnumerable<UserPartialRequest> updates) 
         {
-            var usersDict = new JObject();
-            updates.ForEach(u => usersDict.Add(new JProperty(u.ID, u.ToJObject())));
+            var updatesArr = new JArray();
+            updates.ForEach(u => updatesArr.Add(u.ToJObject()));
 
-            var payload = new JObject(new JProperty("users", usersDict));
+            var payload = new JObject(new JProperty("users", updatesArr));
 
             var request = this._client.BuildAppRequest(Users.Endpoint(), HttpMethod.PATCH);
             request.SetJsonBody(payload.ToString());
