@@ -8,8 +8,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>
-    <Version>0.0.1</Version>
-    <PackageVersion>0.0.1</PackageVersion>
+    <Version>0.4.1</Version>
+    <PackageVersion>0.4.1</PackageVersion>
     <Authors>Horatiu Ion</Authors>
     <Description>Chat client for getstream.io.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -17,6 +17,7 @@
     <PackageProjectUrl>https://github.com/GetStream/stream-chat-net</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/GetStream/stream-chat-net/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>getstreamio</PackageTags>
+    <Company>Stream</Company>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <DefineConstants>NET45</DefineConstants>
