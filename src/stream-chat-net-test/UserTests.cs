@@ -90,10 +90,12 @@ namespace StreamChatTests
             user.SetData("field", "value");
 
             await this._endpoint.Update(user);
-            var result = this._endpoint.UpdatePartial(new UpdatePartialRequest() {
+
+            var result = await this._endpoint.UpdatePartial(new UserPartialRequest {
                 ID = user.ID,
-                Set = new Object(){
-                    field = "updated",
+                Set = new Dictionary<string, string>()
+                {
+                    { "field", "updated" },
                 }
             });
 
