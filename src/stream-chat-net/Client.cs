@@ -292,7 +292,7 @@ namespace StreamChat
             return _client.Execute(request);
         }
 
-        internal string JWToken(object payload)
+        public string JWToken(object payload)
         {
             var segments = new List<string>();
 
