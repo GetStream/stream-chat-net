@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json;
 
 namespace StreamChat
@@ -10,6 +9,9 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "disable_permissions_checks")]
         public bool DisablePermissions { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "multi_tenant_enabled")]
+        public bool MultiTenantEnabled { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "apn_config")]
         public APNConfig APNConfig { get; set; }
