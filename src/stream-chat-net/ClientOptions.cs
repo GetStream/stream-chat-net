@@ -4,7 +4,10 @@ namespace StreamChat
 {
     public enum ApiLocation
     {
+        Dublin,
         USEast,
+        Singapore,
+        Sydney
     }
 
     public class ClientOptions

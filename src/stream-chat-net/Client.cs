@@ -12,11 +12,14 @@ namespace StreamChat
 {
     public class Client : IClient
     {
-        internal const string BaseUrlFormat = "https://chat-{0}.stream-io-api.com";
+        internal const string BaseUrlFormat = "https://chat-proxy-{0}.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal static readonly Dictionary<ApiLocation, string> Locations = new Dictionary<ApiLocation, string>()
         {
-            {ApiLocation.USEast, "us-east-1"}
+            {ApiLocation.Dublin,    "dublin"},
+            {ApiLocation.USEast,    "us-east"},
+            {ApiLocation.Singapore, "singapore"},
+            {ApiLocation.Sydney,    "sydney"}
         };
 
         internal static readonly object JWTHeader = new
