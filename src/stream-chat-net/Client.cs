@@ -260,10 +260,11 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<Message> DeleteMessage(string messageID)
+        public async Task<Message> DeleteMessage(string messageID, bool hardDelete = false)
         {
             var endpoint = string.Format("messages/{0}", messageID);
             var request = this.BuildAppRequest(endpoint, HttpMethod.DELETE);
+            request.AddQueryParameter("hardDelete", hardDelete.ToString().ToLower());
 
             var response = await this.MakeRequest(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
