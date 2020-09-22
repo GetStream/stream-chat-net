@@ -222,7 +222,7 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg)
+        public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null)
         {
             var payload = new
             {
@@ -237,7 +237,7 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public async Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg)
+        public async Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg = null)
         {
             var payload = new
             {
