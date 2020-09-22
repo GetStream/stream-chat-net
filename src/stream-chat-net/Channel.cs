@@ -222,11 +222,12 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public async Task AddMembers(IEnumerable<string> userIDs)
+        public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg)
         {
             var payload = new
             {
-                add_members = userIDs
+                add_members = userIDs,
+                message = msg
             };
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
@@ -236,11 +237,12 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public async Task RemoveMembers(IEnumerable<string> userIDs)
+        public async Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg)
         {
             var payload = new
             {
-                remove_members = userIDs
+                remove_members = userIDs,
+                message = msg
             };
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
