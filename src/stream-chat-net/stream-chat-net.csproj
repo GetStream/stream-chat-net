@@ -8,9 +8,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>
-    <Version>0.4.2</Version>
-    <PackageVersion>0.4.2</PackageVersion>
-    <Authors>Horatiu Ion</Authors>
+    <Version>0.4.4</Version>
+    <PackageVersion>0.4.4</PackageVersion>
+    <Authors>Getstream.io</Authors>
     <Description>Chat client for getstream.io.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright 2019</Copyright>
