@@ -141,7 +141,7 @@ namespace StreamChatTests
 
             var inEvt = new Event()
             {
-                Type = EventType.MessageRead
+                Type = EventType.TypingStart
             };
             inEvt.SetData("foo", new int[] { 1 });
 
