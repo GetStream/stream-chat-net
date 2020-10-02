@@ -151,7 +151,7 @@ namespace StreamChatTests
             Assert.NotNull(outEvt.CreatedAt);
             Assert.NotNull(outEvt.User);
             Assert.AreEqual(inEvt.Type, outEvt.Type);
-            Assert.AreEqual(inEvt.User.ID, outEvt.User.ID);
+            Assert.AreEqual(user1.ID, outEvt.User.ID);
             Assert.AreEqual(1, outEvt.GetData<int[]>("foo")[0]);
         }
 
