@@ -91,7 +91,8 @@ namespace StreamChatTests
 
             await this._endpoint.Update(user);
 
-            var result = await this._endpoint.UpdatePartial(new UserPartialRequest {
+            var result = await this._endpoint.UpdatePartial(new UserPartialRequest
+            {
                 ID = user.ID,
                 Set = new Dictionary<string, string>()
                 {
@@ -200,7 +201,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 

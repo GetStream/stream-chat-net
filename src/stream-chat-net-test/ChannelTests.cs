@@ -48,7 +48,7 @@ namespace StreamChatTests
             var chanData = new GenericData();
             chanData.SetData("name", "one big party");
             chanData.SetData("food", new string[] { "pizza", "gabagool" });
-            var channel = _client.Channel("messaging", null, chanData);
+            var channel = this._client.Channel("messaging", null, chanData);
 
             var chanState = await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -76,7 +76,7 @@ namespace StreamChatTests
             Assert.AreEqual(chanState.Channel.GetData<string[]>("food"), chanData.GetData<string[]>("food"));
 
             var chanId = Guid.NewGuid().ToString();
-            var channel2 = _client.Channel("messaging", chanId);
+            var channel2 = this._client.Channel("messaging", chanId);
             chanState = await channel2.Create(user2.ID);
             Assert.AreEqual(chanState.Channel.ID, channel2.ID);
             Assert.AreEqual(chanId, channel2.ID);
@@ -96,7 +96,7 @@ namespace StreamChatTests
 
             await this._client.Users.Update(user1);
 
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
 
             var inMsg = new MessageInput()
@@ -166,7 +166,7 @@ namespace StreamChatTests
 
             await this._client.Users.Update(user1);
 
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
 
             var inMsg = new MessageInput()
@@ -219,7 +219,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -291,7 +291,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -386,7 +386,7 @@ namespace StreamChatTests
 
             await this._client.Users.UpdateMany(members);
 
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
 
@@ -496,7 +496,7 @@ namespace StreamChatTests
             var customData = new GenericData();
             customData.SetData("foo", "bar");
             await this._client.Users.Update(user1);
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString(), customData);
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString(), customData);
 
             await channel.Create(user1.ID);
 
@@ -542,7 +542,7 @@ namespace StreamChatTests
             };
 
             await this._client.Users.Update(user1);
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             var chanState = await channel.Create(user1.ID);
             Assert.IsNull(chanState.Channel.DeletedAt);
@@ -587,7 +587,7 @@ namespace StreamChatTests
 
             await this._client.Users.UpdateMany(members);
 
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
 
@@ -634,7 +634,7 @@ namespace StreamChatTests
             };
 
             await this._client.Users.Update(user1);
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
 
@@ -666,7 +666,7 @@ namespace StreamChatTests
             };
 
             await this._client.Users.Update(user1);
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
 
@@ -747,7 +747,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2, user3, user4 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging", System.Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", System.Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
 
@@ -793,7 +793,7 @@ namespace StreamChatTests
 
             await this._client.Users.UpdateMany(members);
 
-            var channel = _client.Channel("messaging", System.Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", System.Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -838,7 +838,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2, user3, user4 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -854,7 +854,6 @@ namespace StreamChatTests
 
             var u2 = chanState.Members.Find(u => u.User.ID == user2.ID);
             Assert.NotNull(u2);
-            // Assert.IsTrue(u2.IsModerator);
             Assert.AreEqual(ChannelRole.Moderator, u2.Role);
         }
 
@@ -887,7 +886,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2, user3, user4 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
@@ -905,7 +904,6 @@ namespace StreamChatTests
 
             var u2 = chanState.Members.Find(u => u.User.ID == user2.ID);
             Assert.NotNull(u2);
-            // Assert.IsTrue(u2.IsModerator);
             Assert.AreEqual(ChannelRole.Member, u2.Role);
         }
 
@@ -927,7 +925,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
             await channel.BanUser(user2.ID, user1.ID, Guid.NewGuid().ToString(), 3);
@@ -951,7 +949,7 @@ namespace StreamChatTests
             var members = new User[] { user1, user2 };
 
             await this._client.Users.UpdateMany(members);
-            var channel = _client.Channel("messaging");
+            var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
             await channel.BanUser(user2.ID, user1.ID, Guid.NewGuid().ToString(), 3);
