@@ -135,7 +135,7 @@ namespace StreamChatTests
             };
 
             await this._client.Users.Update(user1);
-            var channel = _client.Channel("messaging", Guid.NewGuid().ToString());
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
 
