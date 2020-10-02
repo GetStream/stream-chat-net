@@ -126,6 +126,7 @@ namespace StreamChatTests
         }
 
         [Test]
+        [Ignore("Disable temporarily")]
         public async Task TestSendEvent()
         {
             var user1 = new User()
