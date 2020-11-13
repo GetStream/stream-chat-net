@@ -27,7 +27,8 @@ namespace StreamChatTests
             var inSettings = new AppSettings()
             {
                 WebhookURL = "http://www.example.com",
-                DisableAuth = true
+                DisableAuth = true,
+                MultiTenantEnabled = true
             };
             await this._client.UpdateAppSettings(inSettings);
 
@@ -37,6 +38,7 @@ namespace StreamChatTests
             Assert.AreEqual(inSettings.DisableAuth, appSettings.DisableAuth);
             Assert.NotNull(appSettings.ChannelConfigs);
             Assert.True(appSettings.ChannelConfigs.ContainsKey("messaging"));
+            Assert.True(appSettings.MultiTenantEnabled);
         }
 
         [Test]

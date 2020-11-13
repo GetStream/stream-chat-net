@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace StreamChat
 {
@@ -33,6 +31,9 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "disable_permissions_checks")]
         public bool DisablePermissions { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "multi_tenant_enabled")]
+        public bool MultiTenantEnabled { get; set; }
 
 
         public AppSettingsWithDetails() { }
