@@ -224,11 +224,18 @@ namespace StreamChat
 
         public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null)
         {
-            var payload = new
-            {
-                add_members = userIDs,
-                message = msg
-            };
+            var payload = new JObject(new JProperty("add_members", userIDs));
+            if (msg != null) {
+                if (msg.User != null)
+                {
+                    msg.User = new User()
+                    {
+                        ID = msg.User.ID
+                    };
+                }
+                payload.Add("message", msg.ToJObject());
+            }
+
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
@@ -239,11 +246,18 @@ namespace StreamChat
 
         public async Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg = null)
         {
-            var payload = new
-            {
-                remove_members = userIDs,
-                message = msg
-            };
+            var payload = new JObject(new JProperty("remove_members", userIDs));
+            if (msg != null) {
+                if (msg.User != null)
+                {
+                    msg.User = new User()
+                    {
+                        ID = msg.User.ID
+                    };
+                }
+                payload.Add("message", msg.ToJObject());
+            }
+
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
