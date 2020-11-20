@@ -798,7 +798,13 @@ namespace StreamChatTests
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
 
-            await channel.RemoveMembers(new string[] { user3.ID });
+            var systemMsg = new MessageInput()
+            {
+                Text = user3.ID.ToString() + " has left",
+                User = user1,
+            };
+
+            await channel.RemoveMembers(new string[] { user3.ID }, systemMsg);
 
             var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(3, chanState.Channel.MemberCount);
