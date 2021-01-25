@@ -6,8 +6,8 @@ namespace StreamChat
 {
     public interface IUsers
     {
-        Task<IEnumerable<User>> UpdateMany(IEnumerable<User> users);
-        Task<User> Update(User user);
+        Task<IEnumerable<User>> UpsertMany(IEnumerable<User> users);
+        Task<User> Upsert(User user);
 
         Task<User> UpdatePartial(UserPartialRequest update);
         Task<IEnumerable<User>> UpdateManyPartial(IEnumerable<UserPartialRequest> updates);

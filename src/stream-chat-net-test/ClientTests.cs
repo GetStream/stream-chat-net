@@ -102,7 +102,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
 
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
@@ -142,7 +142,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
 
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });

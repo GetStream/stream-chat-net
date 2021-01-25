@@ -69,13 +69,13 @@ var bob = new User()
 };
 bob.SetData("name", "Robert Tables");
 
-var bobFromDB = await client.Users.Update(bob);
+var bobFromDB = await client.Users.Upsert(bob);
 Console.WriteLine(bobFromDB.CreatedAt);
 
 //batch update is also supported
 var jane = ...
 var june = ...
-var users = await client.Users.UpdateMany(new User[] { bob, jane, june });
+var users = await client.Users.UpsertMany(new User[] { bob, jane, june });
 ```
 
 ### GDPR-like User endpoints

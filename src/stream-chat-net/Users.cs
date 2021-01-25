@@ -17,7 +17,7 @@ namespace StreamChat
             _client = client;
         }
 
-        public async Task<IEnumerable<User>> UpdateMany(IEnumerable<User> users)
+        public async Task<IEnumerable<User>> UpsertMany(IEnumerable<User> users)
         {
             var usersDict = new JObject();
             users.ForEach(u => usersDict.Add(new JProperty(u.ID, u.ToJObject())));
@@ -33,13 +33,13 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<User> Update(User user)
+        public async Task<User> Upsert(User user)
         {
-            var users = await this.UpdateMany(new User[] { user });
+            var users = await this.UpsertMany(new User[] { user });
             return users.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<User>> UpdateManyPartial(IEnumerable<UserPartialRequest> updates) 
+        public async Task<IEnumerable<User>> UpdateManyPartial(IEnumerable<UserPartialRequest> updates)
         {
             var updatesArr = new JArray();
             updates.ForEach(u => updatesArr.Add(u.ToJObject()));
@@ -56,7 +56,7 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<User> UpdatePartial(UserPartialRequest update) 
+        public async Task<User> UpdatePartial(UserPartialRequest update)
         {
             var user = await this.UpdateManyPartial(new UserPartialRequest[] { update });
             return user.FirstOrDefault();
