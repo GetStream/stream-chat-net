@@ -28,7 +28,7 @@ namespace StreamChat
         Task<List<ChannelState>> QueryChannels(QueryChannelsOptions opts);
 
         Task<Message> UpdateMessage(MessageInput msg);
-        Task<Message> DeleteMessage(string messageID);
+        Task<Message> DeleteMessage(string messageID, bool hardDelete = false);
 
         bool VerifyWebhook(string requestBody, string xSignature);
     }

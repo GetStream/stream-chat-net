@@ -201,6 +201,8 @@ state.Messages.ForEach(m => Console.WriteLine("Message {0}: {1}", m.ID, m.Text))
 ```c#
 //delete a message from any channel by ID
 var deletedMsg = await client.DeleteMessage(r1.ID);
+//hard delete
+var deletedMsg = await client.DeleteMessage(r1.ID, true);
 Console.WriteLine(deletedMsg.DeletedAt);
 
 var replies = await chan.GetReplies(m2.ID, MessagePaginationParams.Default);
