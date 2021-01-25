@@ -36,7 +36,7 @@ namespace StreamChatTests
                 {"foo", "bar"}
             });
 
-            var result = await this._endpoint.Update(user);
+            var result = await this._endpoint.Upsert(user);
             Assert.AreEqual(result.ID, user.ID);
             Assert.AreEqual(result.Role, user.Role);
             Assert.AreEqual(result.GetData<string>("name"), user.GetData<string>("name"));
@@ -45,7 +45,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUpdateMany()
+        public async Task TestUpsertMny()
         {
             var user1 = new User()
             {
@@ -64,7 +64,7 @@ namespace StreamChatTests
                 {"foo", "bar"}
             });
 
-            var results = await this._endpoint.UpdateMany(new User[] { user1, user2 });
+            var results = await this._endpoint.UpsertMany(new User[] { user1, user2 });
             Assert.AreEqual(2, results.Count());
             var u1 = results.ToList().Find(u => u.ID == user1.ID);
             Assert.NotNull(u1);
@@ -89,7 +89,7 @@ namespace StreamChatTests
             };
             user.SetData("field", "value");
 
-            await this._endpoint.Update(user);
+            await this._endpoint.Upsert(user);
 
             var result = await this._endpoint.UpdatePartial(new UserPartialRequest
             {
@@ -119,7 +119,7 @@ namespace StreamChatTests
                 {"foo", "bar"}
             });
 
-            await this._endpoint.Update(user);
+            await this._endpoint.Upsert(user);
 
             var result = await this._endpoint.Delete(user.ID);
             Assert.AreEqual(result.ID, user.ID);
@@ -143,7 +143,7 @@ namespace StreamChatTests
                 {"foo", "bar"}
             });
 
-            await this._endpoint.Update(user);
+            await this._endpoint.Upsert(user);
 
             var result = await this._endpoint.Deactivate(user.ID);
             Assert.AreEqual(result.ID, user.ID);
@@ -167,7 +167,7 @@ namespace StreamChatTests
                 {"foo", "bar"}
             });
 
-            await this._endpoint.Update(user);
+            await this._endpoint.Upsert(user);
 
             var result = await this._endpoint.Deactivate(user.ID);
             Assert.AreEqual(result.ID, user.ID);
@@ -200,7 +200,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -255,7 +255,7 @@ namespace StreamChatTests
             };
             user2.SetData("name", "Alice");
 
-            await this._endpoint.UpdateMany(new User[] { user1, user2 });
+            await this._endpoint.UpsertMany(new User[] { user1, user2 });
 
             var opts = QueryUserOptions.Default.WithFilter(new Dictionary<string, object>() {
                 {"id", user1.ID}
@@ -332,7 +332,7 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
-            await this._endpoint.UpdateMany(new User[] { targetUser, user });
+            await this._endpoint.UpsertMany(new User[] { targetUser, user });
             await this._endpoint.Ban(targetUser.ID, user.ID, Guid.NewGuid().ToString(), 5);
         }
 
@@ -349,7 +349,7 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
-            await this._endpoint.UpdateMany(new User[] { targetUser, user });
+            await this._endpoint.UpsertMany(new User[] { targetUser, user });
             await this._endpoint.Ban(targetUser.ID, user.ID, Guid.NewGuid().ToString(), 5);
             await this._endpoint.Unban(targetUser.ID);
         }
@@ -367,7 +367,7 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.User,
             };
-            await this._endpoint.UpdateMany(new User[] { user1, user2 });
+            await this._endpoint.UpsertMany(new User[] { user1, user2 });
 
             var muteResp = await this._endpoint.Mute(user2.ID, user1.ID);
             Assert.NotNull(muteResp.OwnUser);
@@ -390,7 +390,7 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.User,
             };
-            await this._endpoint.UpdateMany(new User[] { user1, user2 });
+            await this._endpoint.UpsertMany(new User[] { user1, user2 });
 
             await this._endpoint.Unmute(user2.ID, user1.ID);
         }
@@ -403,7 +403,7 @@ namespace StreamChatTests
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
-            await this._endpoint.Update(user1);
+            await this._endpoint.Upsert(user1);
 
             await this._endpoint.MarkAllRead(user1.ID);
         }

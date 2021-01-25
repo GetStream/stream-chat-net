@@ -44,7 +44,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var chanData = new GenericData();
             chanData.SetData("name", "one big party");
             chanData.SetData("food", new string[] { "pizza", "gabagool" });
@@ -94,7 +94,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
 
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
@@ -135,7 +135,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID, new string[] { user1.ID });
@@ -165,7 +165,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
 
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
             await channel.Create(user1.ID, new string[] { user1.ID });
@@ -219,7 +219,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -291,7 +291,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -385,7 +385,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2, user3, user4 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
 
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
@@ -496,7 +496,7 @@ namespace StreamChatTests
 
             var customData = new GenericData();
             customData.SetData("foo", "bar");
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString(), customData);
 
             await channel.Create(user1.ID);
@@ -542,7 +542,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             var chanState = await channel.Create(user1.ID);
@@ -586,7 +586,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2, user3, user4 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
 
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
@@ -634,7 +634,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
@@ -666,7 +666,7 @@ namespace StreamChatTests
                 Role = Role.Admin,
             };
 
-            await this._client.Users.Update(user1);
+            await this._client.Users.Upsert(user1);
             var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
@@ -747,7 +747,7 @@ namespace StreamChatTests
             };
             var members = new User[] { user1, user2, user3, user4 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging", System.Guid.NewGuid().ToString());
 
             await channel.Create(user1.ID);
@@ -792,7 +792,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2, user3, user4 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
 
             var channel = this._client.Channel("messaging", System.Guid.NewGuid().ToString());
 
@@ -844,7 +844,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2, user3, user4 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -892,7 +892,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2, user3, user4 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -931,7 +931,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -955,7 +955,7 @@ namespace StreamChatTests
 
             var members = new User[] { user1, user2 };
 
-            await this._client.Users.UpdateMany(members);
+            await this._client.Users.UpsertMany(members);
             var channel = this._client.Channel("messaging");
 
             await channel.Create(user1.ID, members.Select(u => u.ID));
