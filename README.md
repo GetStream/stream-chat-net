@@ -68,6 +68,7 @@ var bob = new User()
     Role = Role.Admin,
 };
 bob.SetData("name", "Robert Tables");
+bob.SetData("teams", new string[] { "red", "blue" }; // if multi-tenant enabled
 
 var bobFromDB = await client.Users.Upsert(bob);
 Console.WriteLine(bobFromDB.CreatedAt);
@@ -128,6 +129,7 @@ chanFromDB.Members.ForEach(m => Console.WriteLine(m.User.ID));
 
 //create channel and then add members
 var chan = client.Channel("messaging", "bob-and-june");
+chan.SetData("team", "red"); // if multi-tenant enabled
 await chan.Create(bobFromDB.ID);
 await chan.AddMembers(new string[] { bob.ID, june.ID });
 

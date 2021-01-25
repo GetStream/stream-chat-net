@@ -25,18 +25,28 @@ namespace StreamChatTests
         [Test]
         public async Task TestChannelCreate()
         {
+            var settings = new AppSettings()
+            {
+                MultiTenantEnabled = true
+            };
+            await this._client.UpdateAppSettings(settings);
+            var appSettings = await this._client.GetAppSettings();
+            Assert.AreEqual(appSettings.MultiTenantEnabled, true);
+
             var user1 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.Admin,
             };
             user1.SetData("name", "BOB");
+            user1.SetData("teams", new string[] { "red", "blue" });
 
             var user2 = new User()
             {
                 ID = Guid.NewGuid().ToString(),
                 Role = Role.User,
             };
+            user2.SetData("teams", new string[] { "red" });
             user2.SetData("details", new Dictionary<string, string>()
             {
                 {"foo", "bar"}
@@ -48,6 +58,7 @@ namespace StreamChatTests
             var chanData = new GenericData();
             chanData.SetData("name", "one big party");
             chanData.SetData("food", new string[] { "pizza", "gabagool" });
+            chanData.SetData("team", "red");
             var channel = this._client.Channel("messaging", null, chanData);
 
             var chanState = await channel.Create(user1.ID, members.Select(u => u.ID));
@@ -61,12 +72,14 @@ namespace StreamChatTests
 
             Assert.AreEqual(u1.Role, ChannelRole.Owner);
             Assert.AreEqual(u1.User.GetData<string>("name"), user1.GetData<string>("name"));
+            Assert.AreEqual(u1.User.GetData<string[]>("teams"), new string[] { "red", "blue" });
             Assert.NotNull(u1.UpdatedAt);
 
             var u2 = chanState.Members.Find(u => u.User.ID == user2.ID);
             Assert.NotNull(u2);
             Assert.AreEqual(u2.Role, ChannelRole.Member);
             Assert.AreEqual(u2.User.GetData<Dictionary<string, string>>("details")["foo"], user2.GetData<Dictionary<string, string>>("details")["foo"]);
+            Assert.AreEqual(u2.User.GetData<string[]>("teams"), new string[] { "red" });
             Assert.NotNull(u2.UpdatedAt);
 
             Assert.NotNull(chanState.Channel.CreatedBy);
@@ -74,6 +87,7 @@ namespace StreamChatTests
             Assert.AreEqual(chanState.Channel.CreatedBy.Role, user1.Role);
             Assert.AreEqual(chanState.Channel.GetData<string>("name"), chanData.GetData<string>("name"));
             Assert.AreEqual(chanState.Channel.GetData<string[]>("food"), chanData.GetData<string[]>("food"));
+            Assert.AreEqual("red", chanState.Channel.GetData<string>("team"));
 
             var chanId = Guid.NewGuid().ToString();
             var channel2 = this._client.Channel("messaging", chanId);
