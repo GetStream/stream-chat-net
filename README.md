@@ -149,7 +149,7 @@ bobHi.Attachments = new List<Attachment>() { attachment }; // add attachment int
 var m1 = await chan.SendMessage(bobHi, bob.ID);
 var m2 = await chan.SendMessage(juneHi, june.ID);
 Console.WriteLine("{0} says {1} at {2}, {3}", m1.User.ID, m1.Text, m1.CreatedAt, m1.GetData<string>('location'));
-Console.WriteLine("{0} says {1} at {2}", m2.User.ID, m2.Text, m2.CreatedAt, m2.GetData<string>('location'));
+Console.WriteLine("{0} says {1} at {2}", m2.User.ID, m2.Text, m2.CreatedAt);
 
 //send replies
 var bobReply = new MessageInput()
