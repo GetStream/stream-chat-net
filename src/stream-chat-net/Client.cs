@@ -12,6 +12,7 @@ namespace StreamChat
 {
     public class Client : IClient
     {
+        internal static readonly string Version = "0.6.1";
         internal const string BaseUrlFormat = "https://chat-proxy-{0}.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal static readonly Dictionary<ApiLocation, string> Locations = new Dictionary<ApiLocation, string>()
@@ -324,7 +325,7 @@ namespace StreamChat
             var request = new RestRequest(fullPath, method);
             request.AddHeader("Authorization", _token);
             request.AddHeader("stream-auth-type", "jwt");
-            request.AddHeader("X-Stream-Client", "stream-net-client");
+            request.AddHeader("X-Stream-Client", "stream-chat-net-client-"+Version);
             request.AddQueryParameter("api_key", _apiKey);
             return request;
         }
