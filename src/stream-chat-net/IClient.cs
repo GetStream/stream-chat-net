@@ -8,7 +8,7 @@ namespace StreamChat
     {
         IUsers Users { get; }
 
-        string CreateUserToken(string userId, DateTime? expiration = null);
+        string CreateToken(string userId, DateTime? expiration = null);
 
         Task UpdateAppSettings(AppSettings settings);
         Task<AppSettingsWithDetails> GetAppSettings();

@@ -70,7 +70,7 @@ namespace StreamChat
             }
         }
 
-        public string CreateUserToken(string userId, DateTime? expiration = null)
+        public string CreateToken(string userId, DateTime? expiration = null)
         {
             var payload = new Dictionary<string, object>
             {

@@ -53,10 +53,10 @@ var client = new Client("API KEY", "API SECRET");
 
 ```c#
 //without expiration
-var token = client.CreateUserToken("bob-1");
+var token = client.CreateToken("bob-1");
 
 //with expiration
-var token = client.CreateUserToken("bob-1", DateTime.Now.AddHours(1));
+var token = client.CreateToken("bob-1", DateTime.Now.AddHours(1));
 ```
 
 ### Create/Update users
