@@ -136,14 +136,20 @@ var bobHi = new MessageInput()
 {
     Text = "Hi june!",
 };
+bobHi.SetData('location', 'amsterdam');
 var juneHi = new MessageInput()
 {
     Text = "Hi bob!",
 };
+bobHi.SetData('location', 'boulder'); // add custom data into message
+var attachment = new Attachment();
+attachment.SetData('x-built-by', 'android-services'); // add custom data into an attachment
+bobHi.Attachments = new List<Attachment>() { attachment }; // add attachment into a message
+
 var m1 = await chan.SendMessage(bobHi, bob.ID);
 var m2 = await chan.SendMessage(juneHi, june.ID);
-Console.WriteLine("{0} says {1} at {2}", m1.User.ID, m1.Text, m1.CreatedAt);
-Console.WriteLine("{0} says {1} at {2}", m2.User.ID, m2.Text, m2.CreatedAt);
+Console.WriteLine("{0} says {1} at {2}, {3}", m1.User.ID, m1.Text, m1.CreatedAt, m1.GetData<string>('location'));
+Console.WriteLine("{0} says {1} at {2}", m2.User.ID, m2.Text, m2.CreatedAt, m2.GetData<string>('location'));
 
 //send replies
 var bobReply = new MessageInput()

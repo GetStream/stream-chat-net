@@ -104,6 +104,9 @@ namespace StreamChatTests
                 Text = Guid.NewGuid().ToString()
             };
             inMsg.SetData("foo", "barsky");
+            var attachment = new Attachment();
+            attachment.SetData("baz", "bazky");
+            inMsg.Attachments = new List<Attachment>() { attachment };
 
             var outMsg = await channel.SendMessage(inMsg, user1.ID);
 
@@ -115,6 +118,7 @@ namespace StreamChatTests
             Assert.NotNull(outMsg.User);
             Assert.AreEqual(inMsg.User.ID, outMsg.User.ID);
             Assert.AreEqual("barsky", outMsg.GetData<string>("foo"));
+            Assert.AreEqual("bazky", outMsg.Attachments[0].GetData<string>("baz"));
 
             var chanState = await channel.Query(new ChannelQueryParams(false, true));
 
@@ -123,6 +127,7 @@ namespace StreamChatTests
             Assert.AreEqual(1, chanState.Messages.Count);
             Assert.AreEqual(outMsg.ID, chanState.Messages[0].ID);
             Assert.AreEqual("barsky", chanState.Messages[0].GetData<string>("foo"));
+            Assert.AreEqual("bazky", chanState.Messages[0].Attachments[0].GetData<string>("baz"));
         }
 
         [Test]
