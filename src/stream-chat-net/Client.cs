@@ -264,7 +264,9 @@ namespace StreamChat
         {
             var endpoint = string.Format("messages/{0}", messageID);
             var request = this.BuildAppRequest(endpoint, HttpMethod.DELETE);
-            request.AddQueryParameter("hard", hardDelete.ToString().ToLower());
+            if (hardDelete) {
+                request.AddQueryParameter("hard", "true");
+            }
 
             var response = await this.MakeRequest(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
