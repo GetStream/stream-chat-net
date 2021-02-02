@@ -12,9 +12,9 @@ namespace StreamChat
         Task<User> UpdatePartial(UserPartialRequest update);
         Task<IEnumerable<User>> UpdateManyPartial(IEnumerable<UserPartialRequest> updates);
 
-        Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false);
-        Task<User> Deactivate(string id, bool markMessagesDeleted = false);
-        Task<User> Reactivate(string id, bool restoreMessages = false);
+        Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false, bool deleteConversations = false);
+        Task<User> Deactivate(string id, bool markMessagesDeleted = false, string createdById = "");
+        Task<User> Reactivate(string id, bool restoreMessages = false, string name = "", string createdById = "");
 
         Task<ExportedUser> Export(string id);
 
