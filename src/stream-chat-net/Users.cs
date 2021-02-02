@@ -76,13 +76,13 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<User> Deactivate(string id, bool markMessagesDeleted = false, string createdById = "")
+        public async Task<User> Deactivate(string id, bool markMessagesDeleted = false, string createdByID = "")
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/deactivate", HttpMethod.POST);
             var payload = new
             {
                 mark_messages_deleted = markMessagesDeleted,
-                created_by_id = createdById,
+                created_by_id = createdByID,
             };
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
@@ -93,14 +93,14 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<User> Reactivate(string id, bool restoreMessages = false, string name = "", string createdById = "")
+        public async Task<User> Reactivate(string id, bool restoreMessages = false, string name = "", string createdByID = "")
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/reactivate", HttpMethod.POST);
             var payload = new
             {
                 restore_messages = restoreMessages,
                 name = name,
-                created_by_id = createdById,
+                created_by_id = createdByID,
             };
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
