@@ -83,10 +83,10 @@ var users = await client.Users.UpsertMany(new User[] { bob, jane, june });
 
 ```c#
 // exports data for one user
-await client.Export("bob-1");
+await client.Users.Export("bob-1");
 
 // deactivates a user
-await client.Deactivate("bob-1");
+await client.Users.Deactivate("bob-1");
 ```
 
 ### Channel types CRUD
