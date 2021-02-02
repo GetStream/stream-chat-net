@@ -87,6 +87,12 @@ await client.Users.Export("bob-1");
 
 // deactivates a user
 await client.Users.Deactivate("bob-1");
+
+// reactivates a user
+await client.Users.Reactivate("bob-1");
+
+// deletes a user
+await client.Users.Delete("bob-1");
 ```
 
 ### Channel types CRUD

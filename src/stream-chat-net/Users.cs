@@ -62,11 +62,12 @@ namespace StreamChat
             return user.FirstOrDefault();
         }
 
-        public async Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false)
+        public async Task<User> Delete(string id, bool markMessagesDeleted = false, bool hardDelete = false, bool deleteConversations = false)
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id), HttpMethod.DELETE);
             request.AddQueryParameter("mark_messages_deleted", markMessagesDeleted.ToString().ToLower());
             request.AddQueryParameter("hard_delete", hardDelete.ToString().ToLower());
+            request.AddQueryParameter("delete_conversation_channels", deleteConversations.ToString().ToLower());
 
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -75,12 +76,13 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<User> Deactivate(string id, bool markMessagesDeleted = false)
+        public async Task<User> Deactivate(string id, bool markMessagesDeleted = false, string createdById = "")
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/deactivate", HttpMethod.POST);
             var payload = new
             {
                 mark_messages_deleted = markMessagesDeleted,
+                created_by_id = createdById,
             };
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
@@ -91,12 +93,14 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<User> Reactivate(string id, bool restoreMessages = false)
+        public async Task<User> Reactivate(string id, bool restoreMessages = false, string name = "", string createdById = "")
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/reactivate", HttpMethod.POST);
             var payload = new
             {
                 restore_messages = restoreMessages,
+                name = name,
+                created_by_id = createdById,
             };
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
 
