@@ -8,12 +8,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>
-    <Version>0.8.0</Version>
-    <PackageVersion>0.8.0</PackageVersion>
+    <Version>0.8.1</Version>
+    <PackageVersion>0.8.1</PackageVersion>
     <Authors>Getstream.io</Authors>
     <Description>Chat client for getstream.io.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2020</Copyright>
+    <Copyright>Copyright 2021</Copyright>
     <PackageProjectUrl>https://github.com/GetStream/stream-chat-net</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/GetStream/stream-chat-net/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>getstreamio</PackageTags>
