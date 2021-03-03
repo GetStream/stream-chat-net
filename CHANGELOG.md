@@ -1,3 +1,6 @@
+## 0.10.0 - 2021-03-03
+* Add MML support into message.
+
 ## 0.9.0 - 2021-03-03
 * Add .Net Core 2, 3 and 5 support.
 
