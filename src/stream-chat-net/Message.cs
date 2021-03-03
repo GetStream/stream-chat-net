@@ -32,6 +32,9 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "type")]
         public string Type { get; internal set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "mml")]
+        public string MML { get; internal set; }
+
         [JsonIgnore]
         public User User { get; internal set; }
 
