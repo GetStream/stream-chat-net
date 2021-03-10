@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
-using NUnit.Framework;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using StreamChat;
 
 namespace StreamChatTests
@@ -91,6 +91,37 @@ namespace StreamChatTests
             user1Devices = await this._client.GetDevices(user1);
             Assert.AreEqual(1, user1Devices.Count);
             Assert.NotNull(user1Devices.Find(d => d.ID == d2.ID && d.PushProvider == d2.PushProvider));
+        }
+
+        [Test]
+        public async Task TestGetRateLimits()
+        {
+            var allLimits = await this._client.GetRateLimits(new GetRateLimitsOptions());
+            Assert.NotNull(allLimits.ServerSide);
+            Assert.NotNull(allLimits.Android);
+            Assert.NotNull(allLimits.IOS);
+            Assert.NotNull(allLimits.Web);
+
+            var serverSideLimits = await this._client.GetRateLimits(new GetRateLimitsOptions().WithServerSide());
+            Assert.NotNull(serverSideLimits.ServerSide);
+            Assert.Null(serverSideLimits.Android);
+            Assert.Null(serverSideLimits.IOS);
+            Assert.Null(serverSideLimits.Web);
+
+            var options = new GetRateLimitsOptions().
+                WithServerSide().
+                WithAndroid().
+                WithEndpoint("GetRateLimits").
+                WithEndpoint("SendMessage");
+            var endpointLimits = await this._client.GetRateLimits(options);
+            Assert.NotNull(endpointLimits.ServerSide);
+            Assert.NotNull(endpointLimits.Android);
+            Assert.Null(endpointLimits.IOS);
+            Assert.Null(endpointLimits.Web);
+            Assert.AreEqual(2, endpointLimits.ServerSide.Count);
+            Assert.AreEqual(2, endpointLimits.Android.Count);
+            Assert.AreEqual(endpointLimits.Android["GetRateLimits"].Limit, endpointLimits.Android["GetRateLimits"].Remaining);
+            Assert.Greater(endpointLimits.ServerSide["GetRateLimits"].Limit, endpointLimits.ServerSide["GetRateLimits"].Remaining);
         }
 
         [Test]

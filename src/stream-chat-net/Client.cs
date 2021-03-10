@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StreamChat.Rest;
@@ -213,6 +213,20 @@ namespace StreamChat
             var response = await this.MakeRequest(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<RateLimitsMap> GetRateLimits(GetRateLimitsOptions opts)
+        {
+            var request = BuildAppRequest("rate_limits", HttpMethod.GET);
+            opts.Apply(request);
+
+            var response = await this.MakeRequest(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return JsonConvert.DeserializeObject<RateLimitsMap>(response.Content);
+            }
+            throw StreamChatException.FromResponse(response);
         }
 
         public IChannel Channel(string channelType, string channelID = "", GenericData data = null)
