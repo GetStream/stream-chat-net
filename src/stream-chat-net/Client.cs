@@ -215,6 +215,21 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<RateLimitsMap> GetRateLimits(GetRateLimitsOptions opts)
+        {
+            var request = BuildAppRequest("rate_limits", HttpMethod.GET);
+            opts.Apply(request);
+
+            var response = await this.MakeRequest(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var obj = JObject.Parse(response.Content);
+                return (RateLimitsMap)obj.Value.ToObject(typeof(RateLimitsMap));
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public IChannel Channel(string channelType, string channelID = "", GenericData data = null)
         {
             return new Channel(this, channelType, channelID, data);

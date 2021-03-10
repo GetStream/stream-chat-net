@@ -22,6 +22,8 @@ namespace StreamChat
         Task AddDevice(Device d);
         Task<List<Device>> GetDevices(string userID);
         Task RemoveDevice(string deviceID, string userID);
+        
+        Task<RateLimitsMap> GetRateLimits(GetRateLimitsOptions opts);
 
         IChannel Channel(string channelType, string channelID = "", GenericData data = null);
 
