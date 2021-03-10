@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StreamChat.Rest;
@@ -224,8 +224,7 @@ namespace StreamChat
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                var obj = JObject.Parse(response.Content);
-                return (RateLimitsMap)obj.ToObject(typeof(RateLimitsMap));
+                return JsonConvert.DeserializeObject<RateLimitsMap>(response.Content);
             }
             throw StreamChatException.FromResponse(response);
         }

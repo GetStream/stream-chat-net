@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
-using NUnit.Framework;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using StreamChat;
 
 namespace StreamChatTests
@@ -108,7 +108,12 @@ namespace StreamChatTests
             Assert.Null(serverSideLimits.IOS);
             Assert.Null(serverSideLimits.Web);
 
-            var endpointLimits = await this._client.GetRateLimits(new GetRateLimitsOptions().WithServerSide().WithAndroid().WithEndpoint("GetRateLimits").WithEndpoint("SendMessage"));
+            var options = new GetRateLimitsOptions().
+                WithServerSide().
+                WithAndroid().
+                WithEndpoint("GetRateLimits").
+                WithEndpoint("SendMessage");
+            var endpointLimits = await this._client.GetRateLimits(options);
             Assert.NotNull(endpointLimits.ServerSide);
             Assert.NotNull(endpointLimits.Android);
             Assert.Null(endpointLimits.IOS);

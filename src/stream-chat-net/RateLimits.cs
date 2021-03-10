@@ -12,7 +12,7 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "remaining")]
         public int Remaining { get; internal set; }
-        
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reset")]
         public int Reset { get; internal set; }
     }
@@ -91,7 +91,7 @@ namespace StreamChat
                 request.AddQueryParameter("web", "true");
             }
             if (_endpoints.Count > 0) {
-                request.AddQueryParameter("endpoints", string.Join(".", _endpoints.ToArray()));
+                request.AddQueryParameter("endpoints", string.Join(",", _endpoints.ToArray()));
             }
         }
     }
