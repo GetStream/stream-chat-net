@@ -96,27 +96,27 @@ namespace StreamChatTests
         [Test]
         public async Task TestGetRateLimits()
         {
-            var limits = await this._client.GetRateLimits(new GetRateLimitsOptions());
-            Assert.NotNull(limits.ServerSide);
-            Assert.NotNull(limits.Android);
-            Assert.NotNull(limits.IOS);
-            Assert.NotNull(limits.Web);
+            var allLimits = await this._client.GetRateLimits(new GetRateLimitsOptions());
+            Assert.NotNull(allLimits.ServerSide);
+            Assert.NotNull(allLimits.Android);
+            Assert.NotNull(allLimits.IOS);
+            Assert.NotNull(allLimits.Web);
 
-            var limits = await this._client.GetRateLimits(new GetRateLimitsOptions().WithServerSide());
-            Assert.NotNull(limits.ServerSide);
-            Assert.Null(limits.Android);
-            Assert.Null(limits.IOS);
-            Assert.Null(limits.Web);
+            var serverSideLimits = await this._client.GetRateLimits(new GetRateLimitsOptions().WithServerSide());
+            Assert.NotNull(serverSideLimits.ServerSide);
+            Assert.Null(serverSideLimits.Android);
+            Assert.Null(serverSideLimits.IOS);
+            Assert.Null(serverSideLimits.Web);
 
-            var limits = await this._client.GetRateLimits(new GetRateLimitsOptions().WithServerSide().WithAndroid().WithEndpoint("GetRateLimits").WithEndpoint("SendMessage"));
-            Assert.NotNull(limits.ServerSide);
-            Assert.NotNull(limits.Android);
-            Assert.Null(limits.IOS);
-            Assert.Null(limits.Web);
-            Assert.AreEqual(2, limits.ServerSide.Count);
-            Assert.AreEqual(2, limits.Android.Count);
-            Assert.AreEqual(limits.Android["GetRateLimits"].Limit, limits.Android["GetRateLimits"].Remaining);
-            Assert.Greater(limits.ServerSide["GetRateLimits"].Limit, limits.ServerSide["GetRateLimits"].Remaining);
+            var endpointLimits = await this._client.GetRateLimits(new GetRateLimitsOptions().WithServerSide().WithAndroid().WithEndpoint("GetRateLimits").WithEndpoint("SendMessage"));
+            Assert.NotNull(endpointLimits.ServerSide);
+            Assert.NotNull(endpointLimits.Android);
+            Assert.Null(endpointLimits.IOS);
+            Assert.Null(endpointLimits.Web);
+            Assert.AreEqual(2, endpointLimits.ServerSide.Count);
+            Assert.AreEqual(2, endpointLimits.Android.Count);
+            Assert.AreEqual(endpointLimits.Android["GetRateLimits"].Limit, endpointLimits.Android["GetRateLimits"].Remaining);
+            Assert.Greater(endpointLimits.ServerSide["GetRateLimits"].Limit, endpointLimits.ServerSide["GetRateLimits"].Remaining);
         }
 
         [Test]
