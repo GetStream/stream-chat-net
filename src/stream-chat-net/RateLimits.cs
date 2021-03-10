@@ -40,37 +40,37 @@ namespace StreamChat
         bool _web = false;
         List<string> _endpoints = new List<string>();
 
-        public QueryChannelsOptions WithServerSide()
+        public GetRateLimitsOptions WithServerSide()
         {
             _serverSide = true;
             return this;
         }
 
-        public QueryChannelsOptions WithAndroid()
+        public GetRateLimitsOptions WithAndroid()
         {
             _android = true;
             return this;
         }
 
-        public QueryChannelsOptions WithIOS()
+        public GetRateLimitsOptions WithIOS()
         {
             _ios = true;
             return this;
         }
 
-        public QueryChannelsOptions WithWeb()
+        public GetRateLimitsOptions WithWeb()
         {
             _web = true;
             return this;
         }
 
-        public QueryChannelsOptions WithEndpoint(string endpoint)
+        public GetRateLimitsOptions WithEndpoint(string endpoint)
         {
             _endpoints.add(endpoint);
             return this;
         }
 
-        public QueryChannelsOptions WithEndpoints(List<string> endpoints)
+        public GetRateLimitsOptions WithEndpoints(List<string> endpoints)
         {
             _endpoints = endpoints;
             return this;
