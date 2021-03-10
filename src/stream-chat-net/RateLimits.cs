@@ -66,7 +66,7 @@ namespace StreamChat
 
         public GetRateLimitsOptions WithEndpoint(string endpoint)
         {
-            _endpoints.add(endpoint);
+            _endpoints.Add(endpoint);
             return this;
         }
 

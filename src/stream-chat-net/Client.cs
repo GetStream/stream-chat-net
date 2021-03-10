@@ -225,7 +225,7 @@ namespace StreamChat
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var obj = JObject.Parse(response.Content);
-                return (RateLimitsMap)obj.Value.ToObject(typeof(RateLimitsMap));
+                return (RateLimitsMap)obj.ToObject(typeof(RateLimitsMap));
             }
             throw StreamChatException.FromResponse(response);
         }
