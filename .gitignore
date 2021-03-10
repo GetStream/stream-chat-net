@@ -19,3 +19,4 @@ nuget.exe
 *TestResults/
 .vs/
 .vscode/
+.envrc
