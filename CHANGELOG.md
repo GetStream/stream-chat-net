@@ -1,5 +1,8 @@
+## 0.12.0 - 2021-05-10
+* Add missing fields of Device; `CreatedAt`, `Disabled` and `DisabledReason`.
+
 ## 0.11.0 - 2021-03-10
-* Add GetRateLimits endpoint support
+* Add GetRateLimits endpoint support.
 
 ## 0.10.0 - 2021-03-03
 * Add MML support into message.
