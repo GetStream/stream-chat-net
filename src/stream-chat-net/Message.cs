@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -71,6 +71,8 @@ namespace StreamChat
         [JsonIgnore]
         public List<User> MentionedUsers { get; internal set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "silent")]
+        public bool Silent { get; internal set; }
 
         public Message() { }
 

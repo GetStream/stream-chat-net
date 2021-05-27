@@ -194,6 +194,32 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestSendSilentMessage()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Upsert(user1);
+
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString(),
+                Silent = true
+            };
+            inMsg.SetData("foo", "barsky");
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+            Assert.IsNull(outMsg.DeletedAt);
+            Assert.AreEqual(outMsg.Silent, inMsg.Silent);
+        }
+
+        [Test]
         [Ignore("Fails randomly because of app polling")]
         public async Task TestChannelType()
         {
