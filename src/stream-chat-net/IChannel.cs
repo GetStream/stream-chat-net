@@ -36,5 +36,8 @@ namespace StreamChat
 
         Task BanUser(string targetID, string id, string reason, int timeoutMinutes = 0);
         Task UnbanUser(string targetID);
+
+        Task Hide(string userID, bool clearHistory = false);
+        Task Show(string userID);
     }
 }
