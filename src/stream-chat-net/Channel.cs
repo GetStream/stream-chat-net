@@ -225,7 +225,8 @@ namespace StreamChat
         public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null)
         {
             var payload = new JObject(new JProperty("add_members", userIDs));
-            if (msg != null) {
+            if (msg != null)
+            {
                 if (msg.User != null)
                 {
                     msg.User = new User()
@@ -247,7 +248,8 @@ namespace StreamChat
         public async Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg = null)
         {
             var payload = new JObject(new JProperty("remove_members", userIDs));
-            if (msg != null) {
+            if (msg != null)
+            {
                 if (msg.User != null)
                 {
                     msg.User = new User()
@@ -348,6 +350,34 @@ namespace StreamChat
         public async Task UnbanUser(string targetID)
         {
             await this._client.Users.Unban(targetID, this);
+        }
+
+        public async Task Hide(string userID, bool clearHistory = false)
+        {
+            var request = this._client.BuildAppRequest(this.Endpoint + "/hide", HttpMethod.POST);
+            var payload = new JObject();
+            payload.Add("user_id", userID);
+            payload.Add("clear_history", clearHistory);
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                throw StreamChatException.FromResponse(response);
+            }
+        }
+
+        public async Task Show(string userID)
+        {
+            var request = this._client.BuildAppRequest(this.Endpoint + "/show", HttpMethod.POST);
+            var payload = new JObject(new JProperty("user_id", userID));
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                throw StreamChatException.FromResponse(response);
+            }
         }
     }
 }
