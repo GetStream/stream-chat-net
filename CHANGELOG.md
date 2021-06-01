@@ -1,3 +1,7 @@
+## 0.14.0 - 2021-06-01
+
+- Add flag user and message moderation support
+
 ## 0.13.0 - 2021-05-31
 
 - Add support for channel hide/show
