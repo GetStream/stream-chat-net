@@ -219,6 +219,41 @@ namespace StreamChatTests
             Assert.AreEqual(outMsg.Silent, inMsg.Silent);
         }
 
+
+        [Test]
+        public async Task TestFlag()
+        {
+            // flag user
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+            };
+            await this._client.Users.Upsert(user2);
+
+            await this._client.FlagUser(user2.ID, user1.ID);
+            await this._client.UnflagUser(user2.ID, user1.ID);
+
+            // flag message
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString(),
+                Silent = true
+            };
+            inMsg.SetData("foo", "barsky");
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+            await this._client.FlagUser(outMsg.ID, user1.ID);
+            await this._client.UnflagUser(outMsg.ID, user1.ID);
+        }
+
         [Test]
         public async Task TestHideShow()
         {

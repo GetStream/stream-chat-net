@@ -294,6 +294,46 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task FlagUser(string flaggedID, string flaggerID)
+        {
+            await this.postFlag(flaggedID, flaggerID, "flag", "user");
+        }
+
+        public async Task UnflagUser(string flaggedID, string flaggerID)
+        {
+            await this.postFlag(flaggedID, flaggerID, "unflag", "user");
+        }
+
+        public async Task FlagMessage(string flaggedID, string flaggerID)
+        {
+            await this.postFlag(flaggedID, flaggerID, "flag", "message");
+        }
+
+        public async Task UnflagMessage(string flaggedID, string flaggerID)
+        {
+            await this.postFlag(flaggedID, flaggerID, "unflag", "message");
+        }
+
+        private async Task postFlag(string dest, string src, string op, string kind)
+        {
+            var endpoint = string.Format("moderation/{0}", op);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.POST);
+            var payload = new JObject();
+            if (kind == "user") {
+                payload.Add("target_user_id", dest);
+            } else {
+                payload.Add("target_message_id", dest);
+            }
+            payload.Add("user_id", src);
+            request.SetJsonBody(payload.ToString());
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                throw StreamChatException.FromResponse(response);
+            }
+        }
+
         public bool VerifyWebhook(string requestBody, string xSignature)
         {
             using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(this._apiSecret)))
