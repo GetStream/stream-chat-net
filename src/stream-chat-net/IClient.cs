@@ -22,7 +22,7 @@ namespace StreamChat
         Task AddDevice(Device d);
         Task<List<Device>> GetDevices(string userID);
         Task RemoveDevice(string deviceID, string userID);
-        
+
         Task<RateLimitsMap> GetRateLimits(GetRateLimitsOptions opts);
 
         IChannel Channel(string channelType, string channelID = "", GenericData data = null);
@@ -31,6 +31,11 @@ namespace StreamChat
 
         Task<Message> UpdateMessage(MessageInput msg);
         Task<Message> DeleteMessage(string messageID, bool hardDelete = false);
+
+        Task FlagUser(string flaggedUserID, string flaggerUserID);
+        Task UnflagUser(string flaggedUserID, string flaggerUserID);
+        Task FlagMessage(string flaggedMessageID, string flaggerUserID);
+        Task UnflagMessage(string flaggedMessageID, string flaggerUserID);
 
         bool VerifyWebhook(string requestBody, string xSignature);
     }
