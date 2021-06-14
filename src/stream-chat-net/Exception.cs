@@ -11,10 +11,11 @@ namespace StreamChat
 
     public class StreamChatException : Exception
     {
+        public int? Code { get; internal set; }
         internal StreamChatException(ExceptionState state)
             : base(message: state.Message)
         {
-
+            this.Code = state.Code;
         }
 
         internal class ExceptionState
