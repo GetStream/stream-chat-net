@@ -1,3 +1,7 @@
+## 0.15.0 - 2021-06-17
+
+- Expose error codes in the stream exception
+
 ## 0.14.0 - 2021-06-01
 
 - Add flag user and message moderation support
