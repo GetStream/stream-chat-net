@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System;
 using StreamChat.Rest;
 
 namespace StreamChat
@@ -186,6 +186,103 @@ namespace StreamChat
                 last_message_ids = _lastMessageIDs,
                 filter_conditions = _filter,
                 sort = _sort,
+            };
+            request.AddQueryParameter("payload", JsonConvert.SerializeObject(payload));
+        }
+    }
+
+    public class SearchOptions
+    {
+        const int DefaultOffset = 0;
+        const int DefaultLimit = 20;
+
+        int _offset = DefaultOffset;
+        int _limit = DefaultLimit;
+        string _next = null;
+        string _query = null;
+        List<SortParameter> _sort = new List<SortParameter>();
+        Dictionary<string, object> _filter = new Dictionary<string, object>();
+        Dictionary<string, object> _message_filter_conditions = new Dictionary<string, object>();
+
+        public SearchOptions WithOffset(int offset)
+        {
+            _offset = offset;
+            return this;
+        }
+
+        public SearchOptions WithLimit(int limit)
+        {
+            _limit = limit;
+            return this;
+        }
+        public SearchOptions WithSortBy(SortParameter param)
+        {
+            _sort.Add(param);
+            return this;
+        }
+
+        public SearchOptions WithFilter(Dictionary<string, object> filter)
+        {
+            _filter = filter;
+            return this;
+        }
+
+        public SearchOptions WithQuery(string query)
+        {
+            _query = query;
+            return this;
+        }
+
+        public SearchOptions WithMessageFilterConditions(Dictionary<string, object> filter)
+        {
+            _message_filter_conditions = filter;
+            return this;
+        }
+
+        public SearchOptions WithNext(string next)
+        {
+            _next = next;
+            return this;
+        }
+
+        public static SearchOptions Default
+        {
+            get
+            {
+                return new SearchOptions()
+                {
+                    _offset = DefaultOffset,
+                    _limit = DefaultLimit
+                };
+            }
+        }
+
+        internal void Apply(RestRequest request)
+        {
+            if (_offset > 0 && (_sort.Count > 0 || !String.IsNullOrEmpty(_next)))
+            {
+                throw new ArgumentException("offset", "Cannot use offset with sort or next parameters");
+            }
+
+            if (!String.IsNullOrEmpty(_query) && _message_filter_conditions.Count > 0)
+            {
+                throw new ArgumentException("query", "Cannot specify both query and message filter conditions");
+            }
+
+            if (String.IsNullOrEmpty(_query) && _message_filter_conditions.Count == 0)
+            {
+                throw new ArgumentException("query", "Must specify one of query and message filter conditions");
+            }
+
+            var payload = new
+            {
+                limit = _limit,
+                filter_conditions = _filter,
+                sort = _sort,
+                offset = _offset,
+                next = _next,
+                query = _query,
+                message_filter_conditions = _message_filter_conditions,
             };
             request.AddQueryParameter("payload", JsonConvert.SerializeObject(payload));
         }
