@@ -160,4 +160,30 @@ namespace StreamChat
             return result;
         }
     }
+
+    public class MessageSearchResponse
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "next")]
+        public string Next { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "previous")]
+        public string Previous { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
+        public List<MessageSearchResult> Results { get; internal set; }
+
+        public MessageSearchResponse() { }
+
+    }
+
+    public class MessageSearchResult
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "message")]
+        public Message Message { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "channel")]
+        public ChannelObject Channel { get; internal set; }
+
+        public MessageSearchResult() { }
+    }
 }

@@ -329,5 +329,159 @@ namespace StreamChatTests
             Assert.IsTrue(updatedChan.Mutes);
             Assert.AreEqual(newChanType.Commands, updatedChan.Commands);
         }
+
+        [Test]
+        public async Task TestSearchQuery()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var content = Guid.NewGuid().ToString();
+            await this._client.Users.Upsert(user1);
+
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = content
+            };
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+            var results = await this._client.Search(SearchOptions.Default.WithQuery(content).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:"+channel.ID}
+            }));
+
+            Assert.AreEqual(outMsg.ID, results.Results[0].Message.ID);
+        }
+
+        [Test]
+        public async Task TestSearchMessageFilters()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var content = Guid.NewGuid().ToString();
+            await this._client.Users.Upsert(user1);
+
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = content
+            };
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+            var results = await this._client.Search(SearchOptions.Default.WithMessageFilterConditions(new Dictionary<string, object>()
+            {
+                {"text", new Dictionary<string, object>()
+                {
+                    {"$q", content}
+                }}
+            }).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:"+channel.ID}
+            }));
+
+            Assert.AreEqual(outMsg.ID, results.Results[0].Message.ID);
+        }
+
+        [Test]
+        public async Task TestSearchNoQueryMessageFiltersFails()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:123"}
+            })));
+        }
+
+        [Test]
+        public async Task TestSearchBothQueryMessageFiltersFails()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithQuery("query").WithMessageFilterConditions(new Dictionary<string, object>()
+            {
+                {"text", new Dictionary<string, object>()
+                {
+                    {"$q", "query"}
+                }}
+            }).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:123"}
+            })));
+        }
+
+        [Test]
+        public async Task TestSearchNextOffsetFails()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithQuery("query").WithNext("next").WithOffset(1).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:123"}
+            })));
+        }
+
+        [Test]
+        public async Task TestSearchSortOffsetFails()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithQuery("query").WithSortBy(new SortParameter
+            {
+                Field = "created_at",
+                Direction = SortDirection.Ascending
+            }).WithOffset(1).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:123"}
+            })));
+        }
+
+        [Test]
+        [Ignore("")]
+        public async Task TestSearchSortNext()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var content = Guid.NewGuid().ToString();
+            await this._client.Users.Upsert(user1);
+
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = content
+            };
+
+            var outMsg1 = await channel.SendMessage(inMsg, user1.ID);
+            var outMsg2 = await channel.SendMessage(inMsg, user1.ID);
+            var results = await this._client.Search(SearchOptions.Default.WithQuery(content).WithLimit(1).WithSortBy(new SortParameter
+            {
+                Field = "created_at",
+                Direction = SortDirection.Ascending
+            }).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:"+channel.ID}
+            }));
+
+            Assert.AreEqual(outMsg1.ID, results.Results[0].Message.ID);
+            Assert.IsNotEmpty(results.Next);
+
+            var resultsPage2 = await this._client.Search(SearchOptions.Default.WithQuery(content).WithLimit(1).WithNext(results.Next).WithFilter(new Dictionary<string, object>()
+            {
+                {"cid", "messaging:"+channel.ID}
+            }));
+            Assert.AreEqual(outMsg2.ID, resultsPage2.Results[0].Message.ID);
+            Assert.IsNotEmpty(results.Previous);
+
+        }
     }
 }

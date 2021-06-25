@@ -255,6 +255,20 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<MessageSearchResponse> Search(SearchOptions opts)
+        {
+            var request = this.BuildAppRequest("search", HttpMethod.GET);
+            opts.Apply(request);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return JsonConvert.DeserializeObject<MessageSearchResponse>(response.Content);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+
         public async Task<Message> UpdateMessage(MessageInput msg)
         {
             if (string.IsNullOrEmpty(msg.ID))
@@ -319,9 +333,12 @@ namespace StreamChat
             var endpoint = string.Format("moderation/{0}", op);
             var request = this.BuildAppRequest(endpoint, HttpMethod.POST);
             var payload = new JObject();
-            if (kind == "user") {
+            if (kind == "user")
+            {
                 payload.Add("target_user_id", dest);
-            } else {
+            }
+            else
+            {
                 payload.Add("target_message_id", dest);
             }
             payload.Add("user_id", src);

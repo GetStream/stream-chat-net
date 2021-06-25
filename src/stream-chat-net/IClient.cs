@@ -29,6 +29,7 @@ namespace StreamChat
 
         Task<List<ChannelState>> QueryChannels(QueryChannelsOptions opts);
 
+        Task<MessageSearchResponse> Search(SearchOptions opts);
         Task<Message> UpdateMessage(MessageInput msg);
         Task<Message> DeleteMessage(string messageID, bool hardDelete = false);
 

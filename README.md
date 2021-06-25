@@ -31,6 +31,7 @@ nuget install stream-chat-net
 - User devices
 - User search
 - Channel search
+- Message search
 
 ## Getting started
 
