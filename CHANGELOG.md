@@ -1,3 +1,7 @@
+## 0.16.0 - 2021-06-25
+
+- Add search support
+
 ## 0.15.0 - 2021-06-17
 
 - Expose error codes in the stream exception
