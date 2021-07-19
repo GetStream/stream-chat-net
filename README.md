@@ -32,6 +32,7 @@ nuget install stream-chat-net
 - User search
 - Channel search
 - Message search
+- Channel export
 
 ## Getting started
 
@@ -234,4 +235,34 @@ Console.WriteLine(devices[0].ID);
 
 //remove device
 await client.RemoveDevice(junePhone.ID, junePhone.UserID);
+```
+
+### Export Channels
+
+```c#
+// create an export
+var taskId = await client.ExportChannels(new List<ExportChannelRequest>{
+    new ExportChannelRequest().WithChannelId(id).WithChannelType("messaging")
+});
+
+// wait for the completion
+var complete = false;
+var iterations = 0;
+ExportChannelsStatusResponse resp = null;
+while (!complete && iterations < 1000)
+{
+    resp = await client.GetExportChannelsStatus(taskId);
+    if (resp.Status.Equals("completed"))
+    {
+        complete = true;
+    }
+    iterations++;
+    await Task.Delay(100);
+}
+
+// if completed, use the export url
+if (complete)
+{
+    Console.WriteLine(resp.Result.URL);
+}
 ```
