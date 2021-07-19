@@ -38,6 +38,9 @@ namespace StreamChat
         Task FlagMessage(string flaggedMessageID, string flaggerUserID);
         Task UnflagMessage(string flaggedMessageID, string flaggerUserID);
 
+        Task<string> ExportChannels(List<ExportChannelRequest> reqs);
+        Task<ExportChannelsStatusResponse> GetExportChannelsStatus(string taskId);
+
         bool VerifyWebhook(string requestBody, string xSignature);
     }
 }

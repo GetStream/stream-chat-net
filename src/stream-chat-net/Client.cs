@@ -351,6 +351,35 @@ namespace StreamChat
             }
         }
 
+        public async Task<string> ExportChannels(List<ExportChannelRequest> reqs)
+        {
+            var request = this.BuildAppRequest("export_channels", HttpMethod.POST);
+            var payload = new JObject(new JProperty("channels", JArray.FromObject(reqs)));
+            request.SetJsonBody(payload.ToString());
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var taskId = respObj.Property("task_id").Value.ToString();
+                return taskId;
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<ExportChannelsStatusResponse> GetExportChannelsStatus(string taskId)
+        {
+            var endpoint = string.Format("export_channels/{0}", taskId);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.GET);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return JsonConvert.DeserializeObject<ExportChannelsStatusResponse>(response.Content);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public bool VerifyWebhook(string requestBody, string xSignature)
         {
             using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(this._apiSecret)))
