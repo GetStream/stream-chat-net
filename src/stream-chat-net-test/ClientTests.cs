@@ -395,7 +395,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestSearchNoQueryMessageFiltersFails()
+        public void TestSearchNoQueryMessageFiltersFails()
         {
             Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithFilter(new Dictionary<string, object>()
             {
@@ -404,7 +404,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestSearchBothQueryMessageFiltersFails()
+        public void TestSearchBothQueryMessageFiltersFails()
         {
             Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithQuery("query").WithMessageFilterConditions(new Dictionary<string, object>()
             {
@@ -419,7 +419,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestSearchNextOffsetFails()
+        public void TestSearchNextOffsetFails()
         {
             Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithQuery("query").WithNext("next").WithOffset(1).WithFilter(new Dictionary<string, object>()
             {
@@ -428,7 +428,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestSearchSortOffsetFails()
+        public void TestSearchSortOffsetFails()
         {
             Assert.ThrowsAsync<ArgumentException>(async () => await this._client.Search(SearchOptions.Default.WithQuery("query").WithSortBy(new SortParameter
             {
@@ -483,5 +483,40 @@ namespace StreamChatTests
             Assert.IsNotEmpty(results.Previous);
 
         }
+
+        [Test]
+        public async Task TestExport()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Upsert(user1);
+            var id = Guid.NewGuid().ToString();
+            var channel = this._client.Channel("messaging", id);
+            await channel.Create(user1.ID, new string[] { user1.ID });
+            var taskId = await this._client.ExportChannels(new List<ExportChannelRequest>{
+                new ExportChannelRequest().WithChannelId(id).WithChannelType("messaging")
+            });
+            var complete = false;
+            var iterations = 0;
+            ExportChannelsStatusResponse resp = null;
+            while (!complete && iterations < 1000)
+            {
+                resp = await this._client.GetExportChannelsStatus(taskId);
+                if (resp.Status.Equals("completed"))
+                {
+                    complete = true;
+                }
+                iterations++;
+                await Task.Delay(100);
+            }
+            Assert.IsNotNull(resp);
+            Assert.IsNotNull(resp.Result.URL);
+
+        }
+
     }
 }
