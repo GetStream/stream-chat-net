@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using StreamChat;
 using System;
-using System.Diagnostics;
 using System.Linq;
 
 namespace StreamChatTests
@@ -10,48 +9,6 @@ namespace StreamChatTests
     [TestFixture]
     public class JsonHelperTests
     {
-        [Test]
-        public void TestSpeed()
-        {
-            JsonHelpers.RegisterType<Attachment>();
-
-            var orig = CreateTestAttachment();
-            var copy = new Attachment();
-
-            var testObject = orig.ToJObject();
-            testObject.Add("TestProperty", JToken.FromObject(DateTime.Now));
-
-            var count = 5000;
-
-            var sw = new Stopwatch();
-            sw.Start();
-
-            for (int i = 0; i < count; i++)
-            {
-                JsonHelpers.FromJObject(copy, testObject);
-            }
-
-            sw.Stop();
-
-            var expressionTime = sw.ElapsedMilliseconds;
-            Debug.WriteLine(expressionTime);
-
-            copy = new Attachment();
-
-            sw.Restart();
-
-            for (int i = 0; i < count; i++)
-            {
-                JsonHelpers.FromJObjectOld(copy, testObject);
-            }
-
-            sw.Stop();
-            var origTime = sw.ElapsedMilliseconds;
-            Debug.WriteLine(origTime);
-
-            Assert.Less(expressionTime, origTime);
-        }
-
         [TestCase]
         public void TestCorrectness()
         {
