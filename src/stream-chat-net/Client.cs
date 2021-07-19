@@ -12,7 +12,7 @@ namespace StreamChat
 {
     public class Client : IClient
     {
-        static readonly string Version = "0.16.0";
+        static readonly string Version = "0.17.0";
         internal const string BaseUrlFormat = "https://chat-proxy-{0}.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal static readonly Dictionary<ApiLocation, string> Locations = new Dictionary<ApiLocation, string>()

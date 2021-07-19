@@ -1,3 +1,7 @@
+## 0.17.0 - 2021-07-19
+
+- Add channel export support
+
 ## 0.16.0 - 2021-06-25
 
 - Add search support
