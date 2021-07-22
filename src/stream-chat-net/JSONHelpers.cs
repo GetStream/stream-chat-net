@@ -18,6 +18,12 @@ namespace StreamChat
         internal static GenericData FromJObject<T>(T obj, JObject json)
             where T : class
         {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+
+            if (json is null)
+                throw new ArgumentNullException(nameof(json));
+
             var jProps = json.Properties();
             
             var builder = (Builder<T>)CachedBuilders.GetOrAdd(typeof(T), _ => ConstructBuilder<T>());
