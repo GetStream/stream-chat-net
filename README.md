@@ -137,7 +137,9 @@ chanFromDB.Members.ForEach(m => Console.WriteLine(m.User.ID));
 
 //create channel and then add members
 var chan = client.Channel("messaging", "bob-and-june");
-chan.SetData("team", "red"); // if multi-tenant enabled
+var newData = new GenericData(); 
+newData.SetData("team", "red"); // if multi-tenant enabled
+await chan.Update(newData);
 await chan.Create(bobFromDB.ID);
 await chan.AddMembers(new string[] { bob.ID, june.ID });
 
