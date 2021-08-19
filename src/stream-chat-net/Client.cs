@@ -13,31 +13,13 @@ namespace StreamChat
     public class Client : IClient
     {
         static readonly string Version = "0.18.0";
-        internal const string BaseUrlFormat = "https://chat-proxy-{0}.stream-io-api.com";
-        internal const string BaseUrlPath = "/api/v1.0/";
-        internal static readonly Dictionary<ApiLocation, string> Locations = new Dictionary<ApiLocation, string>()
-        {
-            {ApiLocation.Dublin,    "dublin"},
-            {ApiLocation.USEast,    "us-east"},
-            {ApiLocation.Singapore, "singapore"},
-            {ApiLocation.Sydney,    "sydney"}
-        };
+        internal readonly Uri BaseUrl = new Uri("https://chat.stream-io-api.com");
 
         internal static readonly object JWTHeader = new
         {
             typ = "JWT",
             alg = "HS256"
         };
-
-        private Uri BaseUrl
-        {
-            get
-            {
-                string region = Locations[_options.Location];
-                return new Uri(string.Format(BaseUrlFormat, region));
-            }
-        }
-
         static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         readonly ClientOptions _options;

@@ -24,7 +24,6 @@ namespace StreamChatTests
             _client = new StreamChat.Client(apiKey, apiSecret,
                 new StreamChat.ClientOptions()
                 {
-                    Location = StreamChat.ApiLocation.USEast,
                     Timeout = 10000
                 });
         }
