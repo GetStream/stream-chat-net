@@ -308,6 +308,21 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<Message> GetMessage(string messageID)
+        {
+            var endpoint = string.Format("messages/{0}", messageID);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.GET);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var msgObj = respObj.Property("message").Value as JObject;
+                return Message.FromJObject(msgObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task FlagUser(string flaggedID, string flaggerID)
         {
             await this.postFlag(flaggedID, flaggerID, "flag", "user");
