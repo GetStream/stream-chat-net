@@ -165,6 +165,35 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestGetMessage()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Upsert(user1);
+
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var inMsg = new MessageInput()
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            inMsg.SetData("foo", "barsky");
+
+            var outMsg = await channel.SendMessage(inMsg, user1.ID);
+            Assert.IsNull(outMsg.DeletedAt);
+
+            var msg = await this._client.GetMessage(outMsg.ID);
+            Assert.AreEqual(outMsg.ID, msg.ID);
+            Assert.AreEqual(outMsg.CID, msg.CID);
+            Assert.AreEqual(outMsg.Text, msg.Text);
+        }
+
+        [Test]
         public async Task TestDeleteMessage()
         {
             var user1 = new User()
@@ -189,6 +218,7 @@ namespace StreamChatTests
 
             var deletedMsg = await this._client.DeleteMessage(outMsg.ID);
             Assert.AreEqual(outMsg.ID, deletedMsg.ID);
+            Assert.AreEqual(outMsg.CID, deletedMsg.CID);
             Assert.AreEqual(outMsg.Text, deletedMsg.Text);
             Assert.IsNotNull(deletedMsg.DeletedAt);
         }
