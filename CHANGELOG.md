@@ -1,3 +1,8 @@
+## 0.18.0 - 2021-08-19
+
+- Add get message by id support
+- Fix some doc examples in readme
+
 ## 0.17.0 - 2021-07-19
 
 - Add channel export support
