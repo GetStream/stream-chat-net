@@ -1,3 +1,8 @@
+## 0.19.0 - 2021-08-19
+
+- Set base url to edge.
+  - There is no need to set api location anymore so location from client options is removed.
+
 ## 0.18.0 - 2021-08-19
 
 - Add get message by id support
