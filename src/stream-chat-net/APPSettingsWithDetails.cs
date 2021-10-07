@@ -35,8 +35,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "multi_tenant_enabled")]
         public bool MultiTenantEnabled { get; set; }
 
-
-        public AppSettingsWithDetails() { }
     }
 
     public class PushNotificationFields
@@ -46,8 +44,6 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "firebase")]
         public FirebaseFields Firebase { get; set; }
-
-        public PushNotificationFields() { }
     }
 
     public class APNFields
@@ -72,8 +68,6 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "key_id")]
         public string KeyID { get; set; }
-
-        public APNFields() { }
     }
 
     public class FirebaseFields
@@ -84,6 +78,5 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "enabled")]
         public bool Enabled { get; set; }
 
-        public FirebaseFields() { }
     }
 }

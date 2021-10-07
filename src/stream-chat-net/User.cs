@@ -42,9 +42,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "online")]
         public bool? Online { get; set; }
 
-
-        public User() { }
-
         internal static User FromJObject(JObject jObj)
         {
             var result = new User();
@@ -53,14 +50,15 @@ namespace StreamChat
         }
     }
 
-    public class UserPartialRequest : CustomDataBase {
+    public class UserPartialRequest : CustomDataBase
+    {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
         public string ID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
-        public Object Set {get; set; }
+        public Object Set { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "unset")]
-        public Object Unset {get; set; }
+        public Object Unset { get; set; }
     }
 }

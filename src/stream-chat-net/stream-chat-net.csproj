@@ -1,10 +1,10 @@
-﻿<Project ToolsVersion="16.5" Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Configuration">
     <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net45;net461;net472;netcoreapp2.1;netcoreapp3.1;net5.0;netstandard1.6;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net461;net472;netstandard1.6;netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>

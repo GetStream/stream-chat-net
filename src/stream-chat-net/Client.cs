@@ -1,34 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StreamChat.Rest;
+using HttpMethod = StreamChat.Rest.HttpMethod;
+
 
 namespace StreamChat
 {
     public class Client : IClient
     {
-        static readonly string Version = "0.19.0";
-        internal readonly Uri BaseUrl = new Uri("https://chat.stream-io-api.com");
-
-        internal static readonly object JWTHeader = new
+        private const string Version = "0.19.0";
+        private readonly Uri BaseUrl = new Uri("https://chat.stream-io-api.com");
+        private static readonly HttpClient DefaultHttpClient = new HttpClient();
+        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly IReadOnlyDictionary<string, string> JWTHeader = new Dictionary<string, string>
         {
-            typ = "JWT",
-            alg = "HS256"
+           { "typ", "JWT" },
+           { "alg", "HS256"},
         };
-        static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly ClientOptions _options;
+        private readonly RestClient _client;
+        private readonly string _apiSecret;
+        private readonly string _apiKey;
+        private readonly string _token;
 
-        readonly ClientOptions _options;
-        readonly RestClient _client;
-        readonly string _apiSecret;
-        readonly string _apiKey;
-        readonly string _token;
+        public Client(string apiKey, string apiSecret) : this(null, null, apiKey, apiSecret)
+        {
+        }
 
-        public Client(string apiKey, string apiSecret, ClientOptions opts = null)
+        public Client(string apiKey, string apiSecret, ClientOptions opts) : this(opts, null, apiKey, apiSecret)
+        {
+        }
+
+        public Client(string apiKey, string apiSecret, HttpClient httpClient) : this(null, httpClient, apiKey, apiSecret)
+        {
+        }
+
+        public Client(string apiKey, string apiSecret, HttpClient httpClient, ClientOptions opts) : this(opts, httpClient, apiKey, apiSecret)
+        {
+        }
+
+        private Client(ClientOptions opts, HttpClient httpClient, string apiKey, string apiSecret)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentNullException("apiKey", "Must have an apiKey");
@@ -37,12 +54,13 @@ namespace StreamChat
             _apiKey = apiKey;
             _apiSecret = apiSecret;
             _options = opts ?? ClientOptions.Default;
-            _client = new RestClient(BaseUrl, TimeSpan.FromMilliseconds(_options.Timeout));
-            var payload = new
+            httpClient = httpClient ?? DefaultHttpClient;
+            _client = new RestClient(httpClient, BaseUrl, TimeSpan.FromMilliseconds(_options.Timeout));
+            var payload = new Dictionary<string, object>
             {
-                server = true
+                {"server",  true}
             };
-            _token = this.JWToken(payload);
+            _token = this.GenerateJwt(payload);
         }
 
         public IUsers Users
@@ -61,9 +79,9 @@ namespace StreamChat
             };
             if (expiration.HasValue)
             {
-                payload["exp"] = (Int32)(expiration.Value.ToUniversalTime().Subtract(epoch).TotalSeconds);
+                payload["exp"] = (Int32)(expiration.Value.ToUniversalTime().Subtract(Epoch).TotalSeconds);
             }
-            return this.JWToken(payload);
+            return this.GenerateJwt(payload);
         }
 
         public async Task UpdateAppSettings(AppSettings settings)
@@ -397,7 +415,7 @@ namespace StreamChat
             return _client.Execute(request);
         }
 
-        public string JWToken(object payload)
+        public string GenerateJwt(IReadOnlyDictionary<string, object> payload)
         {
             var segments = new List<string>();
 

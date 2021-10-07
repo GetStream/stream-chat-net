@@ -29,7 +29,5 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
         public string Set { get; set; }
-
-        public Command() { }
     }
 }

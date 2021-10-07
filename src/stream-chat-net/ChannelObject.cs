@@ -8,7 +8,6 @@ namespace StreamChat
 {
     public class ChannelObject : CustomDataBase
     {
-        public ChannelObject() { }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
         public string ID { get; set; }

@@ -15,8 +15,6 @@ namespace StreamChat
 
     public class ChannelMember
     {
-        public ChannelMember() { }
-
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserID { get; internal set; }
 

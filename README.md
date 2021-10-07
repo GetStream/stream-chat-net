@@ -45,11 +45,13 @@ using StreamChat;
 ### Initialize client
 
 ```c#
-// snip
+// client instantiation
 
 var client = new Client("API KEY", "API SECRET");
 
 ```
+
+> :bulb: It is recommended to use the same client for the lifetime of your application. If you use .NET Core, you can utilize the [dependency injection extension](#net-core-dependency-injection-support) as well.
 
 ### Generate a token for clientside use
 
@@ -266,5 +268,24 @@ while (!complete && iterations < 1000)
 if (complete)
 {
     Console.WriteLine(resp.Result.URL);
+}
+```
+
+### .NET Core Dependency Injection support
+
+A small extension to add a Stream Client to your IoC container. 
+
+```bash
+nuget install stream-chat-net-dependencyinjection
+```
+
+In `Startup.cs`:
+
+```c#
+public void ConfigureServices(IServiceCollection services)
+{
+    /// ...
+    services.AddStreamClient("apiKey", "apiSecret");
+    // ...
 }
 ```

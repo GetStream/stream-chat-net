@@ -62,8 +62,6 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
         public DateTime? UpdatedAt { get; set; }
-
-        public ExportChannelsStatusResponse() { }
     }
 
     public class ExportChannelsResult
@@ -76,7 +74,5 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "url")]
         public string URL { get; set; }
-
-        public ExportChannelsResult() { }
     }
 }

@@ -41,7 +41,7 @@ namespace StreamChat.Rest
             JsonBody = json;
         }
 
-        public IEnumerable<KeyValuePair<string, string>> QueryParameters
+        public IDictionary<string, string> QueryParameters
         {
             get
             {
@@ -49,7 +49,7 @@ namespace StreamChat.Rest
             }
         }
 
-        public IEnumerable<KeyValuePair<string, string>> Headers
+        public IDictionary<string, string> Headers
         {
             get
             {

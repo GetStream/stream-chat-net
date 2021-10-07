@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -17,8 +16,6 @@ namespace StreamChat
 
         [JsonIgnore]
         public List<Reaction> Reactions { get; internal set; }
-
-        public ExportedUser() { }
 
 
         internal JObject ToJObject()

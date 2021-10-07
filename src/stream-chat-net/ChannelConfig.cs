@@ -65,7 +65,5 @@ namespace StreamChat
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
         public List<Command> Commands { get; set; }
-
-        public ChannelConfigWithInfo() { }
     }
 }

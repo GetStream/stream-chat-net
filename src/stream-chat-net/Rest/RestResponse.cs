@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace StreamChat.Rest
@@ -20,12 +17,15 @@ namespace StreamChat.Rest
 
         internal static async Task<RestResponse> FromResponseMessage(HttpResponseMessage message)
         {
-            var response = new RestResponse()
+            var response = new RestResponse
             {
                 StatusCode = message.StatusCode
             };
 
-            response.Content = await message.Content.ReadAsStringAsync();
+            using (message)
+            {
+                response.Content = await message.Content.ReadAsStringAsync();
+            }
 
             return response;
         }

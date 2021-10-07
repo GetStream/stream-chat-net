@@ -29,12 +29,9 @@ namespace StreamChat
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
         public new List<string> Commands { get; set; }
-
-        public ChannelTypeOutput() { }
     }
 
     public class ChannelTypeInfo : ChannelType
     {
-        public ChannelTypeInfo() { }
     }
 }
