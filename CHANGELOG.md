@@ -1,3 +1,7 @@
+## 0.20.0 - 2021-11-01
+
+- Add async url enrich app config flag
+
 ## 0.19.0 - 2021-08-19
 
 - Set base url to edge.
