@@ -13,6 +13,9 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "multi_tenant_enabled")]
         public bool MultiTenantEnabled { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "async_url_enrich_enabled")]
+        public bool AsyncURLEnrichEnabled { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "apn_config")]
         public APNConfig APNConfig { get; set; }
 
