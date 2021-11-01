@@ -12,7 +12,7 @@ namespace StreamChat
 {
     public class Client : IClient
     {
-        static readonly string Version = "0.20.0";
+        static readonly string Version = "0.20.1";
         internal readonly Uri BaseUrl = new Uri("https://chat.stream-io-api.com");
 
         internal static readonly object JWTHeader = new
