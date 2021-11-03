@@ -11,7 +11,6 @@ namespace StreamChat
         public const string ModerationSet = "moderation_set";
         public const string Giphy = "giphy";
         public const string Imgur = "imgur";
-        public const string Flag = "flag";
         public const string Ban = "ban";
         public const string Mute = "mute";
     }
