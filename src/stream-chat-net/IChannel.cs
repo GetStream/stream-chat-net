@@ -11,18 +11,18 @@ namespace StreamChat
 
         Task<ChannelState> Create(string createdBy, IEnumerable<string> members = null);
 
-        Task<Message> SendMessage(MessageInput msg, string userID);
-        Task<Message> SendMessage(MessageInput msg, string userID, string parentID);
+        Task<Message> SendMessage(MessageInput msg, string userID, bool skipPush = false);
+        Task<Message> SendMessage(MessageInput msg, string userID, string parentID, bool skipPush = false);
 
         Task<Event> SendEvent(Event evt, string userID);
 
-        Task<ReactionResponse> SendReaction(string messageID, Reaction reaction, string userID);
+        Task<ReactionResponse> SendReaction(string messageID, Reaction reaction, string userID, bool skipPush = false);
         Task<ReactionResponse> DeleteReaction(string messageID, string reactionType, string userID);
         Task<List<Reaction>> GetReactions(string messageID, int offset = 0, int limit = 50);
 
         Task<ChannelState> Query(ChannelQueryParams queryParams);
 
-        Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null);
+        Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null, bool skipPush = false);
         Task Delete();
         Task Truncate();
 
