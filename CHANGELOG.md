@@ -1,3 +1,7 @@
+## 0.21.0 - 2021-11-11
+
+- Add skip_push option
+
 ## 0.20.1 - 2021-11-02
 
 - Fix nuget release key encryption
