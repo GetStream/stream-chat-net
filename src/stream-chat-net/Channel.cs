@@ -47,7 +47,7 @@ namespace StreamChat
             return await this.Query(new ChannelQueryParams());
         }
 
-        public async Task<Message> SendMessage(MessageInput msg, string userID)
+        public async Task<Message> SendMessage(MessageInput msg, string userID, bool skipPush = false)
         {
             if (msg.User == null)
             {
@@ -56,6 +56,10 @@ namespace StreamChat
             msg.User.ID = userID;
 
             var payload = new JObject(new JProperty("message", msg.ToJObject()));
+            if (skipPush) 
+            {
+                payload.Add("skip_push", true);
+            }
 
 
             var request = this._client.BuildAppRequest(this.Endpoint + "/message", HttpMethod.POST);
@@ -71,10 +75,10 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<Message> SendMessage(MessageInput msg, string userID, string parentID)
+        public async Task<Message> SendMessage(MessageInput msg, string userID, string parentID, bool skipPush = false)
         {
             msg.ParentID = parentID;
-            return await this.SendMessage(msg, userID);
+            return await this.SendMessage(msg, userID, skipPush);
         }
 
         public async Task<Event> SendEvent(Event evt, string userID)
@@ -100,7 +104,7 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<ReactionResponse> SendReaction(string messageID, Reaction reaction, string userID)
+        public async Task<ReactionResponse> SendReaction(string messageID, Reaction reaction, string userID, bool skipPush = false)
         {
             if (reaction.User == null)
             {
@@ -109,6 +113,10 @@ namespace StreamChat
             reaction.User.ID = userID;
 
             var payload = new JObject(new JProperty("reaction", reaction.ToJObject()));
+            if (skipPush) 
+            {
+                payload.Add("skip_push", true);
+            }
 
             var endpoint = string.Format("messages/{0}/reaction", messageID);
             var request = this._client.BuildAppRequest(endpoint, HttpMethod.POST);
@@ -187,12 +195,17 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null)
+        public async Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null, bool skipPush = false)
         {
             var payload = new JObject();
             payload.Add(new JProperty("data", customData.ToJObject()));
             if (msg != null)
+            {
                 payload.Add(new JProperty("message", msg.ToJObject()));
+
+                if (skipPush) 
+                    payload.Add("skip_push", true);
+            }
 
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
             request.SetJsonBody(payload.ToString());
