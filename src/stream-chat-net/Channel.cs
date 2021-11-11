@@ -200,10 +200,12 @@ namespace StreamChat
             var payload = new JObject();
             payload.Add(new JProperty("data", customData.ToJObject()));
             if (msg != null)
+            {
                 payload.Add(new JProperty("message", msg.ToJObject()));
 
                 if (skipPush) 
                     payload.Add("skip_push", true);
+            }
 
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
             request.SetJsonBody(payload.ToString());
