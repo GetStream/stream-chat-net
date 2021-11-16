@@ -34,6 +34,7 @@ namespace StreamChat
         Task<Message> UpdateMessage(MessageInput msg);
         Task<Message> DeleteMessage(string messageID, bool hardDelete = false);
 
+
         Task FlagUser(string flaggedUserID, string flaggerUserID);
         Task UnflagUser(string flaggedUserID, string flaggerUserID);
         Task FlagMessage(string flaggedMessageID, string flaggerUserID);
@@ -41,6 +42,9 @@ namespace StreamChat
 
         Task<string> ExportChannels(List<ExportChannelRequest> reqs);
         Task<ExportChannelsStatusResponse> GetExportChannelsStatus(string taskId);
+
+        Task<TaskStatus> GetTaskStatus(string taskId);
+        Task<string> DeleteChannels(string[] cids, bool hardDelete = false);
 
         bool VerifyWebhook(string requestBody, string xSignature);
     }

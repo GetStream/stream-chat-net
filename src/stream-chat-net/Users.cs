@@ -76,6 +76,20 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<string> DeleteMany(DeleteUsersRequest req)
+        {
+            var request = this._client.BuildAppRequest(Users.Endpoint("delete"), HttpMethod.POST);
+            request.SetJsonBody(JsonConvert.SerializeObject(req));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                return JObject.Parse(response.Content).Property("task_id").Value.ToString();
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+
         public async Task<User> Deactivate(string id, bool markMessagesDeleted = false, string createdByID = "")
         {
             var request = this._client.BuildAppRequest(Users.Endpoint(id) + "/deactivate", HttpMethod.POST);
