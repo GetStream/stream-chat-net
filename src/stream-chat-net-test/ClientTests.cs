@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StreamChat;
 
@@ -545,8 +544,42 @@ namespace StreamChatTests
             }
             Assert.IsNotNull(resp);
             Assert.IsNotNull(resp.Result.URL);
-
         }
 
+        [Test]
+        public async Task TestDeleteChannels()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Upsert(user1);
+            var id = Guid.NewGuid().ToString();
+            var channel = this._client.Channel("messaging", id);
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var cid = "messaging:" + id;
+            var taskId = await this._client.DeleteChannels(new string[] { cid }, true);
+            var complete = false;
+            var iterations = 0;
+            StreamChat.TaskStatus resp = null;
+            while (!complete && iterations < 1000)
+            {
+                resp = await this._client.GetTaskStatus(taskId);
+                if (resp.Status.Equals("completed"))
+                {
+                    complete = true;
+                }
+                iterations++;
+                await Task.Delay(100);
+            }
+            Assert.IsNotNull(resp);
+            Assert.IsNotNull(resp.Result);
+            var cidStatus = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(resp.Result[cid]));
+            Assert.IsNotNull(cidStatus);
+            Assert.AreEqual("ok", cidStatus["status"]);
+        }
     }
 }

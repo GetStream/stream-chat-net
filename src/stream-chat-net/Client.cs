@@ -377,6 +377,38 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<TaskStatus> GetTaskStatus(string taskId)
+        {
+            var endpoint = string.Format("tasks/{0}", taskId);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.GET);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return JsonConvert.DeserializeObject<TaskStatus>(response.Content);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<string> DeleteChannels(string[] cids, bool hardDelete = false)
+        {
+            var endpoint = string.Format("channels/delete");
+            var request = this.BuildAppRequest(endpoint, HttpMethod.POST);
+            var payload = new
+            {
+                cids = cids,
+                hard_delete = hardDelete,
+            };
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                return JObject.Parse(response.Content).Property("task_id").Value.ToString();
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public bool VerifyWebhook(string requestBody, string xSignature)
         {
             using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(this._apiSecret)))

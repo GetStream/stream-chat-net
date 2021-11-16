@@ -1,8 +1,9 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using NUnit.Framework;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using StreamChat;
 
 namespace StreamChatTests
@@ -127,6 +128,47 @@ namespace StreamChatTests
             Assert.AreEqual(result.GetData<string>("name"), user.GetData<string>("name"));
             Assert.AreEqual(result.GetData<Dictionary<string, string>>("details")["foo"], user.GetData<Dictionary<string, string>>("details")["foo"]);
             Assert.NotNull(result.DeletedAt);
+        }
+
+        [Test]
+        public async Task TestDeleteMany()
+        {
+            var user = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            user.SetData("name", "BOB");
+            user.SetData("details", new Dictionary<string, string>()
+            {
+                {"foo", "bar"}
+            });
+
+            await this._endpoint.Upsert(user);
+
+            DeleteUsersRequest deleteUsersRequest = new DeleteUsersRequest()
+                .WithUserIDs(new string[] { user.ID })
+                .WithUserDelete("hard");
+
+            var taskId = await this._endpoint.DeleteMany(deleteUsersRequest);
+            var complete = false;
+            var iterations = 0;
+            StreamChat.TaskStatus resp = null;
+            while (!complete && iterations < 1000)
+            {
+                resp = await this._client.GetTaskStatus(taskId);
+                if (resp.Status.Equals("completed"))
+                {
+                    complete = true;
+                }
+                iterations++;
+                await Task.Delay(100);
+            }
+            Assert.IsNotNull(resp);
+            Assert.IsNotNull(resp.Result);
+            var userStatus = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(resp.Result[user.ID]));
+            Assert.IsNotNull(userStatus);
+            Assert.AreEqual("ok", userStatus["status"]);
         }
 
         [Test]
