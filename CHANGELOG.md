@@ -1,7 +1,6 @@
 ## 0.22.0 - 2021-11-16
 
-- Add support for GetTask, DeleteChannels and DeleteUsers endpoint
-- Drop flag command from supported command list
+- Add support for GetTask, DeleteChannels and DeleteUsers endpoint [#64](https://github.com/GetStream/stream-chat-net/pull/64)
 
 ## 0.21.0 - 2021-11-11
 
