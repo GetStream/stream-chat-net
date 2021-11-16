@@ -1,3 +1,8 @@
+## 0.22.0 - 2021-11-16
+
+- Add support for GetTask, DeleteChannels and DeleteUsers endpoint
+- Drop flag command from supported command list
+
 ## 0.21.0 - 2021-11-11
 
 - Add skip_push option
