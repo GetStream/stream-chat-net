@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace StreamChat
 {
     public class Client : IClient
     {
-        private static readonly string Version = "0.22.0";
+        private readonly string Version;
         private readonly Uri BaseUrl = new Uri("https://chat.stream-io-api.com");
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
         private static readonly object JWTHeader = new
@@ -61,6 +62,8 @@ namespace StreamChat
                 {"server",  true}
             };
             _token = this.GenerateJwt(payload);
+            var assemblyVersion =  typeof(Client).GetTypeInfo().Assembly.GetName().Version;
+            Version = string.Join(".", assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build);
         }
 
         public IUsers Users
