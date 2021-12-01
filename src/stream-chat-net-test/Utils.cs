@@ -1,28 +1,27 @@
 using System;
+using System.Net.Http;
 
 namespace StreamChatTests
 {
-    public class Credentials
+    public static class TestClientFactory
     {
-        public static Credentials Instance = new Credentials();
+        private static string _apiKey = Environment.GetEnvironmentVariable("STREAM_API_KEY");
+        private static string _apiSecret = Environment.GetEnvironmentVariable("STREAM_API_SECRET");
+        private static StreamChat.Client _defaultClient = new StreamChat.Client(_apiKey, _apiSecret,
+                new StreamChat.ClientOptions
+                {
+                    Timeout = 10000
+                });
 
-        public StreamChat.IClient Client
+        public static StreamChat.IClient GetClient()
         {
-            get
-            {
-                return _client;
-            }
+            return _defaultClient;
         }
 
-
-        private readonly StreamChat.Client _client;
-
-        internal Credentials()
+        public static StreamChat.IClient GetClient(HttpClient httpClient)
         {
-            var apiKey = Environment.GetEnvironmentVariable("STREAM_API_KEY");
-            var apiSecret = Environment.GetEnvironmentVariable("STREAM_API_SECRET");
-            _client = new StreamChat.Client(apiKey, apiSecret,
-                new StreamChat.ClientOptions()
+            return new StreamChat.Client(_apiKey, _apiSecret, httpClient,
+                new StreamChat.ClientOptions
                 {
                     Timeout = 10000
                 });

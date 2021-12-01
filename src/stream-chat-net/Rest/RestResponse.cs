@@ -25,7 +25,10 @@ namespace StreamChat.Rest
                 StatusCode = message.StatusCode
             };
 
-            response.Content = await message.Content.ReadAsStringAsync();
+            using(message)
+            {
+                response.Content = await message.Content.ReadAsStringAsync();
+            }    
 
             return response;
         }

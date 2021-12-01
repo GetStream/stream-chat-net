@@ -19,7 +19,7 @@ namespace StreamChatTests
         [SetUp]
         public void Setup()
         {
-            _client = Credentials.Instance.Client;
+            _client = TestClientFactory.GetClient();
         }
 
         [Test]

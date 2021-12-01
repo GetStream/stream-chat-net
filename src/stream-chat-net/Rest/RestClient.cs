@@ -1,100 +1,53 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Threading;
 
 namespace StreamChat.Rest
 {
     internal class RestClient
     {
-        readonly Uri _baseUrl;
-        private TimeSpan _timeout;
-
-        public RestClient(Uri baseUrl, TimeSpan timeout)
+        private readonly Uri _baseUrl;
+        private readonly HttpClient _httpClient;
+        private static readonly MediaTypeWithQualityHeaderValue _jsonAcceptHeader = new MediaTypeWithQualityHeaderValue("application/json");
+        private static readonly IReadOnlyList<HttpMethod> _methodsWithRequestBody = new List<HttpMethod>
         {
+            HttpMethod.POST, HttpMethod.PATCH, HttpMethod.PUT
+        };
+
+        public TimeSpan Timeout { get; set; }
+
+        public RestClient(HttpClient httpClient, Uri baseUrl, TimeSpan timeout)
+        {
+            _httpClient = httpClient;
             _baseUrl = baseUrl;
-            _timeout = timeout;
-        }
-
-        private HttpClient BuildClient(RestRequest request)
-        {
+            Timeout = timeout;
 #if NET45
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
-            var client = new HttpClient();
-
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-            client.Timeout = _timeout;
-
-            // add request headers
-            request.Headers.ForEach(h =>
-            {
-                client.DefaultRequestHeaders.Add(h.Key, h.Value);
-            });
-
-            return client;
         }
 
-        public TimeSpan Timeout
+        private HttpRequestMessage GenerateRequestMessage(RestRequest req, Uri uri)
         {
-            get { return _timeout; }
-            set { _timeout = value; }
-        }
+            var request = new HttpRequestMessage(req.Method.ToDotnetHttpMethod(), uri);
+            request.Headers.Accept.Add(_jsonAcceptHeader);
+            req.Headers.ForEach(kvp => request.Headers.Add(kvp.Key, kvp.Value));
+            var shouldHaveRequestBody = _methodsWithRequestBody.Contains(req.Method);
 
-        private async Task<RestResponse> ExecuteGet(Uri url, RestRequest request)
-        {
-            using (var client = BuildClient(request))
+            if (shouldHaveRequestBody)
             {
-                HttpResponseMessage response = await client.GetAsync(url);
-                return await RestResponse.FromResponseMessage(response);
+                request.Content = new StringContent(req.JsonBody ?? "{}", Encoding.UTF8, "application/json");
             }
+
+            return request;
         }
 
-        private async Task<RestResponse> ExecutePost(Uri url, RestRequest request)
-        {
-            using (var client = BuildClient(request))
-            {
-                var payload = request.JsonBody ?? "{}";
-                HttpResponseMessage response = await client.PostAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
-                return await RestResponse.FromResponseMessage(response);
-            }
-        }
-
-        private async Task<RestResponse> ExecutePut(Uri url, RestRequest request)
-        {
-            using (var client = BuildClient(request))
-            {
-                var payload = request.JsonBody ?? "{}";
-                HttpResponseMessage response = await client.PutAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
-                return await RestResponse.FromResponseMessage(response);
-            }
-        }
-
-        private async Task<RestResponse> ExecutePatch(Uri url, RestRequest request)
-        {
-            using (var client = BuildClient(request))
-            {
-                var payload = request.JsonBody ?? "{}";
-                var monkeyWork = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), url);
-                monkeyWork.Content = new StringContent(payload, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.SendAsync(monkeyWork);
-                return await RestResponse.FromResponseMessage(response);
-            }
-        }
-
-        private async Task<RestResponse> ExecuteDelete(Uri url, RestRequest request)
-        {
-            using (var client = BuildClient(request))
-            {
-                HttpResponseMessage response = await client.DeleteAsync(url);
-                return await RestResponse.FromResponseMessage(response);
-            }
-        }
-
-        private Uri BuildUri(RestRequest request)
+        private Uri BuildUriWithQueryString(RestRequest request)
         {
             var queryString = "";
             request.QueryParameters.ForEach((p) =>
@@ -105,25 +58,21 @@ namespace StreamChat.Rest
             return new Uri(_baseUrl, request.Resource + queryString);
         }
 
-        public Task<RestResponse> Execute(RestRequest request)
+        public async Task<RestResponse> Execute(RestRequest request)
         {
             if (request == null)
-                throw new ArgumentNullException("request", "Request is required");
+                throw new ArgumentNullException(nameof(request), "Request is required");
 
-            Uri url = this.BuildUri(request);
+            var url = BuildUriWithQueryString(request);
 
-            switch (request.Method)
+            var cancelTokeSource = new CancellationTokenSource();
+            cancelTokeSource.CancelAfter(Timeout);
+
+            using (cancelTokeSource)
+            using (var req = GenerateRequestMessage(request, url))
             {
-                case HttpMethod.DELETE:
-                    return this.ExecuteDelete(url, request);
-                case HttpMethod.POST:
-                    return this.ExecutePost(url, request);
-                case HttpMethod.PUT:
-                    return this.ExecutePut(url, request);
-                case HttpMethod.PATCH:
-                    return this.ExecutePatch(url, request);
-                default:
-                    return this.ExecuteGet(url, request);
+                var response = await _httpClient.SendAsync(req, cancelTokeSource.Token);
+                return await RestResponse.FromResponseMessage(response);
             }
         }
     }
