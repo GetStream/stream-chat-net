@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace StreamChatTests
         [SetUp]
         public void Setup()
         {
-            _client = Credentials.Instance.Client;
+            _client = TestClientFactory.GetClient();
         }
 
         [Test]
@@ -38,6 +39,14 @@ namespace StreamChatTests
             Assert.NotNull(appSettings.ChannelConfigs);
             Assert.True(appSettings.ChannelConfigs.ContainsKey("messaging"));
             Assert.True(appSettings.MultiTenantEnabled);
+        }
+
+        [Test]
+        public async Task TestCustomHttpClient()
+        {
+            var client = TestClientFactory.GetClient(new HttpClient());
+            var resp = await client.GetRateLimits(new GetRateLimitsOptions());
+            Assert.NotNull(resp);
         }
 
         [Test]
