@@ -43,5 +43,4 @@ jobs:
           git config --global user.name 'GH Actions' 
           git config --global user.email 'release@getstream.io'
           git commit -am 'Release ${{ github.event.inputs.version }}'
-          git tag '${{ github.event.inputs.version }}'
-          git push --tags
+          git push
