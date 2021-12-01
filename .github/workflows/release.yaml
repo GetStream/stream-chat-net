@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The new version number. Example: 0.23.0'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update version number in files
+        run: sh scripts/prepare_release.sh "${{ github.event.inputs.version }}"
+
+      - name: Setup dotnet 
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0.x"
+
+      - name: Build
+        run: dotnet build --configuration Release ./src
+
+      - name: Create the package
+        run: dotnet pack --configuration Release ./src
+
+      # - name: Publish the package
+      #   run: dotnet nuget push --api-key ${{ secrets.NUGET_API_KEY } ./src/stream-chat-net/bin/Release/*.nupkg
+
+      - name: Create release on GitHub
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
+
+      - name: Push back changes to master
+        run: |
+          git config --global user.name 'GH Actions' 
+          git config --global user.email 'release@getstream.io'
+          git commit -am 'Release ${{ github.event.inputs.version }}'
+          git tag '${{ github.event.inputs.version }}'
+          git push --tags

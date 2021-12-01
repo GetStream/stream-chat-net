@@ -1,0 +1,33 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  basic:
+    name: Run tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: |
+            5.0.x
+            3.1.x
+
+      - name: Install dependencies
+        run: dotnet restore ./src
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore ./src
+
+      # - name: Run tests
+      #   run: dotnet test ./src/stream-chat-net-test
+        # env:
+        #   STREAM_API_SECRET: ${{ secrets.STREAM_API_SECRET }}
+        #   STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
