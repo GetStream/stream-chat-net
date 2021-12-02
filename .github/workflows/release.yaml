@@ -18,7 +18,7 @@ jobs:
       - name: Update version number in files
         run: scripts/prepare_release.sh "${{ github.event.inputs.version }}"
 
-      - name: Setup dotnet 
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "5.0.x"

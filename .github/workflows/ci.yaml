@@ -7,6 +7,7 @@ jobs:
     name: Run tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      max-parallel: 1
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
       fail-fast: false
@@ -32,6 +33,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test ./src/stream-chat-net-test
-        # env:
-        #   STREAM_API_SECRET: ${{ secrets.STREAM_API_SECRET }}
-        #   STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
+        env:
+          STREAM_API_SECRET: ${{ secrets.STREAM_API_SECRET }}
+          STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
