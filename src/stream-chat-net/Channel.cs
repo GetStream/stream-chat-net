@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -213,8 +214,32 @@ namespace StreamChat
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
+                this._data = customData;
                 var respObj = JObject.Parse(response.Content);
                 return UpdateChannelResponse.FromJObject(respObj);
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
+        public async Task<PartialUpdateChannelResponse> PartialUpdate(PartialUpdateChannelRequest partialUpdateChannelRequest)
+        {
+            var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.PATCH);
+            request.SetJsonBody(JsonConvert.SerializeObject(partialUpdateChannelRequest));
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                if(partialUpdateChannelRequest.Unset != null)
+                {
+                    partialUpdateChannelRequest.Unset.ForEach(x => this._data.RemoveData(x));
+                }
+                if (partialUpdateChannelRequest.Set != null)
+                {
+                    partialUpdateChannelRequest.Set.ForEach(x => this._data.SetData(x.Key, x.Value));
+                }
+
+                var respObj = JObject.Parse(response.Content);
+                return PartialUpdateChannelResponse.FromJObject(respObj);
             }
             throw StreamChatException.FromResponse(response);
         }

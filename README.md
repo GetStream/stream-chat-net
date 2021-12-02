@@ -145,7 +145,14 @@ chanFromDB.Members.ForEach(m => Console.WriteLine(m.User.ID));
 var chan = client.Channel("messaging", "bob-and-june");
 var newData = new GenericData(); 
 newData.SetData("team", "red"); // if multi-tenant enabled
+newData.SetData("group", "delta");
 await chan.Update(newData);
+// or partial update
+await chan.PartialUpdate(new PartialUpdateChannelRequest
+            {
+                Unset = new List<string> { "team" },
+                Set = new Dictionary<string, object> { { "group", "gamma" } }
+            });
 await chan.Create(bobFromDB.ID);
 await chan.AddMembers(new string[] { bob.ID, june.ID });
 

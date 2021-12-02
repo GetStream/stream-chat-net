@@ -159,4 +159,52 @@ namespace StreamChat
             return result;
         }
     }
+
+    public class PartialUpdateChannelRequest
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user")]
+        public User User { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
+        public Dictionary<string, object> Set { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "unset")]
+        public IEnumerable<string> Unset { get; set; }
+    }
+
+    public class PartialUpdateChannelResponse
+    {
+        [JsonIgnore]
+        public ChannelObjectWithInfo Channel { get; internal set; }
+
+        [JsonIgnore]
+        public List<ChannelMember> Members { get; internal set; }
+
+        internal static PartialUpdateChannelResponse FromJObject(JObject jObj)
+        {
+            var result = new PartialUpdateChannelResponse();
+            var data = JsonHelpers.FromJObject(result, jObj);
+
+            var chanObj = data.GetData<JObject>("channel");
+            if (chanObj != null)
+                result.Channel = ChannelObjectWithInfo.FromJObject(chanObj);
+
+            var mbrs = data.GetData<JArray>("members");
+            if (mbrs != null)
+            {
+                var members = new List<ChannelMember>();
+                foreach (var mbr in mbrs)
+                {
+                    var memberObj = mbr as JObject;
+                    members.Add(ChannelMember.FromJObject(memberObj));
+                }
+                result.Members = members;
+            }
+
+            return result;
+        }
+    }
 }
