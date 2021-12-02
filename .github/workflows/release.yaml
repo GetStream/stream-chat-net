@@ -39,6 +39,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           release_name: ${{ github.event.inputs.version }}
+          body_path: CHANGELOG.md
 
       - name: Push back changes to master
         run: git push
