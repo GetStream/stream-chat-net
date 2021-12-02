@@ -23,6 +23,7 @@ namespace StreamChat
         Task<ChannelState> Query(ChannelQueryParams queryParams);
 
         Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null, bool skipPush = false);
+        Task<PartialUpdateChannelResponse> PartialUpdate(PartialUpdateChannelRequest partialUpdateChannelRequest);
         Task Delete();
         Task Truncate();
 

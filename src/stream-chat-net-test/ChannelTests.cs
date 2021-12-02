@@ -553,6 +553,37 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestPartialUpdate()
+        {
+            var user1 = new User
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+            await this._client.Users.Upsert(user1);
+
+            var customData = new GenericData();
+            customData.SetData("color", "red");
+            customData.SetData("age", 18);
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString(), customData);
+            var channelResp = await channel.Create(user1.ID);
+
+            Assert.AreEqual(channelResp.Channel.GetData<string>("color"), "red");
+            Assert.AreEqual(channelResp.Channel.GetData<int>("age"), 18);
+
+            var req = new PartialUpdateChannelRequest
+            {
+                UserId = user1.ID,
+                Unset = new List<string> { "age" },
+                Set = new Dictionary<string, object> { { "color", "blue" } }
+            };
+            var resp = await channel.PartialUpdate(req);
+
+            Assert.AreEqual(resp.Channel.GetData<string>("color"), "blue");
+            Assert.AreEqual(resp.Channel.GetData<int>("age"), default(int));
+        }
+
+        [Test]
         public async Task TestDelete()
         {
             var user1 = new User()
