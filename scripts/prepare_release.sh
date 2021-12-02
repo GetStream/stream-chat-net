@@ -27,6 +27,7 @@ sed -i -r "s/\"[0-9]+\.[0-9]+\.[0-9]+\"/\"$VERSION\"/g" src/stream-chat-net/Clie
 # Tagging will done by the GitHub release step, so skip it
 git config --global user.name 'GH Actions' 
 git config --global user.email 'release@getstream.io'
+git add .
 npx --yes standard-version --release-as "$VERSION" --skip.tag --commit-all
 
 echo "Done!"
