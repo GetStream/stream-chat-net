@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.27.0](https://github.com/peterdeme/stream-chat-net/compare/v0.4.4...v0.27.0) (2021-12-02)
+
+
+### Features
+
+* fix staged things ([6b9c6f7](https://github.com/peterdeme/stream-chat-net/commit/6b9c6f72edbe8645a695c4ca2c2753e1fb6be39e))
+
 ## [0.26.0](https://github.com/peterdeme/stream-chat-net/compare/v0.4.4...v0.26.0) (2021-12-02)
 
 ## 0.25.0 (2021-12-02)
