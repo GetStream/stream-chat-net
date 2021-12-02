@@ -173,6 +173,46 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestUpdateMessagePartial()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            await this._client.Users.Upsert(user1);
+
+            var channel = this._client.Channel("messaging", Guid.NewGuid().ToString());
+            await channel.Create(user1.ID, new string[] { user1.ID });
+
+            var initialMsg = new MessageInput
+            {
+                Text = Guid.NewGuid().ToString()
+            };
+            initialMsg.SetData("foo", "barsky");
+            initialMsg.SetData("bar", "baz");
+
+            var msg = await channel.SendMessage(initialMsg, user1.ID);
+
+            var resp = await _client.UpdateMessagePartial(msg.ID, new MessagePartialUpdateRequest
+            {
+                UserId = user1.ID,
+                Set = new Dictionary<string, object>
+                {
+                    { "foo", "new" }
+                },
+                Unset = new List<string> { "bar"},
+            });
+
+            Assert.AreEqual(msg.ID, resp.Message.ID);
+            Assert.AreEqual(msg.Text, resp.Message.Text);
+            Assert.NotNull(resp.Duration);
+            Assert.AreEqual(resp.Message.GetData<string>("foo"), "new");
+            Assert.IsNull(resp.Message.GetData<string>("bar"));
+        }
+
+        [Test]
         public async Task TestGetMessage()
         {
             var user1 = new User()

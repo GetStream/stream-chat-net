@@ -292,6 +292,32 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<MessagePartialUpdateResponse> UpdateMessagePartial(string messageId, MessagePartialUpdateRequest partialUpdateRequest)
+        {
+            if (string.IsNullOrWhiteSpace(messageId))
+            {
+                throw new ArgumentException("The messageId must be set.", nameof(messageId));
+            }
+
+            var endpoint = string.Format("messages/{0}", messageId);
+            var request = this.BuildAppRequest(endpoint, HttpMethod.PUT);
+            request.SetJsonBody(JsonConvert.SerializeObject(partialUpdateRequest));
+
+            var response = await MakeRequest(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                var msgObj = respObj.Property("message").Value as JObject;
+
+                return new MessagePartialUpdateResponse
+                {
+                    Duration = respObj.Property("duration").Value.ToString(),
+                    Message = Message.FromJObject(msgObj)
+                };                
+            }
+            throw StreamChatException.FromResponse(response);
+        }
+
         public async Task<Message> DeleteMessage(string messageID, bool hardDelete = false)
         {
             var endpoint = string.Format("messages/{0}", messageID);

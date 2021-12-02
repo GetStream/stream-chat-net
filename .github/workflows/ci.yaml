@@ -6,6 +6,8 @@ jobs:
   basic:
     name: Run tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "true"
     strategy:
       max-parallel: 1
       matrix:

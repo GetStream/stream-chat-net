@@ -9,6 +9,8 @@ jobs:
   Release:
     if: "${{ startsWith(github.event.head_commit.message, 'chore(release)') }}"
     runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "true"
     steps:
       - uses: actions/checkout@v2
         with:

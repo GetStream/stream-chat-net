@@ -189,4 +189,28 @@ namespace StreamChat
 
         public MessageSearchResult() { }
     }
+    public class MessagePartialUpdateRequest
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user")]
+        public User User { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
+        public Dictionary<string, object> Set { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "unset")]
+        public List<string> Unset { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "skip_enrich_url")]
+        public bool? SkipEnrichUrl { get; set; }
+    }
+
+    public class MessagePartialUpdateResponse
+    {
+        public Message Message { get; internal set; }
+
+        public string Duration { get; internal set; }
+    }
 }
