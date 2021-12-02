@@ -1,3 +1,7 @@
+## 0.24.0 - 2021-12-01
+
+- Another stuff
+
 ## 0.22.0 - 2021-11-16
 
 - Add support for GetTask, DeleteChannels and DeleteUsers endpoint [#64](https://github.com/GetStream/stream-chat-net/pull/64)
