@@ -22,9 +22,11 @@ sed -i -r "s/>[0-9]+\.[0-9]+\.[0-9]+</>$VERSION</g" src/stream-chat-net/stream-c
 # "0.21.0" becomes "0.22.0", including the double quotes
 sed -i -r "s/\"[0-9]+\.[0-9]+\.[0-9]+\"/\"$VERSION\"/g" src/stream-chat-net/Client.cs
 
-# Create changelog
+# Create changelog, plus commit
 # commmit-all: Commit all staged changes, not just files affected by standard-version
 # Tagging will done by the GitHub release step, so skip it
+git config --global user.name 'GH Actions' 
+git config --global user.email 'release@getstream.io'
 npx --yes standard-version --release-as "$VERSION" --skip.tag --commit-all
 
 echo "Done!"

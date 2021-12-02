@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # For the CHANGELOG generation to have full commit history
 
       - name: Update version number in files
         run: scripts/prepare_release.sh "${{ github.event.inputs.version }}"
@@ -39,8 +41,4 @@ jobs:
           release_name: ${{ github.event.inputs.version }}
 
       - name: Push back changes to master
-        run: |
-          git config --global user.name 'GH Actions' 
-          git config --global user.email 'release@getstream.io'
-          git commit -am 'Release ${{ github.event.inputs.version }}'
-          git push
+        run: git push
