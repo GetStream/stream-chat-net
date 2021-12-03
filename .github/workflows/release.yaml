@@ -30,7 +30,7 @@ jobs:
         run: dotnet pack --configuration Release ./src
 
       - name: Publish the package
-        run: dotnet nuget push --api-key ${{ secrets.NUGET_API_KEY }} ./src/stream-chat-net/bin/Release/*.nupkg
+        run: dotnet nuget push "./src/stream-chat-net/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create release on GitHub
         uses: actions/create-release@v1
