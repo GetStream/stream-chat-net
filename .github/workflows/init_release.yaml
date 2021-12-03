@@ -1,0 +1,24 @@
+name: Create release PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The new version number. Example: 1.40.1'
+        required: true
+
+jobs:
+  init_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # gives standard-version access to all previous commits
+
+      - name: Create release branch
+        run: scripts/create_release_branch.sh "${{ github.event.inputs.version }}"
+
+      - name: Open pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr create -f -l release -t "Release ${{ github.event.inputs.version }}"

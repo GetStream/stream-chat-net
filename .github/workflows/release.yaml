@@ -1,24 +1,18 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'The new version number. Example: 0.23.0'
-        required: true
+  push:
+    branches:
+      - master
 
 jobs:
   release:
+    if: "${{ startsWith(github.event.head_commit.message, 'chore(release)') }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # For the CHANGELOG generation to have full commit history
 
-      - name: Update version number in files
-        run: scripts/prepare_release.sh "${{ github.event.inputs.version }}"
-
-      - name: Setup dotnet 
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "5.0.x"
@@ -30,7 +24,7 @@ jobs:
         run: dotnet pack --configuration Release ./src
 
       # - name: Publish the package
-      #   run: dotnet nuget push --api-key ${{ secrets.NUGET_API_KEY } ./src/stream-chat-net/bin/Release/*.nupkg
+      #   run: dotnet nuget push "./src/stream-chat-net/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create release on GitHub
         uses: actions/create-release@v1
@@ -39,7 +33,3 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           release_name: ${{ github.event.inputs.version }}
-          body_path: CHANGELOG.md
-
-      - name: Push back changes to master
-        run: git push
