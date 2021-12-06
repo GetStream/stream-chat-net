@@ -1,3 +1,14 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.24.0](https://github.com/GetStream/stream-chat-net/compare/0.23.0...0.24.0) (2021-12-06)
+
+
+### Features
+
+* add partial message update ([#77](https://github.com/GetStream/stream-chat-net/issues/77)) ([a3ecf14](https://github.com/GetStream/stream-chat-net/commit/a3ecf14e425ee14bae321d25b1300990685cf58a))
+
 ## 0.22.0 - 2021-11-16
 
 - Add support for GetTask, DeleteChannels and DeleteUsers endpoint [#64](https://github.com/GetStream/stream-chat-net/pull/64)
