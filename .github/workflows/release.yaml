@@ -1,23 +1,30 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'The new version number. Example: 1.40.1'
-        required: true
+  push:
+    branches:
+      - master
 
 jobs:
-  release:
+  Release:
+    if: "${{ startsWith(github.event.head_commit.message, 'chore(release)') }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0 # gives standard-version access to all previous commits
+          fetch-depth: 0
+  
+      - uses: actions/github-script@v5
+        with:
+          script: |
+            const get_change_log_diff = require('./scripts/get_changelog_diff.js')
+            core.exportVariable('CHANGELOG', get_change_log_diff())
 
-      - name: Update version number in files
-        run: scripts/prepare_release.sh "${{ github.event.inputs.version }}"
-
+            // Getting the release version from the commit message
+            // Commit message looks like this: chore(release): 1.0.0
+            const version = context.payload.head_commit.message.split(' ')[1]
+            core.exportVariable('VERSION', version)
+  
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
@@ -33,12 +40,8 @@ jobs:
         run: dotnet nuget push "./src/stream-chat-net/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create release on GitHub
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: ${{ github.event.inputs.version }}
-
-      - name: Push back changes to master
-        run: git push
+          body: ${{ env.CHANGELOG }}
+          tag: ${{ env.VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
