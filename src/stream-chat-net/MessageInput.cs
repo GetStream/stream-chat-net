@@ -27,7 +27,7 @@ namespace StreamChat
         public string ParentID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "shown_in_channel")]
-        public bool ShownInChannel { get; set; }
+        public bool? ShownInChannel { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
         public DateTime? CreatedAt { get; set; }
@@ -39,7 +39,7 @@ namespace StreamChat
         public List<string> MentionedUsers { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "silent")]
-        public bool Silent { get; set; }
+        public bool? Silent { get; set; }
 
         public MessageInput() { }
 
