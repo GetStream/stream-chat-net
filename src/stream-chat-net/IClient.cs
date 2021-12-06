@@ -32,6 +32,7 @@ namespace StreamChat
         Task<MessageSearchResponse> Search(SearchOptions opts);
         Task<Message> GetMessage(string messageID);
         Task<Message> UpdateMessage(MessageInput msg);
+        Task<MessagePartialUpdateResponse> UpdateMessagePartial(string messageId, MessagePartialUpdateRequest partialUpdateRequest);
         Task<Message> DeleteMessage(string messageID, bool hardDelete = false);
 
 
