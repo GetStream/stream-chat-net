@@ -25,7 +25,8 @@ namespace StreamChat
         Task<UpdateChannelResponse> Update(GenericData customData, MessageInput msg = null, bool skipPush = false);
         Task<PartialUpdateChannelResponse> PartialUpdate(PartialUpdateChannelRequest partialUpdateChannelRequest);
         Task Delete();
-        Task Truncate();
+        Task<TruncateResponse> Truncate();
+        Task<TruncateResponse> Truncate(TruncateOptions truncateOptions);
 
         Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null);
         Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg = null);

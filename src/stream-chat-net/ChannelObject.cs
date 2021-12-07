@@ -173,6 +173,14 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "unset")]
         public IEnumerable<string> Unset { get; set; }
+
+        internal JObject ToJObject()
+        {
+            var root = JObject.FromObject(this);
+            if (this.User != null)
+                root.Add("user", this.User.ToJObject());
+            return root;
+        }
     }
 
     public class PartialUpdateChannelResponse
@@ -203,6 +211,53 @@ namespace StreamChat
                 }
                 result.Members = members;
             }
+
+            return result;
+        }
+    }
+
+    public class TruncateOptions
+    {
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "hard_delete")]
+        public bool? HardDelete { get; set; }
+
+        [JsonIgnore]
+        public MessageInput Message { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "skip_push")]
+        public bool? SkipPush { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "truncated_at")]
+        public DateTime? TruncatedAt { get; set; }
+
+        internal JObject ToJObject()
+        {
+            var root = JObject.FromObject(this);
+            if (this.Message != null)
+                root.Add("message", this.Message.ToJObject());
+            return root;
+        }
+    }
+
+    public class TruncateResponse
+    {
+        public string Duration { get; set; }
+        public Message Message { get; set; }
+        public ChannelObjectWithInfo Channel { get; set; }
+
+        internal static TruncateResponse FromJObject(JObject jObj)
+        {
+            var result = new TruncateResponse();
+
+            var data = JsonHelpers.FromJObject(result, jObj);
+            var msgObj = data.GetData<JObject>("message");
+            if (msgObj != null)
+                result.Message = Message.FromJObject(msgObj);
+            var chanObj = data.GetData<JObject>("channel");
+            if (chanObj != null)
+                result.Channel = ChannelObjectWithInfo.FromJObject(chanObj);
+            result.Duration = data.GetData<string>("duration");
 
             return result;
         }

@@ -665,14 +665,32 @@ namespace StreamChatTests
             };
             var msg3 = await channel.SendMessage(inMsg, user3.ID);
 
+            await EnsureChannelMessageCount(channel, messageCount: 3);
+
+            // Truncate without options
+            var response = await channel.Truncate();
+            await EnsureChannelMessageCount(channel, messageCount: 0);
+
+            // Truncate with options
+            await channel.SendMessage(inMsg, user3.ID);
+            await EnsureChannelMessageCount(channel, messageCount: 1);
+
+            await channel.Truncate(new TruncateOptions
+            {
+                SkipPush = true,
+                Message = new MessageInput
+                {
+                    Text = "This channel is getting truncated",
+                    User = new User { ID = user1.ID },
+                },
+            });
+            await EnsureChannelMessageCount(channel, messageCount: 1);
+        }
+
+        private static async Task EnsureChannelMessageCount(IChannel channel, int messageCount)
+        {
             var chanState = await channel.Query(new ChannelQueryParams(false, true));
-            Assert.AreEqual(3, chanState.Messages.Count);
-
-            await channel.Truncate();
-
-            chanState = await channel.Query(new ChannelQueryParams(false, true));
-
-            Assert.AreEqual(0, chanState.Messages.Count);
+            Assert.AreEqual(messageCount, chanState.Messages.Count);
         }
 
         [Test]

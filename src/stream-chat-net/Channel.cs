@@ -224,7 +224,7 @@ namespace StreamChat
         public async Task<PartialUpdateChannelResponse> PartialUpdate(PartialUpdateChannelRequest partialUpdateChannelRequest)
         {
             var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.PATCH);
-            request.SetJsonBody(JsonConvert.SerializeObject(partialUpdateChannelRequest));
+            request.SetJsonBody(partialUpdateChannelRequest.ToJObject().ToString());
 
             var response = await this._client.MakeRequest(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -252,12 +252,26 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
-        public async Task Truncate()
+        public async Task<TruncateResponse> Truncate()
+        {
+            return await Truncate(null);
+        }
+
+        public async Task<TruncateResponse> Truncate(TruncateOptions truncateOptions)
         {
             var request = this._client.BuildAppRequest(this.Endpoint + "/truncate", HttpMethod.POST);
+            if (truncateOptions != null)
+            {
+                request.SetJsonBody(truncateOptions.ToJObject().ToString());
+            }
+            
             var response = await this._client.MakeRequest(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.Created)
-                throw StreamChatException.FromResponse(response);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var respObj = JObject.Parse(response.Content);
+                return TruncateResponse.FromJObject(respObj);
+            }
+            throw StreamChatException.FromResponse(response);
         }
 
         public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null)
