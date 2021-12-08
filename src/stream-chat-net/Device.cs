@@ -29,7 +29,5 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "disabled_reason")]
         public string DisabledReason { get; internal set; }
-
-        public Device() { }
     }
 }

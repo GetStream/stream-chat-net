@@ -19,8 +19,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
         public DateTime? CreatedAt { get; set; }
 
-        public Reaction() { }
-
         internal new JObject ToJObject()
         {
             var root = JObject.FromObject(this);
@@ -52,9 +50,6 @@ namespace StreamChat
 
         [JsonIgnore]
         public Reaction Reaction { get; internal set; }
-
-
-        public ReactionResponse() { }
 
         internal JObject ToJObject()
         {

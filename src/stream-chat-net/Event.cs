@@ -68,8 +68,6 @@ namespace StreamChat
         [JsonIgnore]
         public User OwnUser { get; set; }
 
-        public Event() { }
-
         public new JObject ToJObject()
         {
             var root = JObject.FromObject(this);

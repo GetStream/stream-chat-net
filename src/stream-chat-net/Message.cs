@@ -77,8 +77,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "silent")]
         public bool Silent { get; internal set; }
 
-        public Message() { }
-
         internal new JObject ToJObject()
         {
             var root = JObject.FromObject(this);
@@ -175,7 +173,7 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
         public List<MessageSearchResult> Results { get; internal set; }
 
-        public MessageSearchResponse() { }
+        
 
     }
 
@@ -186,9 +184,8 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "channel")]
         public ChannelObject Channel { get; internal set; }
-
-        public MessageSearchResult() { }
     }
+
     public class MessagePartialUpdateRequest
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]

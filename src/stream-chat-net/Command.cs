@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json;
 
 
@@ -27,8 +26,6 @@ namespace StreamChat
         public string Args { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
-        public string Set { get; set; }
-
-        public Command() { }
+        public string Set { get; set; } 
     }
 }

@@ -24,8 +24,6 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "webhook_url")]
         public string WebhookURL { get; set; }
-
-        public AppSettings() { }
     }
 
     public struct APNAuthType
@@ -65,8 +63,6 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "p12_cert")]
         public string P12Cert { get; set; }
-
-        public APNConfig() { }
     }
 
     public class FirebaseConfig
@@ -79,7 +75,5 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "disabled")]
         public bool Disabled { get; set; }
-
-        public FirebaseConfig() { }
     }
 }

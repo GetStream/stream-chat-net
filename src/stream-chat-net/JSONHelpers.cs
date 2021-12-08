@@ -11,8 +11,6 @@ namespace StreamChat
     {
         protected GenericData _data = new GenericData();
 
-        public CustomDataBase() { }
-
         public T GetData<T>(string name)
         {
             return this._data.GetData<T>(name);

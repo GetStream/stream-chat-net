@@ -12,8 +12,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "last_read")]
         public DateTime? LastRead { get; set; }
 
-        public Read() { }
-
         internal JObject ToJObject()
         {
             var root = JObject.FromObject(this);

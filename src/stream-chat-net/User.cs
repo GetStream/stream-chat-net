@@ -42,9 +42,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "online")]
         public bool? Online { get; set; }
 
-
-        public User() { }
-
         internal static User FromJObject(JObject jObj)
         {
             var result = new User();

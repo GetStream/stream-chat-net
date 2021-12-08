@@ -21,8 +21,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "conversations")]
         public string Conversations { get; set; }
 
-        public DeleteUsersRequest() { }
-
         public DeleteUsersRequest WithUserIDs(string[] ids)
         {
             this.UserIDs = ids;
@@ -64,7 +62,5 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
         public DateTime? UpdatedAt { get; set; }
-
-        public TaskStatus() { }
     }
 }

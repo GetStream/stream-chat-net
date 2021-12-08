@@ -21,20 +21,15 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod")]
         public new string Automod { get; set; }
-
-        public ChannelTypeInput() { }
     }
 
     public class ChannelTypeOutput : ChannelType
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
-        public new List<string> Commands { get; set; }
-
-        public ChannelTypeOutput() { }
+        public new List<string> Commands { get; set; } 
     }
 
     public class ChannelTypeInfo : ChannelType
     {
-        public ChannelTypeInfo() { }
     }
 }

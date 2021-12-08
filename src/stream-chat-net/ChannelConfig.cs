@@ -55,8 +55,6 @@ namespace StreamChat
 
     public class ChannelConfig : ChannelConfigBase
     {
-        public ChannelConfig() { }
-
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
         public List<string> Commands { get; set; }
     }
@@ -65,7 +63,5 @@ namespace StreamChat
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
         public List<Command> Commands { get; set; }
-
-        public ChannelConfigWithInfo() { }
     }
 }
