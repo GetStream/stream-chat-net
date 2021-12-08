@@ -5,9 +5,6 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using StreamChat;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace StreamChatTests
 {
     [Parallelizable(ParallelScope.None)]
@@ -1029,6 +1026,41 @@ namespace StreamChatTests
             await channel.Create(user1.ID, members.Select(u => u.ID));
             await channel.BanUser(user2.ID, user1.ID, Guid.NewGuid().ToString(), 3);
             await channel.UnbanUser(user2.ID);
+        }
+
+        [Test]
+        public async Task AssignRolesAsync()
+        {
+            var user1 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.Admin,
+            };
+
+            var user2 = new User()
+            {
+                ID = Guid.NewGuid().ToString(),
+                Role = Role.User,
+            };
+
+            var members = new User[] { user1, user2 };
+
+            await this._client.Users.UpsertMany(members);
+            var channel = this._client.Channel("messaging", System.Guid.NewGuid().ToString());
+            await channel.Create(user1.ID);
+            await channel.AddMembers(new string[] { user1.ID, user2.ID });
+
+            var resp = await channel.AssignRoles(new AssignRoleRequest
+            {
+                AssignRoles = new List<RoleAssignment>
+                {
+                    new RoleAssignment { UserId = user1.ID, ChannelRole = Role.ChannelModerator },
+                    new RoleAssignment { UserId = user2.ID, ChannelRole = Role.ChannelModerator }
+                },
+                Message = new MessageInput { Text = "Test message", User = user1 }
+            });
+
+            Assert.That(resp, Is.Not.Null);
         }
     }
 }

@@ -8,13 +8,10 @@ using StreamChat.Rest;
 
 namespace StreamChat
 {
-    public class Users : IUsers
+    public class Users : ServiceBase, IUsers
     {
-        readonly Client _client;
-
-        internal Users(Client client)
+        internal Users(Client client) : base(client)
         {
-            _client = client;
         }
 
         public async Task<IEnumerable<User>> UpsertMany(IEnumerable<User> users)

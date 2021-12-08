@@ -28,9 +28,10 @@ namespace StreamChat
         public const string AddLinks = "AddLinks";
     }
 
-    public class Permission
+    [Obsolete("Use V2 Permissions APIs instead. " +
+            "See https://getstream.io/chat/docs/dotnet-csharp/migrating_from_legacy/?language=csharp")]
+    public class ChannelTypePermission
     {
-
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "action")]
         public string Action { get; set; }
 
@@ -47,18 +48,6 @@ namespace StreamChat
         public bool Owner { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "priority")]
-        public int Priority { get; set; } 
-    }
-
-    public class PermissionWithInfo : Permission
-    {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
-        public DateTime? CreatedAt { get; internal set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
-        public DateTime? UpdatedAt { get; internal set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
-        public DateTime? DeletedAt { get; internal set; }
+        public int Priority { get; set; }
     }
 }

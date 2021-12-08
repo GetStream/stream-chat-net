@@ -63,16 +63,16 @@ namespace StreamChat
             };
             _token = this.GenerateJwt(payload);
             var assemblyVersion = typeof(Client).GetTypeInfo().Assembly.GetName().Version;
+
             Version = string.Join(".", assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build);
+            Users = new Users(this);
+            Permissions = new PermissionClient(this);
         }
 
-        public IUsers Users
-        {
-            get
-            {
-                return new Users(this);
-            }
-        }
+        public IUsers Users { get; }
+
+        public IPermissions Permissions { get; }
+
 
         public string CreateToken(string userId, DateTime? expiration = null, DateTime? issuedAt = null)
         {

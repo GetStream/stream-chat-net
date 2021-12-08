@@ -20,3 +20,4 @@ nuget.exe
 .vs/
 .vscode/
 .envrc
+.runsettings
