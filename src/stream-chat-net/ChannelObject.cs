@@ -8,8 +8,6 @@ namespace StreamChat
 {
     public class ChannelObject : CustomDataBase
     {
-        public ChannelObject() { }
-
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
         public string ID { get; set; }
 
@@ -93,8 +91,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "config")]
         public new ChannelConfigWithInfo Config { get; set; }
 
-        public ChannelObjectWithInfo() { }
-
         internal new static ChannelObjectWithInfo FromJObject(JObject jObj)
         {
             var result = new ChannelObjectWithInfo();
@@ -132,9 +128,6 @@ namespace StreamChat
 
         [JsonIgnore]
         public Message Message { get; internal set; }
-
-
-        public UpdateChannelResponse() { }
 
         internal JObject ToJObject()
         {

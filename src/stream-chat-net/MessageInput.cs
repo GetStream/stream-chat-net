@@ -41,8 +41,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "silent")]
         public bool? Silent { get; set; }
 
-        public MessageInput() { }
-
         internal new JObject ToJObject()
         {
             var root = JObject.FromObject(this);

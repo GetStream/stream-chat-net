@@ -47,9 +47,7 @@ namespace StreamChat
         public bool Owner { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "priority")]
-        public int Priority { get; set; }
-
-        public Permission() { }
+        public int Priority { get; set; } 
     }
 
     public class PermissionWithInfo : Permission
@@ -62,7 +60,5 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "deleted_at")]
         public DateTime? DeletedAt { get; internal set; }
-
-        public PermissionWithInfo() { }
     }
 }

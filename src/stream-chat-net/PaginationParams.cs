@@ -10,9 +10,7 @@ namespace StreamChat
         public int Limit { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "offset")]
-        public int Offset { get; set; }
-
-        public PaginationParams() { }
+        public int Offset { get; set; } 
     }
 
     public class MessagePaginationParams
@@ -46,8 +44,6 @@ namespace StreamChat
                 };
             }
         }
-
-        public MessagePaginationParams() { }
 
         internal void Apply(RestRequest request)
         {

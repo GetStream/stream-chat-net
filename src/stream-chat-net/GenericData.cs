@@ -10,8 +10,6 @@ namespace StreamChat
     {
         readonly IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
 
-        public GenericData() { }
-
         public T GetData<T>(string name)
         {
             JToken val;

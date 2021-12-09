@@ -18,8 +18,6 @@ namespace StreamChat
         [JsonIgnore]
         public User Target { get; internal set; }
 
-        public Mute() { }
-
         internal JObject ToJObject()
         {
             var root = JObject.FromObject(this);
@@ -53,8 +51,6 @@ namespace StreamChat
 
         [JsonIgnore]
         public Mute Mute { get; internal set; }
-
-        public MuteResponse() { }
 
         internal JObject ToJObject()
         {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -62,8 +61,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "og_scrape_url")]
         public string OGScrapeUrl { get; set; }
 
-        public Attachment() { }
-
         internal static Attachment FromJObject(JObject jObj)
         {
             var result = new Attachment();
@@ -87,9 +84,7 @@ namespace StreamChat
         public string Type { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "value")]
-        public string Value { get; set; }
-
-        public AttachmentAction() { }
+        public string Value { get; set; }  
     }
 
     public class Field
@@ -101,8 +96,6 @@ namespace StreamChat
         public string Title { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "short")]
-        public bool Short { get; set; }
-
-        public Field() { }
+        public bool Short { get; set; }  
     }
 }

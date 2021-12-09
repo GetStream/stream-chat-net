@@ -8,8 +8,6 @@ namespace StreamChat
 {
     public class ChannelState
     {
-        public ChannelState() { }
-
         [JsonIgnore]
         public ChannelObjectWithInfo Channel { get; internal set; }
 

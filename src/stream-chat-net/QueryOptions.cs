@@ -17,9 +17,7 @@ namespace StreamChat
         public string Field { get; set; }
 
         [JsonProperty(PropertyName = "direction")]
-        public SortDirection Direction { get; set; }
-
-        public SortParameter() { }
+        public SortDirection Direction { get; set; }        
     }
 
     public class QueryUserOptions

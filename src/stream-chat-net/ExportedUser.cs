@@ -18,9 +18,6 @@ namespace StreamChat
         [JsonIgnore]
         public List<Reaction> Reactions { get; internal set; }
 
-        public ExportedUser() { }
-
-
         internal JObject ToJObject()
         {
             var root = new JObject();
