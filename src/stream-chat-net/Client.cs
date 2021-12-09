@@ -74,7 +74,7 @@ namespace StreamChat
             }
         }
 
-        public string CreateToken(string userId, DateTime? expiration = null)
+        public string CreateToken(string userId, DateTime? expiration = null, DateTime? issuedAt = null)
         {
             var payload = new Dictionary<string, object>
             {
@@ -82,7 +82,11 @@ namespace StreamChat
             };
             if (expiration.HasValue)
             {
-                payload["exp"] = (Int32)(expiration.Value.ToUniversalTime().Subtract(epoch).TotalSeconds);
+                payload["exp"] = (int)(expiration.Value.ToUniversalTime().Subtract(epoch).TotalSeconds);
+            }
+            if (issuedAt.HasValue)
+            {
+                payload["iat"] = (int)(issuedAt.Value.ToUniversalTime().Subtract(epoch).TotalSeconds);
             }
             return this.GenerateJwt(payload);
         }
