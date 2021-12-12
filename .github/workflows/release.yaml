@@ -33,14 +33,13 @@ jobs:
         with:
           dotnet-version: "5.0.x"
 
-      - name: Build
-        run: dotnet build --configuration Release ./src
-
       - name: Create the package
         run: dotnet pack --configuration Release ./src
 
-      - name: Publish the package
-        run: dotnet nuget push "./src/stream-chat-net/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+      - name: Publish the package & symbols
+        run: |
+          dotnet nuget push "./src/stream-chat-net/bin/Release/*.nupkg"  -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push "./src/stream-chat-net/bin/Release/*.snupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create release on GitHub
         uses: ncipollo/release-action@v1

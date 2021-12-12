@@ -298,9 +298,9 @@ if (complete)
 
 ## Contributing
 
-## Contributing
-
 We welcome code changes that improve this library or fix a problem, please make sure to follow all best practices and add tests if applicable before submitting a Pull Request on Github. We are very happy to merge your code in the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
+
+Head over to [CONTRIBUTING.md](./CONTRIBUTING.md) for some development tips.
 
 ## We are hiring!
 

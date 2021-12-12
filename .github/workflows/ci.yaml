@@ -2,6 +2,10 @@ name: CI
 
 on: [pull_request]
 
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   basic:
     name: Run tests on ${{ matrix.os }}
@@ -24,15 +28,18 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: |
-            5.0.x
-            3.1.x
+          dotnet-version: 5.0.x
+
+      - name: Dependency cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('src/**/*.csproj') }}
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: dotnet restore ./src
-
-      - name: Build
-        run: dotnet build --configuration Release --no-restore ./src
 
       - name: Run tests
         run: dotnet test ./src/stream-chat-net-test
