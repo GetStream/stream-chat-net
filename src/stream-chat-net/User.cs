@@ -51,6 +51,12 @@ namespace StreamChat
         }
     }
 
+    public class AddMemberOptions
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "hide_history")]
+        public bool? HideHistory { get; set; }
+    }
+
     public class UserPartialRequest : CustomDataBase
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]

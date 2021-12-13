@@ -28,7 +28,7 @@ namespace StreamChat
         Task<TruncateResponse> Truncate();
         Task<TruncateResponse> Truncate(TruncateOptions truncateOptions);
 
-        Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null);
+        Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null, AddMemberOptions options = null);
         Task RemoveMembers(IEnumerable<string> userIDs, MessageInput msg = null);
         Task AddModerators(IEnumerable<string> userIDs);
         Task DemoteModerators(IEnumerable<string> userIDs);

@@ -8,9 +8,15 @@ namespace StreamChat
 {
     public partial class Channel
     {
-        public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null)
+        public async Task AddMembers(IEnumerable<string> userIDs, MessageInput msg = null, AddMemberOptions options = null)
         {
             var payload = new JObject(new JProperty("add_members", userIDs));
+
+            if (options != null)
+            {
+                payload.Merge(JObject.FromObject(options));
+            }
+
             if (msg != null)
             {
                 if (msg.User != null)
