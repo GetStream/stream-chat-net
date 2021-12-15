@@ -62,7 +62,7 @@ namespace StreamChat
                 {"server",  true}
             };
             _token = this.GenerateJwt(payload);
-            var assemblyVersion =  typeof(Client).GetTypeInfo().Assembly.GetName().Version;
+            var assemblyVersion = typeof(Client).GetTypeInfo().Assembly.GetName().Version;
             Version = string.Join(".", assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build);
         }
 
@@ -109,7 +109,7 @@ namespace StreamChat
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var obj = JObject.Parse(response.Content);
-                return (AppSettingsWithDetails)obj.Property("app").Value.ToObject(typeof(AppSettingsWithDetails));
+                return obj.Property("app").Value.ToObject<AppSettingsWithDetails>();
             }
 
             throw StreamChatException.FromResponse(response);
@@ -317,7 +317,7 @@ namespace StreamChat
                 {
                     Duration = respObj.Property("duration").Value.ToString(),
                     Message = Message.FromJObject(msgObj)
-                };                
+                };
             }
             throw StreamChatException.FromResponse(response);
         }
