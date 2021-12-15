@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.25.0](https://github.com/GetStream/stream-chat-net/compare/0.24.0...0.25.0) (2021-12-15)
+
+
+### Features
+
+* add iat support to token creation ([#84](https://github.com/GetStream/stream-chat-net/issues/84)) ([c1775e5](https://github.com/GetStream/stream-chat-net/commit/c1775e52f75c059508b3caba97d8a8a8afac4c34))
+* add options to truncate ([#81](https://github.com/GetStream/stream-chat-net/issues/81)) ([71f4797](https://github.com/GetStream/stream-chat-net/commit/71f47976902c8cdd9ff4a063218d92e19b95f200))
+* extend appsettings ([#87](https://github.com/GetStream/stream-chat-net/issues/87)) ([cbde797](https://github.com/GetStream/stream-chat-net/commit/cbde797a4ad4f6a03cc940da8ba4ee17e4d27b39))
+
 ## [0.24.0](https://github.com/GetStream/stream-chat-net/compare/0.23.0...0.24.0) (2021-12-06)
 
 
