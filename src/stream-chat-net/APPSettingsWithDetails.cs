@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace StreamChat
 {
-    public class AppSettingsWithDetails
+    public class AppSettingsWithDetails : AppSettingsBase
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "name")]
         public string Name { get; set; }
@@ -14,9 +14,6 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "push_notifications")]
         public PushNotificationFields PushNotificationFields { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "webhook_url")]
-        public string WebhookURL { get; set; }
-
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "channel_configs")]
         public Dictionary<string, ChannelConfig> ChannelConfigs { get; set; }
 
@@ -25,18 +22,6 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "suspended_explanation")]
         public string SuspendedExplanation { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "disable_auth_checks")]
-        public bool DisableAuth { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "disable_permissions_checks")]
-        public bool DisablePermissions { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "async_url_enrich_enabled")]
-        public bool AsyncURLEnrichEnabled { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "multi_tenant_enabled")]
-        public bool MultiTenantEnabled { get; set; }
     }
 
     public class PushNotificationFields
@@ -46,13 +31,19 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "firebase")]
         public FirebaseFields Firebase { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "huawei")]
+        public HuaweiFields Huawei { get; set; }
     }
 
-    public class APNFields
+    public abstract class PushNotificationBase
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "enabled")]
         public bool Enabled { get; set; }
+    }
 
+    public class APNFields : PushNotificationBase
+    {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "auth_type")]
         public string AuthType { get; set; }
 
@@ -69,15 +60,16 @@ namespace StreamChat
         public string TeamID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "key_id")]
-        public string KeyID { get; set; }  
+        public string KeyID { get; set; }
     }
 
-    public class FirebaseFields
+    public class FirebaseFields : PushNotificationBase
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "notification_template")]
         public string NotificationTemplate { get; set; }
+    }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "enabled")]
-        public bool Enabled { get; set; }
+    public class HuaweiFields : PushNotificationBase
+    {
     }
 }

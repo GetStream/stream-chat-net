@@ -202,7 +202,7 @@ namespace StreamChatTests
                 {
                     { "foo", "new" }
                 },
-                Unset = new List<string> { "bar"},
+                Unset = new List<string> { "bar" },
             });
 
             Assert.AreEqual(msg.ID, resp.Message.ID);

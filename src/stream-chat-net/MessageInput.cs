@@ -14,6 +14,9 @@ namespace StreamChat
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "text")]
         public string Text { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "mml")]
+        public string Mml { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "html")]
         public string HTML { get; set; }
 
