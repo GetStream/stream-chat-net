@@ -197,6 +197,20 @@ Console.WriteLine("{0} reacted to msg id {1} with {2}", response.Reaction.User.I
 await chan.AddModerators(new string[] { june.ID });
 await chan.DemoteModerators(new string[] { june.ID });
 
+// create roles
+await client.Permissions.CreateRole("channel-boss");
+
+// assign users to roles (optional message)
+await chan.AssignRoles(new AssignRoleRequest
+{
+    AssignRoles = new List<RoleAssignment>
+    {
+        new RoleAssignment { UserId = bob.ID, ChannelRole = Role.ChannelModerator },
+        new RoleAssignment { UserId = june.ID, ChannelRole = Role.ChannelModerator }
+    },
+    Message = new MessageInput { Text = "Bob and June just became mods", User = bob }
+});
+
 //add a ban with a timeout
 await chan.BanUser(june.ID, "Being a big jerk", 4);
 

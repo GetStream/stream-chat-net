@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -50,14 +51,46 @@ namespace StreamChat
         }
     }
 
-    public class UserPartialRequest : CustomDataBase {
+    public class UserPartialRequest : CustomDataBase
+    {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
         public string ID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
-        public Object Set {get; set; }
+        public Object Set { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "unset")]
-        public Object Unset {get; set; }
+        public Object Unset { get; set; }
     }
+
+    public class RoleAssignment
+    {
+        [JsonProperty(PropertyName = "channel_role")]
+        public string ChannelRole { get; set; }
+
+        [JsonProperty(PropertyName = "user_id")]
+        public string UserId { get; set; }
+    }
+
+    public class AssignRoleRequest
+    {
+        [JsonProperty(PropertyName = "assign_roles")]
+        public List<RoleAssignment> AssignRoles { get; set; }
+
+        [JsonIgnore]
+        public MessageInput Message { get; set; }
+
+        public JObject ToJObject()
+        {
+            var root = JObject.FromObject(this);
+
+            if (Message != null)
+            {
+                root.Add("message", Message.ToJObject());
+            }
+
+            return root;
+        }
+    }
+
 }

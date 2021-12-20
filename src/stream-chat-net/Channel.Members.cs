@@ -54,5 +54,18 @@ namespace StreamChat
                 throw StreamChatException.FromResponse(response);
         }
 
+        public async Task<UpdateChannelResponse> AssignRoles(AssignRoleRequest roleRequest)
+        {
+            var request = this._client.BuildAppRequest(this.Endpoint, HttpMethod.POST);
+            request.SetJsonBody(roleRequest.ToJObject().ToString());
+
+            var response = await this._client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamChatException.FromResponse(response);
+
+            var respObj = JObject.Parse(response.Content);
+            return UpdateChannelResponse.FromJObject(respObj);
+        }
+
     }
 }

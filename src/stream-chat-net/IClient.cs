@@ -7,6 +7,7 @@ namespace StreamChat
     public interface IClient
     {
         IUsers Users { get; }
+        IPermissions Permissions { get; }
 
         string CreateToken(string userId, DateTime? expiration = null, DateTime? issuedAt = null);
 

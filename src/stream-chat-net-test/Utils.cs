@@ -13,18 +13,15 @@ namespace StreamChatTests
                     Timeout = 10000
                 });
 
-        public static StreamChat.IClient GetClient()
-        {
-            return _defaultClient;
-        }
+        public static StreamChat.IClient GetClient() => _defaultClient;
 
         public static StreamChat.IClient GetClient(HttpClient httpClient)
-        {
-            return new StreamChat.Client(_apiKey, _apiSecret, httpClient,
-                new StreamChat.ClientOptions
-                {
-                    Timeout = 10000
-                });
-        }
+            => new StreamChat.Client(
+                _apiKey,
+                _apiSecret,
+                httpClient,
+                new StreamChat.ClientOptions{ Timeout = 10000 }
+            );
+        
     }
 }

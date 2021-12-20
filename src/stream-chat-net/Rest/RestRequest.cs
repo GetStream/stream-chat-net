@@ -4,13 +4,6 @@ namespace StreamChat.Rest
 {
     internal class RestRequest
     {
-        public class Parameter
-        {
-            public string Name { get; set; }
-
-            public string Value { get; set; }
-        }
-
         private IDictionary<string, string> _headers = new Dictionary<string, string>();
         private IDictionary<string, string> _queryParameters = new Dictionary<string, string>();
 

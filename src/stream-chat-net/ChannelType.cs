@@ -7,7 +7,9 @@ namespace StreamChat
     public class ChannelType : ChannelConfigWithInfo
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "permissions")]
-        public List<Permission> Permissions { get; set; }
+        [Obsolete("Use V2 Permissions APIs instead. " +
+            "See https://getstream.io/chat/docs/dotnet-csharp/migrating_from_legacy/?language=csharp")]
+        public List<ChannelTypePermission> Permissions { get; set; }
     }
 
     public class ChannelTypeInput : ChannelType
@@ -26,7 +28,7 @@ namespace StreamChat
     public class ChannelTypeOutput : ChannelType
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
-        public new List<string> Commands { get; set; } 
+        public new List<string> Commands { get; set; }
     }
 
     public class ChannelTypeInfo : ChannelType
