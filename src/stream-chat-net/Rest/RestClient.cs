@@ -27,7 +27,7 @@ namespace StreamChat.Rest
             _httpClient = httpClient;
             _baseUrl = baseUrl;
             Timeout = timeout;
-#if NET45
+#if OLD_TLS_HANDLING
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
         }
