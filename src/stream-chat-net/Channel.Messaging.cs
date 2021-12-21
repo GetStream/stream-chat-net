@@ -17,7 +17,7 @@ namespace StreamChat
             msg.User.ID = userID;
 
             var payload = new JObject(new JProperty("message", msg.ToJObject()));
-            if (skipPush) 
+            if (skipPush)
             {
                 payload.Add("skip_push", true);
             }
@@ -74,7 +74,7 @@ namespace StreamChat
             reaction.User.ID = userID;
 
             var payload = new JObject(new JProperty("reaction", reaction.ToJObject()));
-            if (skipPush) 
+            if (skipPush)
             {
                 payload.Add("skip_push", true);
             }
