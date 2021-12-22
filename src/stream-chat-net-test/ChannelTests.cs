@@ -817,7 +817,7 @@ namespace StreamChatTests
 
             await channel.Create(user1.ID);
 
-            await channel.AddMembers(members.Select(u => u.ID));
+            await channel.AddMembers(members.Select(u => u.ID), options: new AddMemberOptions { HideHistory = true });
 
             var chanState = await channel.Query(new ChannelQueryParams());
             Assert.AreEqual(4, chanState.Channel.MemberCount);
