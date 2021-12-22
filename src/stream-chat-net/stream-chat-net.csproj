@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>
-    <Version>0.25.0</Version>
+    <Version>0.26.0</Version>
     <Authors>Getstream.io</Authors>
     <Description>Chat client for getstream.io.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
