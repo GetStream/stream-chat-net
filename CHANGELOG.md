@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.26.0](https://github.com/GetStream/stream-chat-net/compare/0.25.0...0.26.0) (2021-12-22)
+
+
+### Features
+
+* add hidehistory to add members ([25e79c1](https://github.com/GetStream/stream-chat-net/commit/25e79c1414fc88b88aa8d140a4c57e709a7633ff))
+* add permissions v2 ([#83](https://github.com/GetStream/stream-chat-net/issues/83)) ([26fb0f5](https://github.com/GetStream/stream-chat-net/commit/26fb0f50319b9d83814ef7a762dd60ab6526b0fc))
+
 ## [0.25.0](https://github.com/GetStream/stream-chat-net/compare/0.24.0...0.25.0) (2021-12-15)
 
 
