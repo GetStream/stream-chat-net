@@ -15,13 +15,16 @@ namespace StreamChat
         public PushNotificationFields PushNotificationFields { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "channel_configs")]
-        public Dictionary<string, ChannelConfig> ChannelConfigs { get; set; }
+        public Dictionary<string, ChannelTypeWithStringCommands> ChannelConfigs { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "suspended")]
         public bool Suspended { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "suspended_explanation")]
         public string SuspendedExplanation { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "grants")]
+        public Dictionary<string, List<string>> Grants { get; set; }
     }
 
     public class PushNotificationFields

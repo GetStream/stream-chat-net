@@ -39,6 +39,7 @@ namespace StreamChatTests
             Assert.NotNull(appSettings.ChannelConfigs);
             Assert.True(appSettings.ChannelConfigs.ContainsKey("messaging"));
             Assert.True(appSettings.MultiTenantEnabled);
+            Assert.That(appSettings.Grants, Is.Not.Empty);
         }
 
         [Test]
@@ -351,10 +352,9 @@ namespace StreamChatTests
         }
 
         [Test]
-        [Ignore("Fails randomly because of app polling")]
         public async Task TestChannelType()
         {
-            var inChanType = new ChannelTypeInput()
+            var inChanType = new ChannelTypeWithStringCommands
             {
                 Name = Guid.NewGuid().ToString(),
                 Automod = Autmod.Disabled,
@@ -374,15 +374,15 @@ namespace StreamChatTests
             Assert.AreEqual(outChanType.CreatedAt, getChanType.CreatedAt);
             Assert.AreEqual(outChanType.Commands, getChanType.Commands.Select(x => x.Name));
 
-            Thread.Sleep(200);
+            Thread.Sleep(6000);
 
             await this._client.DeleteChannelType(inChanType.Name);
             Assert.ThrowsAsync<StreamChatException>(async () =>
-           {
-               var c = await this._client.GetChannelType(inChanType.Name);
-           });
+            {
+                var c = await this._client.GetChannelType(inChanType.Name);
+            });
 
-            var newChanType = new ChannelTypeInput()
+            var newChanType = new ChannelTypeWithStringCommands
             {
                 Name = Guid.NewGuid().ToString(),
             };
@@ -390,16 +390,17 @@ namespace StreamChatTests
 
             var chans = await this._client.ListChannelTypes();
 
-            ChannelTypeInfo chanInfo;
-            var found = chans.TryGetValue(newChanType.Name, out chanInfo);
-            Assert.IsTrue(found);
+            if (!chans.TryGetValue(newChanType.Name, out var chanInfo))
+            {
+                Assert.Fail($"Can't find {newChanType.Name}");
+            }
             Assert.AreEqual(newChanType.Name, chanInfo.Name);
 
             newChanType.Commands = new List<string>() { Commands.Ban };
             newChanType.Mutes = true;
             newChanType.MaxMessageLength = 123;
 
-            Thread.Sleep(200);
+            Thread.Sleep(6000);
 
             var updatedChan = await this._client.UpdateChannelType(newChanType.Name, newChanType);
 

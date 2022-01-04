@@ -120,6 +120,9 @@ namespace StreamChat
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "channel_hide_members_only")]
         public bool? ChannelHideMembersOnly { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "grants")]
+        public Dictionary<string, List<string>> Grants { get; set; }
     }
 
     public struct APNAuthType

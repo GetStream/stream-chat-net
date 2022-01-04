@@ -45,7 +45,7 @@ namespace StreamChat
         public List<string> Invites { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "config")]
-        public ChannelConfig Config { get; set; }
+        public ChannelTypeWithCommands Config { get; set; }
 
         internal new JObject ToJObject()
         {
@@ -89,7 +89,7 @@ namespace StreamChat
     public class ChannelObjectWithInfo : ChannelObject
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "config")]
-        public new ChannelConfigWithInfo Config { get; set; }
+        public new ChannelTypeWithCommands Config { get; set; }
 
         internal new static ChannelObjectWithInfo FromJObject(JObject jObj)
         {

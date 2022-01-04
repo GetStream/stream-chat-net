@@ -115,7 +115,7 @@ namespace StreamChat
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<ChannelTypeOutput> CreateChannelType(ChannelTypeInput channelType)
+        public async Task<ChannelTypeWithStringCommands> CreateChannelType(ChannelTypeWithStringCommands channelType)
         {
             if (channelType.Commands == null || channelType.Commands.Count == 0)
             {
@@ -127,12 +127,12 @@ namespace StreamChat
             var response = await this.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
-                return JsonConvert.DeserializeObject<ChannelTypeOutput>(response.Content);
+                return JsonConvert.DeserializeObject<ChannelTypeWithStringCommands>(response.Content);
 
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<ChannelTypeInfo> GetChannelType(string type)
+        public async Task<ChannelTypeWithCommands> GetChannelType(string type)
         {
             var endpoint = string.Format("channeltypes/{0}", type);
             var request = BuildAppRequest(endpoint, HttpMethod.GET);
@@ -140,12 +140,12 @@ namespace StreamChat
             var response = await this.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                return JsonConvert.DeserializeObject<ChannelTypeInfo>(response.Content);
+                return JsonConvert.DeserializeObject<ChannelTypeWithCommands>(response.Content);
 
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<Dictionary<string, ChannelTypeInfo>> ListChannelTypes()
+        public async Task<Dictionary<string, ChannelTypeWithCommands>> ListChannelTypes()
         {
             var request = BuildAppRequest("channeltypes", HttpMethod.GET);
             var response = await this.MakeRequest(request);
@@ -153,13 +153,13 @@ namespace StreamChat
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var obj = JObject.Parse(response.Content);
-                return (Dictionary<string, ChannelTypeInfo>)obj.Property("channel_types").Value.ToObject(typeof(Dictionary<string, ChannelTypeInfo>));
+                return obj.Property("channel_types").Value.ToObject<Dictionary<string, ChannelTypeWithCommands>>();
             }
 
             throw StreamChatException.FromResponse(response);
         }
 
-        public async Task<ChannelTypeOutput> UpdateChannelType(string type, ChannelTypeInput channelType)
+        public async Task<ChannelTypeWithStringCommands> UpdateChannelType(string type, ChannelTypeWithStringCommands channelType)
         {
             var payload = JObject.FromObject(channelType);
             payload.Remove("name");
@@ -171,7 +171,7 @@ namespace StreamChat
             var response = await this.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
-                return JsonConvert.DeserializeObject<ChannelTypeOutput>(response.Content);
+                return JsonConvert.DeserializeObject<ChannelTypeWithStringCommands>(response.Content);
 
             throw StreamChatException.FromResponse(response);
         }

@@ -14,10 +14,10 @@ namespace StreamChat
         Task UpdateAppSettings(AppSettings settings);
         Task<AppSettingsWithDetails> GetAppSettings();
 
-        Task<ChannelTypeOutput> CreateChannelType(ChannelTypeInput channelType);
-        Task<ChannelTypeInfo> GetChannelType(string type);
-        Task<Dictionary<string, ChannelTypeInfo>> ListChannelTypes();
-        Task<ChannelTypeOutput> UpdateChannelType(string type, ChannelTypeInput channelType);
+        Task<ChannelTypeWithStringCommands> CreateChannelType(ChannelTypeWithStringCommands channelType);
+        Task<ChannelTypeWithCommands> GetChannelType(string type);
+        Task<Dictionary<string, ChannelTypeWithCommands>> ListChannelTypes();
+        Task<ChannelTypeWithStringCommands> UpdateChannelType(string type, ChannelTypeWithStringCommands channelType);
         Task DeleteChannelType(string type);
 
         Task AddDevice(Device d);
