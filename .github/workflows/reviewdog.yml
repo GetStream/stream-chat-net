@@ -1,4 +1,4 @@
-name: reviewdog
+name: Reviewdog
 on:
   pull_request:
 
@@ -8,22 +8,21 @@ concurrency:
 
 jobs:
   reviewdog:
+    name: 🐶 Reviewdog
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - uses: reviewdog/action-setup@v1
-        with:
-          reviewdog_version: latest
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
 
       - name: Reviewdog
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          dotnet build -clp:NoSummary -p:GenerateFullPaths=true --no-incremental --nologo -f net5.0 -v q src \
+          dotnet build -clp:NoSummary -p:GenerateFullPaths=true --no-incremental --nologo -f net6.0 -v q \
           | reviewdog -f=dotnet -name=dotnet -reporter=github-pr-review

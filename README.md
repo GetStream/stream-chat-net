@@ -1,287 +1,271 @@
-# stream-chat-net
+# Official .NET SDK for [Stream Chat](https://getstream.io/chat/)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/ctwrjwga4gau657y/branch/master?svg=true)](https://ci.appveyor.com/project/tbarbugli/stream-chat-net/branch/master) [![NuGet Badge](https://buildstats.info/nuget/stream-chat-net)](https://www.nuget.org/packages/stream-chat-net/)
+[![.github/workflows/ci.yaml](https://github.com/GetStream/stream-chat-net/actions/workflows/ci.yaml/badge.svg)](https://github.com/GetStream/stream-chat-net/actions/workflows/ci.yaml) [![NuGet Badge](https://buildstats.info/nuget/stream-chat-net)](https://www.nuget.org/packages/stream-chat-net/)
 
-[stream-chat-net](https://github.com/GetStream/stream-chat-net) is the official .NET API client for [Stream Chat](https://getstream.io/chat), a service for building chat applications.
+<p align="center">
+    <img src="./assets/logo.svg" width="50%" height="50%">
+</p>
+<p align="center">
+    Official .NET API client for Stream Chat, a service for building chat applications.
+    <br />
+    <a href="https://getstream.io/chat/docs/"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/GetStream/stream-chat-net/tree/master/samples">Code Samples</a>
+    ·
+    <a href="https://github.com/GetStream/stream-chat-net/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/GetStream/stream-chat-net/issues">Request Feature</a>
+</p>
 
-You can sign up for a Stream account at [https://getstream.io/chat/get_started/](https://getstream.io/chat/get_started/).
+## 📝 About Stream
+
+You can sign up for a Stream account at our [Get Started](https://getstream.io/chat/get_started/) page.
 
 You can use this library to access chat API endpoints server-side.
 
-For the client-side integrations (web and mobile) have a look at the Javascript, iOS and Android SDK libraries ([https://getstream.io/chat/](https://getstream.io/chat/)).
+For the client-side integrations (web and mobile) have a look at the JavaScript, iOS and Android SDK libraries ([docs](https://getstream.io/chat/)).
 
-## Installation
+---
+> ## 🚨 Breaking changes in v1.0 <
+> The library received many changes in v1.0 to make it easier to use and more maintanable in the future.
+> The main change is that both [`Channel`](https://github.com/GetStream/stream-chat-net/blob/0.26.0/src/stream-chat-net/Channel.cs) and [`Client`](https://github.com/GetStream/stream-chat-net/blob/0.26.0/src/stream-chat-net/Client.cs) classes have been separated into small modules that we call clients. (This resambles the [structure of our Java library](https://github.com/GetStream/stream-chat-java/tree/1.5.0/src/main/java/io/getstream/chat/java/services) as well.)
+> Main changes:
+> - `Channel` and `Client` classes are gone, and have been organized into smaller clients in `StreamChat.Clients` namespace.
+> - These clients do not maintain state as `Channel` used to did earlier where [it kept the `channelType` and `channelId` in the memory](https://github.com/GetStream/stream-chat-net/blob/0.26.0/src/stream-chat-net/Channel.cs#L34-#L35). So this means that you'll need to pass in `channelType` and `channelId` to a lot of method calls in `IChannelClient`.
+> - Async method names have `Async` suffix now.
+> - All public methods and classes have documentation.
+> - Identifiers has been renamed from `ID` to `Id` to follow [Microsoft's naming guide](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/capitalization-conventions). Such as `userID` -> `userId`.
+> - A lot of data classes have been renamed to make more sense. Such as `ChannelObject` -> `Channel`.
+> - Data classes have been moved to `StreamChat.Models` namespace.
+> - Full feature parity: all backend APIs are available.
+> - Returned values are type of `ApiResponse` and expose rate limit informaiton with `GetRateLimit()` method.
+> - The folder structure of the project has been reorganized to follow [Microsoft's recommendation](https://gist.github.com/davidfowl/ed7564297c61fe9ab814).
+> - Unit tests have been improved. They are smaller, more focused and have cleanup methods.
+> - Added .NET 6.0 support.
+> 
+> The proper usage of the library:
+> ```csharp
+> var clientFactory = new StreamClientFactory("YourApiKey", "YourApiSecret");
+> // Note: all client instances can be used as a singleton for the lifetime
+> // of your application as they don't maintain state.
+> var userClient = clientFactory.GetUserClient();
+> var channelClient = clientFactory.GetChannelClient();
+> var messageClient = clientFactory.GetMessageClient();
+> var reactionClient = clientFactory.GetReactionClient();
+>
+> var jamesBond = await userClient.UpsertAsync(new UserRequest { Id = "james_bond" });
+> var agentM = await userClient.UpsertAsync(new UserRequest { Id = "agent_m" });
+> 
+> var channel = await channelClient.GetOrCreateAsync("messaging", "superHeroChannel", createdBy: jamesBond.Id);
+> await channelClient.AddMembersAsync(channel.Type, channel.Id, jamesBond.Id, agentM.Id);
+> 
+> var message = await messageClient.SendMessageAsync(channel.Type, channel.Id, jamesBond.Id, "I need a new quest Agent M.");
+> await reactionClient.SendReactionAsync(message.Id, "like", agentM.Id);
+> ```
+
+---
+
+## ⚙️ Installation
 
 ```bash
-nuget install stream-chat-net
+$ dotnet add package stream-chat-net
 ```
 
-## Documentation
+> 💡 Tip: you can find code samples in the [samples](./samples) folder.
 
-[Official API Docs](https://getstream.io/chat/docs)
-
-## Supported features
-
-- Chat channels
-- Messages
-- Chat channel types
-- User management
-- Moderation API
-- Push configuration
-- User devices
-- User search
-- Channel search
-- Message search
-- Channel export
-
-## Getting started
+## ✨ Getting started
 
 ### Import
 
 ```c#
-using StreamChat;
+using StreamChat.Clients;
 ```
 
 ### Initialize client
 
 ```c#
-// client instantiation
+// Client factory instantiation.
+var clientFactory = new StreamClientFactory("YourApiKey", "YourApiSecret");
 
-var client = new Client("API KEY", "API SECRET");
+// Or you can configure some options such as custom HttpClient, HTTP timeouts etc.
+var clientFactory = new StreamClientFactory("YourApiKey", "YourApiSecret", opts => opts.Timeout = TimeSpan.FromSeconds(5));
 
-// or if you want to use your own HttpClient
-
-var client = new Client("API KEY", "API SECRET", httpClient);
-
+// Get clients from client factory. Note: all clients can be used as a singleton in your application.
+var channelClient = clientFactory.GetChannelClient();
+var messageClient = clientFactory.GetMessageClient();
 ```
 
-> :bulb: It is strongly recommended to use the same client for the lifetime of your application.
-
-### Generate a token for clientside use
+### Generate a token for client-side usage
 
 ```c#
-//without expiration
-var token = client.CreateToken("bob-1");
+var userClient = clientFactory.GetUserClient();
 
-//with expiration
-var token = client.CreateToken("bob-1", DateTime.Now.AddHours(1));
+// Without expiration
+var token = userClient.CreateToken("bob-1");
+
+// With expiration
+var token = userClient.CreateToken("bob-1", expiration: DateTimeOffset.UtcNow.AddHours(1));
 ```
 
 ### Create/Update users
 
 ```c#
-var bob = new User()
+var userClient = clientFactory.GetUserClient();
+
+var bob = new UserRequest
 {
-    ID = "bob-1",
+    Id = "bob-1",
     Role = Role.Admin,
+    Teams = new[] { "red", "blue" } // if multi-tenant enabled
 };
-bob.SetData("name", "Robert Tables");
-bob.SetData("teams", new string[] { "red", "blue" }; // if multi-tenant enabled
+bob.SetData("age", 27);
 
-var bobFromDB = await client.Users.Upsert(bob);
-Console.WriteLine(bobFromDB.CreatedAt);
+await userClient.UpsertAsync(bob);
 
-//batch update is also supported
-var jane = ...
-var june = ...
-var users = await client.Users.UpsertMany(new User[] { bob, jane, june });
+// Batch update is also supported
+var jane = new UserRequest { Id = "jane"};
+var june = new UserRequest { Id = "june"};
+var users = await userClient.UpsertManyAsync(new[] { bob, jane, june });
 ```
 
 ### GDPR-like User endpoints
 
 ```c#
-// exports data for one user
-await client.Users.Export("bob-1");
+var userClient = clientFactory.GetUserClient();
 
-// deactivates a user
-await client.Users.Deactivate("bob-1");
-
-// reactivates a user
-await client.Users.Reactivate("bob-1");
-
-// deletes a user
-await client.Users.Delete("bob-1");
+await userClient.ExportAsync("bob-1");
+await userClient.DeactivateAsync("bob-1");
+await userClient.ReactivateAsync("bob-1");
+await userClient.DeleteAsync("bob-1");
 ```
 
-### Channel types CRUD
+### Channel types
 
 ```c#
-var c = new ChannelTypeInput()
+var channelTypeClient = clientFactory.GetChannelTypeClient();
+
+var chanTypeConf = new ChannelTypeWithStringCommands
 {
     Name = "livechat",
     Automod = Autmod.Disabled,
-    Commands = new List<string>() { Commands.Ban },
+    Commands = new List<string> { Commands.Ban },
     Mutes = true
 };
-//create
-var chanType = await client.CreateChannelType(c);
-Console.WriteLine(chanType.CreatedAt);
+var chanType = await channelTypeClient.CreateChannelTypeAsync(chanTypeConf);
 
-//update
-c.Mutes = false;
-chanType = await client.UpdateChannelType(chanType.Name, c);
-Console.WriteLine(chanType.UpdatedAt);
-Console.WriteLine(chanType.Mutes);
-
-//get
-var messaging = await client.GetChannelType("messaging");
-
-//list
-var chans = await client.ListChannelTypes();
-
-//delete
-await client.DeleteChannelType("livechat");
+var allChanTypes = await channelTypeClient.ListChannelTypesAsync();
 ```
 
 ### Channels
 
 ```c#
-// create a channel with members from the start
-var chan = client.Channel("messaging", "bob-and-jane");
-var chanFromDB = await chan.Create(bob.ID, new string[] { bob.ID, jane.ID });
-chanFromDB.Members.ForEach(m => Console.WriteLine(m.User.ID));
+var channelClient = clientFactory.GetChannelClient();
 
-//create channel and then add members
-var chan = client.Channel("messaging", "bob-and-june");
-var newData = new GenericData(); 
-newData.SetData("team", "red"); // if multi-tenant enabled
-newData.SetData("group", "delta");
-await chan.Update(newData);
-// or partial update
-await chan.PartialUpdate(new PartialUpdateChannelRequest
-            {
-                Unset = new List<string> { "team" },
-                Set = new Dictionary<string, object> { { "group", "gamma" } }
-            });
-await chan.Create(bobFromDB.ID);
-await chan.AddMembers(new string[] { bob.ID, june.ID });
+// Create a channel with members from the start, Bob is the creator
+var channel = channelClient.GetOrCreateAsync("messaging", "bob-and-jane", bob.Id, bob.Id, jane.Id);
 
-//send messages
-var bobHi = new MessageInput()
+// Create channel and then add members, Mike is the creator
+var channel = channelClient.GetOrCreateAsync("messaging", "bob-and-jane", mike.Id);
+channelClient.AddMembersAsync(channel.Type, channel.Id, bob.Id, jane.Id, joe.Id);
+```
+### Messaging
+```c#
+var messageClient = clientFactory.GetMessageClient();
+
+// Only text
+messageClient.SendMessageAsync(channel.Type, channel.Id, bob.Id, "Hey, I'm Bob!");
+
+// With custom data
+var msgReq = new MessageRequest { Text = "Hi june!" };
+msgReq.SetData('location', 'amsterdam');
+
+var bobMessageResp = await messageClient.SendMessageAsync(channelType, channel.Id, msgReq, bob.Id);
+
+// Threads
+var juneReply = new MessageRequest { Text = "Long time no see!" };
+var juneReplyMessage = await messageClient.SendMessageToThreadAsync(channel.Type, channel.Id, juneReply, june.Id, bobMessageResp.Message.Id)
+```
+
+### Reactions
+```c#
+var reactionClient = clientFactory.GetReactionClient();
+
+await reactionClient.SendReactionAsync(message.Id, "like", bob.Id);
+
+var allReactions = await reactionClient.GetReactionsAsync(message.Id);
+```
+
+### Moderation
+```c#
+var channelClient = clientFactory.GetChannelClient();
+var userClient = clientFactory.GetUserClient();
+var flagClient = clientFactory.GetFlagClient();
+
+await channelClient.AddModeratorsAsync(channel.Type, channel.Id, new[] { jane.Id });
+
+await userClient.BanAsync(new BanRequest
 {
-    Text = "Hi june!",
-};
-bobHi.SetData('location', 'amsterdam');
-var juneHi = new MessageInput()
-{
-    Text = "Hi bob!",
-};
-bobHi.SetData('location', 'boulder'); // add custom data into message
-var attachment = new Attachment();
-attachment.SetData('x-built-by', 'android-services'); // add custom data into an attachment
-bobHi.Attachments = new List<Attachment>() { attachment }; // add attachment into a message
+    Type = channel.Type,
+    Id = channel.Id,
+    Reason = "reason",
+    TargetUserId = bob.Id,
+    UserId = jane.Id
+});
 
-var m1 = await chan.SendMessage(bobHi, bob.ID);
-var m2 = await chan.SendMessage(juneHi, june.ID);
-Console.WriteLine("{0} says {1} at {2}, {3}", m1.User.ID, m1.Text, m1.CreatedAt, m1.GetData<string>('location'));
-Console.WriteLine("{0} says {1} at {2}", m2.User.ID, m2.Text, m2.CreatedAt);
+await flagClient.FlagUserAsync(bob.Id, jane.Id);
+```
+### Permissions
+```c#
+var permissionClient = clientFactory.GetPermissionClient();
 
-//send replies
-var bobReply = new MessageInput()
-{
-    Text = "Long time no see!"
-};
-var r1 = await chan.SendMessage(bobReply, bob.ID, m2.ID);
-Console.WriteLine("{0} replied {1} to msg id {2}", r1.User.ID, r1.Text, r1.ParentID);
+await permissionClient.CreateRoleAsync("channel-boss");
 
-//send reactions
-var juneReact = new Reaction()
-{
-    Type = "like"
-};
-var response = await chan.SendReaction(r1.ID, juneReact, june.ID);
-
-Console.WriteLine("{0} reacted to msg id {1} with {2}", response.Reaction.User.ID, response.Message.ID, response.Reaction.Type);
-
-//add/remove moderators
-await chan.AddModerators(new string[] { june.ID });
-await chan.DemoteModerators(new string[] { june.ID });
-
-// create roles
-await client.Permissions.CreateRole("channel-boss");
-
-// assign users to roles (optional message)
-await chan.AssignRoles(new AssignRoleRequest
+// Assign users to roles (optional message)
+await channelClient.AssignRolesAsync(new AssignRoleRequest
 {
     AssignRoles = new List<RoleAssignment>
     {
         new RoleAssignment { UserId = bob.ID, ChannelRole = Role.ChannelModerator },
-        new RoleAssignment { UserId = june.ID, ChannelRole = Role.ChannelModerator }
+        new RoleAssignment { UserId = june.ID, ChannelRole = "channel-boss" }
     },
-    Message = new MessageInput { Text = "Bob and June just became mods", User = bob }
+    Message = new MessageRequest { Text = "Bob and June just became mods", User = bob }
 });
-
-//add a ban with a timeout
-await chan.BanUser(june.ID, "Being a big jerk", 4);
-
-//removing a ban
-await chan.UnbanUser(june.ID);
-
-//query channel state
-var queryParams = new ChannelQueryParams(false, true)
-{
-    MessagesPagination = new MessagePaginationParams() //optional
-    {
-        Limit = 2,
-        IDLT = m1.ID
-    }
-};
-var state = await chan.Query(queryParams);
-Console.WriteLine(state.Channel.ID);
-Console.WriteLine(state.Channel.Type);
-state.Members.ForEach(m => Console.WriteLine("Member {0}", m.User.ID));
-state.Messages.ForEach(m => Console.WriteLine("Message {0}: {1}", m.ID, m.Text));
-```
-
-### Messages
-
-```c#
-//delete a message from any channel by ID
-var deletedMsg = await client.DeleteMessage(r1.ID);
-//hard delete
-var deletedMsg = await client.DeleteMessage(r1.ID, true);
-Console.WriteLine(deletedMsg.DeletedAt);
-
-var replies = await chan.GetReplies(m2.ID, MessagePaginationParams.Default);
-Console.WriteLine(replies.Count);
 ```
 
 ### Devices
 
 ```c#
-//add device
-var junePhone = new Device()
+var deviceClient = clientFactory.GetDeviceClient();
+
+var junePhone = new Device
 {
     ID = "iOS Device Token",
     PushProvider = PushProvider.APN,
     UserID = june.ID
 };
-await client.AddDevice(junePhone);
 
-//list devices
-var devices = await client.GetDevices(june.ID);
-Console.WriteLine(devices[0].ID);
+await deviceClient.AddDeviceAsync(junePhone);
 
-//remove device
-await client.RemoveDevice(junePhone.ID, junePhone.UserID);
+var devices = await deviceClient.GetDevicesAsync(june.Id);
 ```
 
 ### Export Channels
 
 ```c#
-// create an export
-var taskId = await client.ExportChannels(new List<ExportChannelRequest>{
-    new ExportChannelRequest().WithChannelId(id).WithChannelType("messaging")
-});
+var channelClient = clientFactory.GetChannelClient();
+var taskClient = clientFactory.GetTaskClient();
 
-// wait for the completion
+var taskResponse = channelClient.ExportChannelAsync(new ExportChannelRequest { Id = channel.Id, Type = channel.Type });
+
+// Wait for the completion
 var complete = false;
 var iterations = 0;
-ExportChannelsStatusResponse resp = null;
+AsyncTaskStatusResponse resp = null;
 while (!complete && iterations < 1000)
 {
-    resp = await client.GetExportChannelsStatus(taskId);
-    if (resp.Status.Equals("completed"))
+    resp = await taskClient.GetTaskStatusAsync(taskResponse.TaskId);
+    if (resp.Status == AsyncTaskStatus.Completed)
     {
         complete = true;
     }
@@ -289,20 +273,19 @@ while (!complete && iterations < 1000)
     await Task.Delay(100);
 }
 
-// if completed, use the export url
 if (complete)
 {
     Console.WriteLine(resp.Result.URL);
 }
 ```
 
-## Contributing
+## ✍️ Contributing
 
-We welcome code changes that improve this library or fix a problem, please make sure to follow all best practices and add tests if applicable before submitting a Pull Request on Github. We are very happy to merge your code in the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
+We welcome code changes that improve this library or fix a problem, please make sure to follow all best practices and add tests if applicable before submitting a Pull Request on Github. We are very happy to merge your code in the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our [license file](./LICENSE) for more details.
 
 Head over to [CONTRIBUTING.md](./CONTRIBUTING.md) for some development tips.
 
-## We are hiring!
+## 🧑‍💻 We are hiring!
 
 We've recently closed a [$38 million Series B funding round](https://techcrunch.com/2021/03/04/stream-raises-38m-as-its-chat-and-activity-feed-apis-power-communications-for-1b-users/) and we keep actively growing.
 Our APIs are used by more than a billion end-users, and you'll have a chance to make a huge impact on the product within a team of the strongest engineers all over the world.

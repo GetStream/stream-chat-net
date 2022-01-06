@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Configuration">
+    <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net45;net46;net47;net48;netstandard1.6;netstandard2.0;netstandard2.1;net5.0;net6.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>stream-chat-net</PackageId>
+    <Title>.NET Client for Stream Chat</Title>
+    <Version>0.26.0</Version>
+    <Company>Stream.io</Company>
+    <Authors>Stream.io</Authors>
+    <Copyright>© $([System.DateTime]::UtcNow.ToString(yyyy)) Stream.io</Copyright>
+    <Description>Chat client for Stream.io</Description>
+    <RepositoryUrl>https://github.com/GetStream/stream-chat-net</RepositoryUrl>
+    <RepositoryCommit>$(GITHUB_SHA)</RepositoryCommit>
+    <PackageProjectUrl>https://github.com/GetStream/stream-chat-net</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReleaseNotes>$(CHANGELOG)</PackageReleaseNotes>
+    <PackageTags>getstream.io stream.io chat sdk</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>nuget_logo.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+      <None Include="../LICENSE" Pack="true" PackagePath=""/>
+      <None Include="../README.md" Pack="true" PackagePath=""/>
+      <None Include="../assets/nuget_logo.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+  <PropertyGroup Condition="$(TargetFramework) == 'net45' OR $(TargetFramework) == 'net46'">
+    <DefineConstants>OLD_TLS_HANDLING</DefineConstants>
+  </PropertyGroup>
+    <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376" PrivateAssets="All"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>../.stylecop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+</Project>

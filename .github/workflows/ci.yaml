@@ -8,41 +8,35 @@ concurrency:
 
 jobs:
   basic:
-    name: Run tests on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: 🧪 Run tests
+    runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
-    strategy:
-      max-parallel: 1
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-      fail-fast: false
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
       - uses: wagoid/commitlint-github-action@v4
-        if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
 
       - name: Dependency cache
         uses: actions/cache@v2
         id: cache
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('src/**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj') }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: dotnet restore ./src
+        run: dotnet restore
 
       - name: Run tests
-        run: dotnet test ./src/stream-chat-net-test
+        run: dotnet test
         env:
-          STREAM_API_SECRET: ${{ secrets.STREAM_API_SECRET }}
-          STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
+          STREAM_SECRET: ${{ secrets.STREAM_API_SECRET }}
+          STREAM_KEY: ${{ secrets.STREAM_API_KEY }}

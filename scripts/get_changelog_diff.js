@@ -20,7 +20,7 @@ module.exports = () => {
     current_release = changelog.indexOf(releases[0])
     previous_release = changelog.indexOf(releases[1])
 
-    latest_changes = changelog.substr(current_release, previous_release-current_release)
-    
+    latest_changes = changelog.substr(current_release, previous_release - current_release)
+
     return latest_changes
 }
