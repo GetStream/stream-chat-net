@@ -71,74 +71,92 @@ namespace StreamChat.Models
         }
     }
 
-    public class QueryChannelsOptions : IQueryParameterConvertible
+    public class QueryChannelsOptions
     {
         private const int DefaultOffset = 0;
         private const int DefaultLimit = 20;
 
-        private int _offset = DefaultOffset;
-        private int _limit = DefaultLimit;
+        [JsonProperty("offset")]
+        public int Offset { get; set; } = DefaultOffset;
 
-        private bool _presence = false;
-        private bool _state = false;
-        private bool _watch = false;
-        private bool _recovery = false;
+        [JsonProperty("limit")]
+        public int Limit { get; set; } = DefaultLimit;
 
-        private List<SortParameter> _sort = new List<SortParameter>();
-        private Dictionary<string, object> _filter = new Dictionary<string, object>();
-        private Dictionary<string, string> _lastMessageIds = new Dictionary<string, string>();
+        [JsonProperty("presence")]
+        public bool Presence { get; set; }
+
+        [JsonProperty("state")]
+        public bool State { get; set; }
+
+        [JsonProperty("watch")]
+        public bool Watch { get; set; }
+
+        [JsonProperty("recovery")]
+        public bool Recovery { get; set; }
+
+        [JsonProperty("sort", NullValueHandling = NullValueHandling.Ignore)]
+        public List<SortParameter> Sort { get; set; }
+
+        [JsonProperty("filter_conditions")]
+        public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
+
+        [JsonProperty("last_message_ids", NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, string> LastMessageIds { get; set; }
 
         public QueryChannelsOptions WithOffset(int offset)
         {
-            _offset = offset;
+            Offset = offset;
             return this;
         }
 
         public QueryChannelsOptions WithLimit(int limit)
         {
-            _limit = limit;
+            Limit = limit;
             return this;
         }
 
         public QueryChannelsOptions WithPresence()
         {
-            _presence = true;
+            Presence = true;
             return this;
         }
 
         public QueryChannelsOptions WithState()
         {
-            _state = true;
+            State = true;
             return this;
         }
 
         public QueryChannelsOptions WithWatch()
         {
-            _watch = true;
+            Watch = true;
             return this;
         }
 
         public QueryChannelsOptions WithRecovery()
         {
-            _recovery = true;
+            Recovery = true;
             return this;
         }
 
         public QueryChannelsOptions WithSortBy(SortParameter param)
         {
-            _sort.Add(param);
+            if (Sort == null)
+                Sort = new List<SortParameter>();
+
+            Sort.Add(param);
             return this;
         }
 
         public QueryChannelsOptions WithFilter(Dictionary<string, object> filter)
         {
-            _filter = filter;
+            Filter = filter;
             return this;
         }
 
         public QueryChannelsOptions WithLastMessageIDs(Dictionary<string, string> msgIds)
         {
-            _lastMessageIds = msgIds;
+            LastMessageIds = msgIds;
             return this;
         }
 
@@ -146,29 +164,8 @@ namespace StreamChat.Models
         {
             get => new QueryChannelsOptions
             {
-                _offset = DefaultOffset,
-                _limit = DefaultLimit,
-            };
-        }
-
-        public List<KeyValuePair<string, string>> ToQueryParameters()
-        {
-            var payload = new
-            {
-                offset = _offset,
-                limit = _limit,
-                presence = _presence,
-                watch = _watch,
-                state = _state,
-                recovery = _recovery,
-                last_message_ids = _lastMessageIds,
-                filter_conditions = _filter,
-                sort = _sort,
-            };
-
-            return new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("payload", JsonConvert.SerializeObject(payload)),
+                Offset = DefaultOffset,
+                Limit = DefaultLimit,
             };
         }
     }

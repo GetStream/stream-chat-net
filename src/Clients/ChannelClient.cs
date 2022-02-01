@@ -14,9 +14,9 @@ namespace StreamChat.Clients
 
         public async Task<QueryChannelResponse> QueryChannelsAsync(QueryChannelsOptions opts)
             => await ExecuteRequestAsync<QueryChannelResponse>("channels",
-                HttpMethod.GET,
-                HttpStatusCode.OK,
-                queryParams: opts.ToQueryParameters());
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                opts);
 
         public async Task<AsyncOperationResponse> ExportChannelAsync(ExportChannelItem request)
             => await ExportChannelsAsync(new ExportChannelRequest { Channels = new[] { request } });

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 namespace StreamChat.Models
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum Autmod
+    public enum Automod
     {
         None,
 
@@ -24,7 +24,7 @@ namespace StreamChat.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ModerationBehaviour
     {
-        Uknown,
+        Unknown,
 
         [EnumMember(Value = "flag")]
         Flag,
@@ -75,13 +75,13 @@ namespace StreamChat.Models
         public int? MaxMessageLength { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod")]
-        public Autmod? Automod { get; set; }
+        public Automod? Automod { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod_behavior")]
-        public ModerationBehaviour? AutmodBehavior { get; set; }
+        public ModerationBehaviour? AutomodBehavior { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod_thresholds")]
-        public Dictionary<string, ModerationBehaviour> AutmodThresholds { get; set; }
+        public Dictionary<string, ModerationBehaviour> AutomodThresholds { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "url_enrichment")]
         public bool? UrlEnrichment { get; set; }
@@ -161,13 +161,13 @@ namespace StreamChat.Models
         public int? MaxMessageLength { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod")]
-        public Autmod? Automod { get; set; }
+        public Automod? Automod { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod_behavior")]
-        public ModerationBehaviour? AutmodBehavior { get; set; }
+        public ModerationBehaviour? AutomodBehavior { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "automod_thresholds")]
-        public Dictionary<string, ModerationBehaviour> AutmodThresholds { get; set; }
+        public Dictionary<string, ModerationBehaviour> AutomodThresholds { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "url_enrichment")]
         public bool? UrlEnrichment { get; set; }

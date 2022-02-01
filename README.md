@@ -148,7 +148,7 @@ var channelTypeClient = clientFactory.GetChannelTypeClient();
 var chanTypeConf = new ChannelTypeWithStringCommands
 {
     Name = "livechat",
-    Automod = Autmod.Disabled,
+    Automod = Automod.Disabled,
     Commands = new List<string> { Commands.Ban },
     Mutes = true
 };

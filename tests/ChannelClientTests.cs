@@ -139,7 +139,7 @@ namespace StreamChatTests
 
             var resp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(new Dictionary<string, object>
             {
-                { "id", channel.Id },
+                { "cid", new Dictionary<string, object> { { "$eq", channel.Cid } } },
             }));
             resp.Channels.Count.Should().Be(0);
         }

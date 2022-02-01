@@ -15,14 +15,8 @@ namespace StreamChat.Clients
         public async Task<ApiResponse> FlagUserAsync(string flaggedId, string flaggerId)
             => await PostFlagAsync(flaggedId, flaggerId, "flag", "user");
 
-        public async Task<ApiResponse> UnflagUserAsync(string flaggedId, string flaggerId)
-            => await PostFlagAsync(flaggedId, flaggerId, "unflag", "user");
-
         public async Task<ApiResponse> FlagMessageAsync(string flaggedId, string flaggerId)
             => await PostFlagAsync(flaggedId, flaggerId, "flag", "message");
-
-        public async Task<ApiResponse> UnflagMessageAsync(string flaggedId, string flaggerId)
-            => await PostFlagAsync(flaggedId, flaggerId, "unflag", "message");
 
         private async Task<ApiResponse> PostFlagAsync(string dest, string src, string op, string kind)
         {

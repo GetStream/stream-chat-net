@@ -59,14 +59,6 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUnflagUserAsync()
-        {
-            await _flagClient.FlagUserAsync(_chanMember1.Id, _chanMember2.Id);
-
-            await _flagClient.UnflagUserAsync(_chanMember1.Id, _chanMember2.Id);
-        }
-
-        [Test]
         public async Task TestQueryFlagsAsync()
         {
             await _flagClient.FlagMessageAsync(_message.Id, _chanMember1.Id);

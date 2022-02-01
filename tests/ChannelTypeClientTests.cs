@@ -69,7 +69,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestUpdateChannelTypeAsync()
         {
-            var expectedAutmod = Autmod.Simple;
+            var expectedAutomod = Automod.Simple;
 
             await WaitForAsync(async () =>
             {
@@ -77,10 +77,10 @@ namespace StreamChatTests
                 {
                     var updated = await _channelTypeClient.UpdateChannelTypeAsync(_channelType.Name, new ChannelTypeWithStringCommandsRequest
                     {
-                        Automod = expectedAutmod,
+                        Automod = expectedAutomod,
                     });
 
-                    return updated.Automod == expectedAutmod;
+                    return updated.Automod == expectedAutomod;
                 }
                 catch
                 {
