@@ -155,7 +155,7 @@ namespace StreamChatTests
         {
             var resp = await _messageClient.MarkReadAsync(_channel.Type, _channel.Id, _user.Id, _message.Id);
 
-            resp.Event.Type.Should().BeEquivalentTo(EventType.MessageRead);
+            resp.Event.Type.Should().BeEquivalentTo("message.read");
             resp.Event.User.Id.Should().BeEquivalentTo(_user.Id);
         }
 

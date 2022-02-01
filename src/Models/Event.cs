@@ -1,38 +1,8 @@
 using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
-    public static class EventType
-    {
-        public const string UserPresenceChanged = "user.presence.changed";
-        public const string UserWatchingStart = "user.watching.start";
-        public const string UserWatchingStop = "user.watching.stop";
-        public const string UserUpdated = "user.updated";
-        public const string TypingStart = "typing.start";
-        public const string TypingStop = "typing.stop";
-        public const string MessageNew = "message.new";
-        public const string MessageUpdated = "message.updated";
-        public const string MessageDeleted = "message.deleted";
-        public const string MessageRead = "message.read";
-        public const string ReactionNew = "reaction.new";
-        public const string ReactionDeleted = "reaction.deleted";
-        public const string MemberAdded = "member.added";
-        public const string MemberUpdated = "member.updated";
-        public const string MemberRemoved = "member.removed";
-        public const string ChannelUpdated = "channel.updated";
-        public const string ChannelDeleted = "channel.deleted";
-        public const string HealthCheck = "health.check";
-        public const string NotificationNewMessage = "notification.message_new";
-        public const string NotificationMarkRead = "notification.mark_read";
-        public const string NotificationInvited = "notification.invited";
-        public const string NotificationInviteAccepted = "notification.invite_accepted";
-        public const string NotificationAddedToChannel = "notification.added_to_channel";
-        public const string NotificationRemovedFromChannel = "notification.removed_from_channel";
-        public const string NotificationMutesUpdated = "notification.mutes_updated";
-    }
-
     public class Event : CustomDataBase
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "type")]

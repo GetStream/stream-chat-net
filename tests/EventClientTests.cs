@@ -33,7 +33,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestSendEventAsync()
         {
-            var expectedEvent = new Event { Type = EventType.TypingStart, UserId = _user.Id };
+            var expectedEvent = new Event { Type = "typing.start", UserId = _user.Id };
             expectedEvent.SetData("foo", new[] { 1 });
 
             var resp = await _eventClient.SendEventAsync(_channel.Type, _channel.Id, expectedEvent);
