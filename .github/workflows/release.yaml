@@ -8,6 +8,7 @@ on:
 
 jobs:
   Release:
+    name: 🚀 Release
     if: github.event.pull_request.merged && startsWith(github.head_ref, 'release-')
     runs-on: ubuntu-latest
     env:
@@ -31,13 +32,13 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: "5.0.x"
+          dotnet-version: "6.0.x"
 
       - name: Create the package
         run: dotnet pack --configuration Release ./src
 
       - name: Publish the package
-        run: dotnet nuget push "./src/stream-chat-net/bin/Release/*.nupkg"  -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push "./src/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
 
       - name: Create release on GitHub
         uses: ncipollo/release-action@v1

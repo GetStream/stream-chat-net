@@ -9,6 +9,7 @@ on:
 
 jobs:
   init_release:
+    name: 🚀 Create release PR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,7 +17,15 @@ jobs:
           fetch-depth: 0 # gives the changelog generator access to all previous commits
 
       - name: Create release branch
-        run: scripts/create_release_branch.sh "${{ github.event.inputs.version }}"
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          npx --yes standard-version@9.3.2 --release-as "$VERSION" --skip.tag --skip.commit --tag-prefix=
+          git config --global user.name 'github-actions' 
+          git config --global user.email 'release@getstream.io'
+          git checkout -q -b "release-$VERSION"
+          git commit -am "chore(release): $VERSION"
+          git push -q -u origin "release-$VERSION"
 
       - name: Get changelog diff
         uses: actions/github-script@v5

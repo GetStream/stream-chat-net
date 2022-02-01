@@ -9,18 +9,18 @@ We welcome code changes that improve this library or fix a problem, please make 
 Most IDEs automatically prompt you to restore the dependencies but if not, use this command:
 
 ```shell
-$ dotnet restore ./src
+$ dotnet restore
 ```
 
 Building:
 
 ```shell
-$ dotnet build ./src
+$ dotnet build
 ```
 
 ### Run tests
 
-The tests we have are full fledged integration tests, meaning they will actually reach out to a Stream app. Hence the tests require at least two environment variables: `STREAM_API_KEY` and `STREAM_API_SECRET`.
+The tests we have are full fledged integration tests, meaning they will actually reach out to a Stream app. Hence the tests require at least two environment variables: `STREAM_KEY` and `STREAM_SECRET`.
 
 To have these env vars available for the test running, you need to set up a `.runsettings` file in the root of the project (don't worry, it's gitignored).
 
@@ -33,8 +33,8 @@ It needs to look like this:
 <RunSettings>
   <RunConfiguration>
     <EnvironmentVariables>
-      <STREAM_API_KEY>api_key_here</STREAM_API_KEY>
-      <STREAM_API_SECRET>secret_key_here</STREAM_API_SECRET>
+      <STREAM_KEY>api_key_here</STREAM_KEY>
+      <STREAM_SECRET>secret_key_here</STREAM_SECRET>
     </EnvironmentVariables>
   </RunConfiguration>
 </RunSettings>
@@ -42,7 +42,7 @@ It needs to look like this:
 
 In CLI:
 ```shell
-$ dotnet test -s .runsettings ./src/stream-chat-net-test
+$ dotnet test -s .runsettings
 ```
 
 Go to the next section to see how to use it in IDEs.
@@ -58,8 +58,7 @@ For VS Code, the recommended extensions are:
 Recommended settings (`.vscode/settings.json`):
 ```json
 {
-    "omnisharp.testRunSettings": ".runsettings",
-    "dotnet-test-explorer.testProjectPath": "./src/stream-chat-net-test",
+    "omnisharp.testRunSettings": ".runsettings"
 }
 ```
 
