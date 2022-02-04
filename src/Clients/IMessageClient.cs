@@ -37,7 +37,7 @@ namespace StreamChat.Clients
         /// or updated with or without an expiration.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/pinned_messages/?language=csharp</remarks>
-        Task<MessagePartialUpdateResponse> PinMessageAsync(string channelType, string channelId, string messageId, string userId, TimeSpan? expiresIn = null);
+        Task<MessagePartialUpdateResponse> PinMessageAsync(string messageId, string userId, TimeSpan? expiresIn = null);
 
         /// <summary>
         /// <para>Unpins a message.</para>
@@ -47,7 +47,7 @@ namespace StreamChat.Clients
         /// or updated with or without an expiration.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/pinned_messages/?language=csharp</remarks>
-        Task<MessagePartialUpdateResponse> UnpinMessageAsync(string channelType, string channelId, string messageId, string userId);
+        Task<MessagePartialUpdateResponse> UnpinMessageAsync(string messageId, string userId);
 
         /// <summary>
         /// <para>Translates a message.</para>

@@ -115,10 +115,10 @@ namespace StreamChatTests
         [Test]
         public async Task TestPinAndUnpinAsync()
         {
-            var update = await _messageClient.PinMessageAsync(_channel.Type, _channel.Id, _message.Id, _user.Id);
+            var update = await _messageClient.PinMessageAsync(_message.Id, _user.Id);
             update.Message.Pinned.Should().BeTrue();
 
-            update = await _messageClient.UnpinMessageAsync(_channel.Type, _channel.Id, _message.Id, _user.Id);
+            update = await _messageClient.UnpinMessageAsync(_message.Id, _user.Id);
             update.Message.Pinned.Should().BeFalse();
         }
 
