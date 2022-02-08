@@ -43,5 +43,32 @@ namespace StreamChat.Clients
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 roleRequest);
+
+        public async Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, string userId, MessageRequest msg = null)
+            => await InviteAsync(channelType, channelId, new[] { userId }, msg);
+
+        public async Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, IEnumerable<string> userIds)
+            => await InviteAsync(channelType, channelId, userIds, null);
+
+        public async Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null)
+            => await UpdateAsync(channelType, channelId, new ChannelUpdateRequest
+            {
+                Invites = userIds,
+                Message = msg,
+            });
+
+        public async Task<UpdateChannelResponse> AcceptInviteAsync(string channelType, string channelId, string userId)
+            => await UpdateAsync(channelType, channelId, new ChannelUpdateRequest
+            {
+                AcceptInvite = true,
+                UserId = userId,
+            });
+
+        public async Task<UpdateChannelResponse> RejectInviteAsync(string channelType, string channelId, string userId)
+            => await UpdateAsync(channelType, channelId, new ChannelUpdateRequest
+            {
+                RejectInvite = true,
+                UserId = userId,
+            });
     }
 }

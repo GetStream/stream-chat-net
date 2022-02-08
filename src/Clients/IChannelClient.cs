@@ -178,6 +178,36 @@ namespace StreamChat.Clients
         Task<TruncateResponse> TruncateAsync(string channelType, string channelId, TruncateOptions truncateOptions);
 
         /// <summary>
+        /// Invites a user to the channel.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
+        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, string userId, MessageRequest msg = null);
+
+        /// <summary>
+        /// Invites a user to the channel.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
+        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, IEnumerable<string> userIds);
+
+        /// <summary>
+        /// Invites a user to the channel.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
+        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null);
+
+        /// <summary>
+        /// Accepts an invitaton to a channel.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
+        Task<UpdateChannelResponse> AcceptInviteAsync(string channelType, string channelId, string userId);
+
+        /// <summary>
+        /// Rejects an invitaton to a channel.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
+        Task<UpdateChannelResponse> RejectInviteAsync(string channelType, string channelId, string userId);
+
+        /// <summary>
         /// <para>Updates a channel.</para>
         /// The update function updates all of the channel data. Any data that is present on the channel
         /// and not included in a full update will be deleted. If you don't want that, use

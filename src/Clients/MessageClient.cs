@@ -95,7 +95,7 @@ namespace StreamChat.Clients
                     new KeyValuePair<string, string>("ids", string.Join(",", messageIds)),
                 });
 
-        public async Task<MessagePartialUpdateResponse> PinMessageAsync(string channelType, string channelId, string messageId, string userId, TimeSpan? expiresIn = null)
+        public async Task<MessagePartialUpdateResponse> PinMessageAsync(string messageId, string userId, TimeSpan? expiresIn = null)
             => await UpdateMessagePartialAsync(messageId, new MessagePartialUpdateRequest
             {
                 Set = new Dictionary<string, object>
@@ -106,7 +106,7 @@ namespace StreamChat.Clients
                 UserId = userId,
             });
 
-        public async Task<MessagePartialUpdateResponse> UnpinMessageAsync(string channelType, string channelId, string messageId, string userId)
+        public async Task<MessagePartialUpdateResponse> UnpinMessageAsync(string messageId, string userId)
             => await UpdateMessagePartialAsync(messageId, new MessagePartialUpdateRequest
             {
                 Set = new Dictionary<string, object>

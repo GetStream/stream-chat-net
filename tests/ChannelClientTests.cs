@@ -260,5 +260,27 @@ namespace StreamChatTests
             var user2 = channel.Members.First(x => x.UserID == _user2.Id);
             user2.IsModerator.Should().BeTrue();
         }
+
+        [Test]
+        public async Task TestInvitationAndAcceptanceAsync()
+        {
+            var userToInvite = await UpsertNewUserAsync();
+            Func<Task> inviteTask = () => _channelClient.InviteAsync(_channel.Type, _channel.Id, userToInvite.Id);
+            Func<Task> acceptTask = () => _channelClient.AcceptInviteAsync(_channel.Type, _channel.Id, userToInvite.Id);
+
+            await inviteTask.Should().NotThrowAsync();
+            await acceptTask.Should().NotThrowAsync();
+        }
+
+        [Test]
+        public async Task TestInvitationAndRejectionAsync()
+        {
+            var userToInvite = await UpsertNewUserAsync();
+            Func<Task> inviteTask = () => _channelClient.InviteAsync(_channel.Type, _channel.Id, userToInvite.Id);
+            Func<Task> rejectTask = () => _channelClient.RejectInviteAsync(_channel.Type, _channel.Id, userToInvite.Id);
+
+            await inviteTask.Should().NotThrowAsync();
+            await rejectTask.Should().NotThrowAsync();
+        }
     }
 }
