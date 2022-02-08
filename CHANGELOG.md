@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/GetStream/stream-chat-net/compare/1.0.0...1.1.0) (2022-02-08)
+
+
+### Features
+
+* add helper methods for user invitation, acceptance and rejection ([#94](https://github.com/GetStream/stream-chat-net/issues/94)) ([491325f](https://github.com/GetStream/stream-chat-net/commit/491325f9363960b0490aefbda77555c2fcab3d3f))
+
 ## [1.0.0](https://github.com/GetStream/stream-chat-net/compare/0.26.0...1.0.0) (2022-02-01)
 
 
