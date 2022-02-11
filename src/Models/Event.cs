@@ -66,6 +66,12 @@ namespace StreamChat.Models
         public DateTimeOffset? CreatedAt { get; set; }
     }
 
+    public class UserCustomEvent : CustomDataBase
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "type")]
+        public string Type { get; set; }
+    }
+
     public class SendEventResponse : ApiResponse
     {
         public Event Event { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
@@ -43,6 +44,17 @@ namespace StreamChatTests
             resp.Event.Type.Should().BeEquivalentTo(expectedEvent.Type);
             resp.Event.User.Id.Should().BeEquivalentTo(_user.Id);
             resp.Event.GetData<int[]>("foo")[0].Should().Be(expectedEvent.GetData<int[]>("foo")[0]);
+        }
+
+        [Test]
+        public async Task TestSendCustomUserEventAsync()
+        {
+            var customEvent = new UserCustomEvent { Type = "friendship_request" };
+            customEvent.SetData("text", "Test field");
+
+            Func<Task> eventTask = () => _eventClient.SendUserCustomEventAsync(_user.Id, customEvent);
+
+            await eventTask.Should().NotThrowAsync();
         }
     }
 }

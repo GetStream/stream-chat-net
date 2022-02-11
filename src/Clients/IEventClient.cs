@@ -17,5 +17,14 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/custom_events/?language=csharp</remarks>
         Task<SendEventResponse> SendEventAsync(string channelType, string channelId, Event @event);
+
+        /// <summary>
+        /// <para>Sends a custom event to a user.</para>
+        /// This allows you to send custom events to a connected user. The event is delivered
+        /// to all connected clients for that user. It is only available with server-side authentication.
+        /// A copy of the event is sent via web-hooks if it is enabled.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/custom_events/?language=csharp</remarks>
+        Task<ApiResponse> SendUserCustomEventAsync(string userId, UserCustomEvent @event);
     }
 }

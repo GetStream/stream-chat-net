@@ -16,5 +16,11 @@ namespace StreamChat.Clients
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 new { @event = @event });
+
+        public async Task<ApiResponse> SendUserCustomEventAsync(string userId, UserCustomEvent @event)
+            => await ExecuteRequestAsync<ApiResponse>($"users/{userId}/event",
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                new { @event = @event });
     }
 }
