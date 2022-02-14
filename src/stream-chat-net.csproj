@@ -9,7 +9,7 @@
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>
     <Title>.NET Client for Stream Chat</Title>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Company>Stream.io</Company>
     <Authors>Stream.io</Authors>
     <Copyright>© $([System.DateTime]::UtcNow.ToString(yyyy)) Stream.io</Copyright>
