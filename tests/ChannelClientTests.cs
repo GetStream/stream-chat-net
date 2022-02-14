@@ -158,6 +158,20 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestQueryChannelsAsync()
+        {
+            var queryResp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(new Dictionary<string, object>
+            {
+                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+            }));
+
+            var read = queryResp.Channels[0].Reads[0];
+            read.LastRead.Should().NotBe(default(DateTimeOffset));
+            read.UnreadMessages.Should().NotBeNull();
+            read.User.Should().NotBeNull();
+        }
+
+        [Test]
         public async Task TestHideAndShowChannelAsync()
         {
             Func<Task> hideCall = () => _channelClient.HideAsync(_channel.Type, _channel.Id, _user1.Id);
