@@ -75,7 +75,7 @@ namespace StreamChat.Models
         [JsonProperty("watchers")]
         public List<User> Watchers { get; set; }
 
-        [JsonProperty("reads")]
+        [JsonProperty("read")]
         public List<ChannelRead> Reads { get; set; }
 
         [JsonProperty("members")]
