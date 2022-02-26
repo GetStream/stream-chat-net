@@ -16,7 +16,7 @@ namespace StreamChat.Clients
                     Data = new ChannelRequest
                     {
                         CreatedBy = new UserRequest { Id = createdBy },
-                        Members = members.Select(x => new ChannelMember { UserID = x }),
+                        Members = members.Select(x => new ChannelMember { UserId = x }),
                     },
                 });
 

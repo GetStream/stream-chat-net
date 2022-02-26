@@ -45,8 +45,8 @@ namespace StreamChatTests
             chanData.CreatedBy = new UserRequest { Id = _user1.Id };
             chanData.Members = new List<ChannelMember>
             {
-                new ChannelMember { UserID = _user1.Id },
-                new ChannelMember { UserID = _user2.Id },
+                new ChannelMember { UserId = _user1.Id },
+                new ChannelMember { UserId = _user2.Id },
             };
 
             var chanState = await _channelClient.GetOrCreateAsync("messaging", new ChannelGetRequest
@@ -223,7 +223,7 @@ namespace StreamChatTests
             await _channelClient.AddMembersAsync(_channel.Type, _channel.Id, newUser.Id);
 
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
-            channel.Members.Should().Contain(x => x.UserID == newUser.Id);
+            channel.Members.Should().Contain(x => x.UserId == newUser.Id);
             await TryDeleteUsersAsync(new[] { newUser.Id });
         }
 
@@ -233,7 +233,7 @@ namespace StreamChatTests
             await _channelClient.RemoveMembersAsync(_channel.Type, _channel.Id, new[] { _user3.Id });
 
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
-            channel.Members.Should().NotContain(x => x.UserID == _user3.Id);
+            channel.Members.Should().NotContain(x => x.UserId == _user3.Id);
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace StreamChatTests
             await _channelClient.AddModeratorsAsync(_channel.Type, _channel.Id, new[] { _user2.Id });
 
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
-            var user2 = channel.Members.First(x => x.UserID == _user2.Id);
+            var user2 = channel.Members.First(x => x.UserId == _user2.Id);
             user2.IsModerator.Should().BeTrue();
         }
 
@@ -254,7 +254,7 @@ namespace StreamChatTests
             await _channelClient.DemoteModeratorsAsync(_channel.Type, _channel.Id, new[] { _user2.Id });
 
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
-            var user2 = channel.Members.First(x => x.UserID == _user2.Id);
+            var user2 = channel.Members.First(x => x.UserId == _user2.Id);
             user2.IsModerator.Should().BeNull();
         }
 
@@ -274,7 +274,7 @@ namespace StreamChatTests
             });
 
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
-            var user2 = channel.Members.First(x => x.UserID == _user2.Id);
+            var user2 = channel.Members.First(x => x.UserId == _user2.Id);
             user2.IsModerator.Should().BeTrue();
         }
 

@@ -1,37 +1,29 @@
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using StreamChat.Rest;
 
 namespace StreamChat.Models
 {
     public class PaginationParams
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "limit")]
         public int Limit { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "offset")]
         public int Offset { get; set; }
     }
 
     public class MessagePaginationParams : IQueryParameterConvertible
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "limit")]
         public int Limit { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "offset")]
         public int Offset { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id_gte")]
+        [JsonProperty("id_gte")]
         public string IDGTE { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id_gt")]
+        [JsonProperty("id_gt")]
         public string IDGT { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id_lte")]
+        [JsonProperty("id_lte")]
         public string IDLTE { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id_lt")]
+        [JsonProperty("id_lt")]
         public string IDLT { get; set; }
 
         public static MessagePaginationParams Default

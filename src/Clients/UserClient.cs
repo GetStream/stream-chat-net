@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using StreamChat.Models;
 using StreamChat.Rest;
+using StreamChat.Utils;
 
 namespace StreamChat.Clients
 {
@@ -202,7 +202,7 @@ namespace StreamChat.Clients
                 HttpStatusCode.OK,
                 queryParams: new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("payload", JsonConvert.SerializeObject(payload)),
+                    new KeyValuePair<string, string>("payload", StreamJsonConverter.SerializeObject(payload)),
                 });
         }
     }

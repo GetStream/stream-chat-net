@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using StreamChat.Utils;
 
 namespace StreamChat.Models
 {
@@ -13,10 +14,7 @@ namespace StreamChat.Models
 
     public class SortParameter
     {
-        [JsonProperty(PropertyName = "field")]
         public string Field { get; set; }
-
-        [JsonProperty(PropertyName = "direction")]
         public SortDirection Direction { get; set; } = SortDirection.Ascending;
     }
 
@@ -76,31 +74,15 @@ namespace StreamChat.Models
         private const int DefaultOffset = 0;
         private const int DefaultLimit = 20;
 
-        [JsonProperty("offset")]
         public int Offset { get; set; } = DefaultOffset;
-
-        [JsonProperty("limit")]
         public int Limit { get; set; } = DefaultLimit;
-
-        [JsonProperty("presence")]
         public bool Presence { get; set; }
-
-        [JsonProperty("state")]
         public bool State { get; set; }
-
-        [JsonProperty("watch")]
         public bool Watch { get; set; }
-
-        [JsonProperty("recovery")]
         public bool Recovery { get; set; }
-
-        [JsonProperty("sort", NullValueHandling = NullValueHandling.Ignore)]
-        public List<SortParameter> Sort { get; set; }
-
+        public List<SortParameter> Sort { get; set; } = new List<SortParameter>();
         [JsonProperty("filter_conditions")]
         public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
-
-        [JsonProperty("last_message_ids", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, string> LastMessageIds { get; set; }
 
         public QueryChannelsOptions WithOffset(int offset)
@@ -141,9 +123,6 @@ namespace StreamChat.Models
 
         public QueryChannelsOptions WithSortBy(SortParameter param)
         {
-            if (Sort == null)
-                Sort = new List<SortParameter>();
-
             Sort.Add(param);
             return this;
         }
@@ -264,7 +243,7 @@ namespace StreamChat.Models
 
             return new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("payload", JsonConvert.SerializeObject(payload)),
+                new KeyValuePair<string, string>("payload", StreamJsonConverter.SerializeObject(payload)),
             };
         }
     }

@@ -53,7 +53,7 @@ namespace StreamChatTests
             actualReaction.Reaction.Type.Should().BeEquivalentTo(expectedReaction.Type);
             actualReaction.Reaction.CreatedAt.Should().NotBeNull();
             actualReaction.Reaction.User.Id.Should().BeEquivalentTo(_user.Id);
-            actualReaction.Reaction.MessageID.Should().BeEquivalentTo(_message.Id);
+            actualReaction.Reaction.MessageId.Should().BeEquivalentTo(_message.Id);
             actualReaction.Reaction.GetData<string>("foo").Should().BeEquivalentTo(expectedReaction.GetData<string>("foo"));
 
             var resp = await _reactionClient.GetReactionsAsync(_message.Id);

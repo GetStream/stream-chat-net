@@ -34,7 +34,7 @@ namespace StreamChat.Clients
                 segments.Add(Base64UrlEncode(signature));
             }
 
-            return string.Join(".", segments.ToArray());
+            return string.Join(".", segments);
         }
 
         private static string Base64UrlEncode(byte[] input)

@@ -23,19 +23,17 @@ namespace StreamChat.Models
 
     public class DeleteUsersRequest
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_ids")]
         public IEnumerable<string> UserIds { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user")]
+        [JsonProperty("user")]
         public DeletionStrategy? UserDeletionStrategy { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "messages")]
+        [JsonProperty("messages")]
         public DeletionStrategy? MessageDeletionStrategy { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "conversations")]
+        [JsonProperty("conversations")]
         public DeletionStrategy? ConversationDeletionStrategy { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "new_channel_owner_id")]
         public string NewChannelOwnerId { get; set; }
 
         /// <summary>
@@ -112,20 +110,14 @@ namespace StreamChat.Models
 
     public class GenericTaskIdResponse : ApiResponse
     {
-        [JsonProperty(PropertyName = "task_id")]
         public string TaskId { get; set; }
     }
 
     public class AsyncTaskStatusResponse : GenericTaskIdResponse
     {
         public AsyncTaskStatus Status { get; set; }
-
-        [JsonProperty(PropertyName = "created_at")]
         public DateTimeOffset? CreatedAt { get; set; }
-
         public Dictionary<string, object> Result { get; set; }
-
-        [JsonProperty(PropertyName = "updated_at")]
         public DateTimeOffset? UpdatedAt { get; set; }
     }
 }

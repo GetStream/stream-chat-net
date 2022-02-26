@@ -35,14 +35,9 @@ namespace StreamChat.Models
         /// </summary>
         public bool TryGetRateLimit(out RateLimitsInfo rateLimits)
         {
-            if (_rateLimits == null)
-            {
-                rateLimits = null;
-                return false;
-            }
-
             rateLimits = _rateLimits;
-            return true;
+
+            return rateLimits != null;
         }
     }
 

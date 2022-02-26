@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
@@ -15,19 +14,13 @@ namespace StreamChat.Models
 
     public abstract class CommandBase
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "description")]
         public string Description { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "args")]
         public string Args { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "set")]
         public string Set { get; set; }
     }
 
     public class Command : CommandBase
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "name")]
         public string Name { get; set; }
     }
 
@@ -38,17 +31,10 @@ namespace StreamChat.Models
     public class CommandGetResponse : ApiResponse
     {
         public string Description { get; set; }
-
         public string Args { get; set; }
-
         public string Set { get; set; }
-
         public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "created_at")]
         public string CreatedAt { get; set; }
-
-        [JsonProperty(PropertyName = "updated_at")]
         public string UpdatedAt { get; set; }
     }
 

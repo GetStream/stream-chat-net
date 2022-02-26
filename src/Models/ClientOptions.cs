@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using StreamChat.Exceptions;
 
 namespace StreamChat.Models
 {
@@ -19,7 +20,7 @@ namespace StreamChat.Models
 
         /// <summary>The base url for the Stream Chat API.</summary>
         /// <remarks>Default is https://chat.stream-io-api.com.</remarks>
-        public Uri BaseUrl { get; set; } = new Uri("https://chat.stream-io-api.com");
+        public Uri BaseUrl { get; set; } = new Uri("https://chat.stream-io-api.com", UriKind.Absolute);
 
 #if NETCOREAPP2_1_OR_GREATER
         // SocketsHttpHandler is only available in .NET Core 2.1+
@@ -41,6 +42,12 @@ namespace StreamChat.Models
 
             if (!string.IsNullOrWhiteSpace(urlEnvVar))
                 BaseUrl = new Uri(urlEnvVar, UriKind.Absolute);
+        }
+
+        internal void EnsureValid()
+        {
+            if (Timeout.TotalSeconds < 1 || Timeout.TotalSeconds > 59)
+                throw new InvalidClientOptionsException("Timeout must be between 1 and 59 seconds");
         }
     }
 }

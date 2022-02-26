@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StreamChat
+namespace StreamChat.Utils
 {
     internal static class Extensions
     {

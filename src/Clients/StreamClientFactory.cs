@@ -29,7 +29,7 @@ namespace StreamChat.Clients
         /// Initializes a new instance of the <see cref="StreamClientFactory"/> class.
         /// This constructor uses STREAM_KEY and STREAM_SECRET environment
         /// variables to initialize the client.
-        /// If they don't exist, it'll throw an <see cref="ArgumentNullException"/>.
+        /// If they don't exist, <see cref="ArgumentNullException"/> will be thrown.
         /// </summary>
         /// <exception cref="ArgumentNullException">If API key or API secret is null.</exception>
         public StreamClientFactory() : this(null, null, null)
@@ -67,11 +67,12 @@ namespace StreamChat.Clients
             var opts = new ClientOptions();
             opts.OverrideWithEnvVars();
             clientOptionsConfigurer?.Invoke(opts);
+            opts.EnsureValid();
 
             var jwtGeneratorClient = new JwtGeneratorClient();
             var generatedJwt = jwtGeneratorClient.GenerateServerSideJwt(apiSecret);
             var assemblyVersion = typeof(StreamClientFactory).GetTypeInfo().Assembly.GetName().Version;
-            var sdkVersion = string.Join(".", assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build);
+            var sdkVersion = assemblyVersion.ToString(3);
             var restClient = new RestClient(opts, generatedJwt, apiKey, sdkVersion);
 
             _appClient = new AppClient(restClient, apiSecret);
@@ -90,29 +91,17 @@ namespace StreamChat.Clients
         }
 
         public IAppClient GetAppClient() => _appClient;
-
         public IBlocklistClient GetBlocklistClient() => _blocklistClient;
-
         public IChannelClient GetChannelClient() => _channelClient;
-
         public IChannelTypeClient GetChannelTypeClient() => _channelTypeClient;
-
         public ICommandClient GetCommandClient() => _commandClient;
-
         public IDeviceClient GetDeviceClient() => _deviceClient;
-
         public IEventClient GetEventClient() => _eventClient;
-
         public IFlagClient GetFlagClient() => _flagClient;
-
         public IMessageClient GetMessageClient() => _messageClient;
-
         public IPermissionClient GetPermissionClient() => _permissionClient;
-
         public IReactionClient GetReactionClient() => _reactionClient;
-
         public ITaskClient GetTaskClient() => _taskClient;
-
         public IUserClient GetUserClient() => _userClient;
     }
 }

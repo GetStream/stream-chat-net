@@ -8,12 +8,13 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-chat-net</PackageId>
+    <RootNamespace>StreamChat</RootNamespace>
     <Title>.NET Client for Stream Chat</Title>
     <Version>1.1.1</Version>
     <Company>Stream.io</Company>
     <Authors>Stream.io</Authors>
     <Copyright>© $([System.DateTime]::UtcNow.ToString(yyyy)) Stream.io</Copyright>
-    <Description>Chat client for Stream.io</Description>
+    <Description>Chat client for Stream.io. For more information see https://github.com/GetStream/stream-chat-net.</Description>
     <RepositoryUrl>https://github.com/GetStream/stream-chat-net</RepositoryUrl>
     <RepositoryCommit>$(GITHUB_SHA)</RepositoryCommit>
     <PackageProjectUrl>https://github.com/GetStream/stream-chat-net</PackageProjectUrl>
@@ -25,6 +26,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EnablePackageValidation>true</EnablePackageValidation>
+    <InvariantGlobalization>true</InvariantGlobalization>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -45,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376" PrivateAssets="All"/>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.406" PrivateAssets="All"/>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <PropertyGroup>

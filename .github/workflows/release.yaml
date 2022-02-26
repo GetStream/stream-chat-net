@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -30,7 +31,7 @@ jobs:
             core.exportVariable('VERSION', version)
   
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: "6.0.x"
 
