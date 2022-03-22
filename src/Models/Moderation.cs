@@ -104,4 +104,75 @@ namespace StreamChat.Models
             };
         }
     }
+
+    public class QueryFlagReportsRequest
+    {
+        private const int DefaultOffset = 0;
+        private const int DefaultLimit = 20;
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "filter_conditions")]
+        public Dictionary<string, object> FilterConditions { get; set; }
+        public int Limit { get; set; } = DefaultLimit;
+        public int Offset { get; set; } = DefaultOffset;
+    }
+
+    public class FlagReport
+    {
+        public string Id { get; set; }
+        public Message Message { get; set; }
+
+        [JsonProperty("flags_count")]
+        public int FlagsCount { get; set; }
+
+        [JsonProperty("message_user_id")]
+        public string MessageUserId { get; set; }
+
+        [JsonProperty("channel_cid")]
+        public string ChannelCid { get; set; }
+
+        [JsonProperty("created_at")]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        [JsonProperty("updated_at")]
+        public DateTimeOffset UpdatedAt { get; set; }
+    }
+
+    public class QueryFlagReportsResponse : ApiResponse
+    {
+        [JsonProperty("flag_reports")]
+        public List<FlagReport> FlagReports { get; set; }
+    }
+
+    public class ReviewFlagReportRequest
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "review_result")]
+        public string ReviewResult { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "review_details")]
+        public Dictionary<string, object> ReviewDetails { get; set; }
+    }
+
+    public class ExtendedFlagReport : FlagReport
+    {
+        [JsonProperty("review_result")]
+        public string ReviewResult { get; set; }
+
+        [JsonProperty("review_details")]
+        public Dictionary<string, object> ReviewDetails { get; set; }
+
+        [JsonProperty("reviewed_at")]
+        public DateTimeOffset ReviewedAt { get; set; }
+
+        [JsonProperty("reviewed_by")]
+        public User ReviewedBy { get; set; }
+    }
+
+    public class ReviewFlagReportResponse : ApiResponse
+    {
+        [JsonProperty("flag_report")]
+        public ExtendedFlagReport FlagReport { get; set; }
+    }
 }

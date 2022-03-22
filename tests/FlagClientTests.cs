@@ -77,5 +77,28 @@ namespace StreamChatTests
                 return resp.Flags.Count > 0;
             });
         }
+
+        [Test]
+        public async Task TestQueryFlagAndReviewFlagAsync()
+        {
+            await _flagClient.FlagMessageAsync(_message.Id, _chanMember2.Id);
+
+            var queryResp = await _flagClient.QueryFlagReportsAsync(new QueryFlagReportsRequest
+            {
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "message_id", _message.Id },
+                },
+            });
+            var report = queryResp.FlagReports[0];
+            report.Message.Id.Should().Be(_message.Id);
+
+            var reviewResp = await _flagClient.ReviewFlagReportAsync(report.Id, new ReviewFlagReportRequest
+            {
+                ReviewResult = "reviewed",
+                UserId = _chanMember1.Id,
+            });
+            reviewResp.FlagReport.ReviewResult.Should().Be("reviewed");
+        }
     }
 }

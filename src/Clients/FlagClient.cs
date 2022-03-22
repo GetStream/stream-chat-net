@@ -35,5 +35,17 @@ namespace StreamChat.Clients
                 HttpMethod.GET,
                 HttpStatusCode.OK,
                 queryParams: request.ToQueryParameters());
+
+        public async Task<QueryFlagReportsResponse> QueryFlagReportsAsync(QueryFlagReportsRequest request)
+            => await ExecuteRequestAsync<QueryFlagReportsResponse>("moderation/reports",
+            HttpMethod.POST,
+            HttpStatusCode.Created,
+            request);
+
+        public async Task<ReviewFlagReportResponse> ReviewFlagReportAsync(string reportId, ReviewFlagReportRequest request)
+            => await ExecuteRequestAsync<ReviewFlagReportResponse>($"moderation/reports/{reportId}",
+                HttpMethod.PATCH,
+                HttpStatusCode.OK,
+                request);
     }
 }
