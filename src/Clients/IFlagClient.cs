@@ -32,5 +32,17 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp#query-message-flags</remarks>
         Task<QueryMessageFlagsResponse> QueryMessageFlags(FlagMessageQueryRequest request);
+
+        /// <summary>
+        /// Queries flag reports.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp</remarks>
+        Task<QueryFlagReportsResponse> QueryFlagReportsAsync(QueryFlagReportsRequest request);
+
+        /// <summary>
+        /// Sends a flag report review.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp</remarks>
+        Task<ReviewFlagReportResponse> ReviewFlagReportAsync(string reportId, ReviewFlagReportRequest request);
     }
 }
