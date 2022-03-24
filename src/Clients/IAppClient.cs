@@ -48,6 +48,18 @@ namespace StreamChat.Clients
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/push_test/?language=csharp</remarks>
         Task<AppCheckSqsResponse> CheckSqsPushAsync(AppCheckSqsRequest checkSqsRequest);
 
+        /// <summary>Inserts or creates a new push provider.</summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/push_introduction/?language=csharp</remarks>
+        Task<UpsertPushProviderResponse> UpsertPushProviderAsync(PushProviderRequest pushProviderRequest);
+
+        /// <summary>Lists all push providers.</summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/push_introduction/?language=csharp</remarks>
+        Task<ListPushProvidersResponse> ListPushProvidersAsync();
+
+        /// <summary>Deletes a push provider.</summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/push_introduction/?language=csharp</remarks>
+        Task<ApiResponse> DeletePushProviderAsync(PushProviderType providerType, string name);
+
         /// <summary>Validates whether the HMAC signature is correct for the message body.</summary>
         /// <param name="requestBody">The request body to validate.</param>
         /// <param name="xSignature">The signature provided in X-Signature header.</param>

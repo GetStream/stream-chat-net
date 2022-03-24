@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
-    public static class PushProvider
+    public static class PushProviderNames
     {
         public const string APN = "apn";
         public const string Firebase = "firebase";
