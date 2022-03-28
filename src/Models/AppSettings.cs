@@ -89,6 +89,9 @@ namespace StreamChat.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "auto_translation_enabled")]
         public bool? AutoTranslationEnabled { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reminders_interval")]
+        public int? RemindersInterval { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sqs_url")]
         public string SqsUrl { get; set; }
 
