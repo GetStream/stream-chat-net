@@ -62,6 +62,9 @@ namespace StreamChat.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "replies")]
         public bool? Replies { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reminders")]
+        public bool? Reminders { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "uploads")]
         public bool? Uploads { get; set; }
 
