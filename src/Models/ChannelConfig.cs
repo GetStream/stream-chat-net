@@ -83,5 +83,8 @@ namespace StreamChat.Models
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "blocklist_behavior")]
         public ModerationBehaviour BlocklistBehavior { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "commands")]
+        public List<string> Commands { get; set; }
     }
 }
