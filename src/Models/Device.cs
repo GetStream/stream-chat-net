@@ -4,12 +4,6 @@ using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
-    public static class PushProviderNames
-    {
-        public const string APN = "apn";
-        public const string Firebase = "firebase";
-    }
-
     public class Device
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
@@ -20,6 +14,9 @@ namespace StreamChat.Models
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "push_provider")]
         public string PushProvider { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "push_provider_name")]
+        public string PushProviderName { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserID { get; set; }

@@ -22,6 +22,12 @@ namespace StreamChat.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "skip_devices")]
         public bool? SkipDevices { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "push_provider_name")]
+        public string PushProviderName { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "push_provider_type")]
+        public PushProviderType? PushProviderType { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserId { get; set; }
 
@@ -33,6 +39,9 @@ namespace StreamChat.Models
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "provider")]
         public string Provider { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "provider_name")]
+        public string ProviderName { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "error_message")]
         public string ErrorMessage { get; set; }
