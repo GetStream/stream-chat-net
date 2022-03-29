@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -48,6 +49,22 @@ namespace StreamChat.Clients
 
         public async Task<ApiResponse> RevokeTokensAsync(DateTimeOffset? issuedBefore)
             => await UpdateAppSettingsAsync(new AppSettingsRequest { RevokeTokensIssuedBefore = issuedBefore });
+
+        public async Task<UpsertPushProviderResponse> UpsertPushProviderAsync(PushProviderRequest pushProviderRequest)
+            => await ExecuteRequestAsync<UpsertPushProviderResponse>("push_providers",
+                    HttpMethod.POST,
+                    HttpStatusCode.Created,
+                    new Dictionary<string, PushProviderRequest> { { "push_provider", pushProviderRequest } });
+
+        public async Task<ListPushProvidersResponse> ListPushProvidersAsync()
+            => await ExecuteRequestAsync<ListPushProvidersResponse>("push_providers",
+                    HttpMethod.GET,
+                    HttpStatusCode.OK);
+
+        public async Task<ApiResponse> DeletePushProviderAsync(PushProviderType providerType, string name)
+            => await ExecuteRequestAsync<ApiResponse>($"push_providers/{providerType}/{name}",
+                    HttpMethod.DELETE,
+                    HttpStatusCode.OK);
 
         public bool VerifyWebhook(string requestBody, string xSignature)
         {
