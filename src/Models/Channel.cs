@@ -21,8 +21,6 @@ namespace StreamChat.Models
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }
         public DateTimeOffset? LastMessageAt { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "truncated_by")]
         public User TruncatedBy { get; set; }
     }
 
@@ -73,11 +71,7 @@ namespace StreamChat.Models
         public MessageRequest Message { get; set; }
         public bool? SkipPush { get; set; }
         public DateTimeOffset? TruncatedAt { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserId { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user")]
         public User User { get; set; }
     }
 
