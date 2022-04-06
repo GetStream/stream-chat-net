@@ -151,10 +151,13 @@ namespace StreamChatTests
             var originalChannel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { State = true });
             originalChannel.Messages.Should().NotBeEmpty();
 
-            await _channelClient.TruncateAsync(_channel.Type, _channel.Id);
+            await _channelClient.TruncateAsync(_channel.Type, _channel.Id, new TruncateOptions { UserId = _user2.Id });
 
             var afterTruncateChannel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { State = true });
             afterTruncateChannel.Messages.Should().BeEmpty();
+
+            // this isn't deployed to the test environment, so uncomment it a bit later:
+            // afterTruncateChannel.Channel.TruncatedBy.Id.Should().Be(_user2.Id);
         }
 
         [Test]
