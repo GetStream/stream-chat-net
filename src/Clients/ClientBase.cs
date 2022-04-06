@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using StreamChat.Exceptions;
 using StreamChat.Models;
 using StreamChat.Rest;
+using StreamChat.Utils;
 using HttpMethod = StreamChat.Rest.HttpMethod;
 
 namespace StreamChat.Clients
@@ -38,7 +38,7 @@ namespace StreamChat.Clients
 
                 try
                 {
-                    deserialized = JsonConvert.DeserializeObject<T>(resp.Content);
+                    deserialized = StreamJsonConverter.DeserializeObject<T>(resp.Content);
                 }
                 catch (Exception ex)
                 {

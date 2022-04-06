@@ -67,7 +67,7 @@ namespace StreamChatTests
             {
                 Data = new ChannelRequest
                 {
-                    Members = members.Select((x, idx) => new ChannelMember { UserID = x, Role = idx == 0 ? Role.Admin : null }),
+                    Members = members.Select((x, idx) => new ChannelMember { UserId = x, Role = idx == 0 ? Role.Admin : null }),
                     CreatedBy = new UserRequest { Id = createdByUserId },
                 },
             });

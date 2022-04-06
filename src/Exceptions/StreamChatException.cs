@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
-using Newtonsoft.Json;
 using StreamChat.Models;
 using StreamChat.Rest;
+using StreamChat.Utils;
 
 namespace StreamChat.Exceptions
 {
@@ -42,7 +41,7 @@ namespace StreamChat.Exceptions
 
             if (!string.IsNullOrWhiteSpace(response.Content))
             {
-                resp = JsonConvert.DeserializeObject<ExceptionResponse>(response.Content);
+                resp = StreamJsonConverter.DeserializeObject<ExceptionResponse>(response.Content);
                 resp.HttpStatusCode = response.StatusCode;
             }
 
@@ -58,17 +57,10 @@ namespace StreamChat.Exceptions
     internal class ExceptionResponse
     {
         public int Code { get; set; }
-
         public string Message { get; set; }
-
-        [JsonProperty("exception_fields")]
         public Dictionary<string, string> ExceptionFields { get; set; }
-
-        [JsonProperty("more_info")]
         public string MoreInfo { get; set; }
-
         public HttpStatusCode HttpStatusCode { get; set; }
-
         public RateLimitsInfo RateLimit { get; set; }
     }
 }

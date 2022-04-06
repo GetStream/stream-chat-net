@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using StreamChat.Utils;
 
 namespace StreamChat.Rest
 {
     internal class RestRequest
     {
-        internal Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
-        internal Dictionary<string, string> QueryParameters { get; set; } = new Dictionary<string, string>();
-        internal HttpMethod Method { get; set; }
-        internal string RelativeUri { get; set; }
-        internal string JsonBody { get; set; }
-        internal MultipartFormDataContent MultipartBody { get; set; }
+        internal Dictionary<string, string> Headers { get; private set; } = new Dictionary<string, string>();
+        internal Dictionary<string, string> QueryParameters { get; private set; } = new Dictionary<string, string>();
+        internal HttpMethod Method { get; private set; }
+        internal string RelativeUri { get; private set; }
+        internal string JsonBody { get; private set; }
+        internal MultipartFormDataContent MultipartBody { get; private set; }
 
         internal RestRequest AddHeader(string name, string value)
         {

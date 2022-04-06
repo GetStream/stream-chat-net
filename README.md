@@ -178,7 +178,7 @@ messageClient.SendMessageAsync(channel.Type, channel.Id, bob.Id, "Hey, I'm Bob!"
 
 // With custom data
 var msgReq = new MessageRequest { Text = "Hi june!" };
-msgReq.SetData('location', 'amsterdam');
+msgReq.SetData("location", "amsterdam");
 
 var bobMessageResp = await messageClient.SendMessageAsync(channelType, channel.Id, msgReq, bob.Id);
 
@@ -242,7 +242,7 @@ var junePhone = new Device
 {
     ID = "iOS Device Token",
     PushProvider = PushProvider.APN,
-    UserID = june.ID
+    UserId = june.ID
 };
 
 await deviceClient.AddDeviceAsync(junePhone);
@@ -268,6 +268,7 @@ while (!complete && iterations < 1000)
     if (resp.Status == AsyncTaskStatus.Completed)
     {
         complete = true;
+        break;
     }
     iterations++;
     await Task.Delay(100);
@@ -275,7 +276,7 @@ while (!complete && iterations < 1000)
 
 if (complete)
 {
-    Console.WriteLine(resp.Result.URL);
+    Console.WriteLine(resp.Result["url"]);
 }
 ```
 

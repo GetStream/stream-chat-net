@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
@@ -32,22 +31,11 @@ namespace StreamChat.Models
             "See https://getstream.io/chat/docs/dotnet-csharp/migrating_from_legacy/?language=csharp")]
     public class ChannelTypePermission
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "action")]
         public string Action { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "name")]
         public string Name { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "resources")]
         public List<string> Resources { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "roles")]
         public List<string> Roles { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "owner")]
         public bool Owner { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "priority")]
         public int Priority { get; set; }
     }
 }

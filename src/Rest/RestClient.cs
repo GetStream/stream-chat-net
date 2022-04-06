@@ -7,8 +7,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using StreamChat.Models;
+using StreamChat.Utils;
 
 namespace StreamChat.Rest
 {
@@ -23,12 +23,13 @@ namespace StreamChat.Rest
         private readonly string _apiKey;
         private readonly string _sdkVersion;
         private readonly HttpClient _httpClient;
+        private readonly Uri _baseUrl;
         private readonly TimeSpan _timeout;
 
         internal RestClient(ClientOptions opts, string jwt, string apiKey, string sdkVersion)
         {
             _httpClient = opts.HttpClient;
-            _httpClient.BaseAddress = opts.BaseUrl;
+            _baseUrl = opts.BaseUrl;
             _jwt = jwt;
             _apiKey = apiKey;
             _sdkVersion = sdkVersion;
@@ -40,9 +41,9 @@ namespace StreamChat.Rest
 
         public RestRequest BuildRestRequest(string fullPath,
             HttpMethod method,
-            object body = null,
-            IEnumerable<KeyValuePair<string, string>> queryParams = null,
-            MultipartFormDataContent multipartBody = null)
+            object body,
+            IEnumerable<KeyValuePair<string, string>> queryParams,
+            MultipartFormDataContent multipartBody)
         {
             return new RestRequest()
                 .SetRelativeUri(fullPath)
@@ -50,7 +51,7 @@ namespace StreamChat.Rest
                 .AddHeader("Authorization", _jwt)
                 .AddHeader("stream-auth-type", "jwt")
                 .AddHeader("X-Stream-Client", $"stream-chat-net-client-{_sdkVersion}")
-                .SetJsonBodyIfNotNull(body == null ? null : JsonConvert.SerializeObject(body))
+                .SetJsonBodyIfNotNull(body == null ? null : StreamJsonConverter.SerializeObject(body))
                 .SetMultipartBodyIfNotNull(multipartBody)
                 .AddQueryParameter("api_key", _apiKey)
                 .AddQueryParametersIfNotNull(queryParams);
@@ -60,13 +61,10 @@ namespace StreamChat.Rest
         {
             var uri = BuildUriWithQueryString(request);
 
-            var cancelTokeSource = new CancellationTokenSource();
-            cancelTokeSource.CancelAfter(_timeout);
-
-            using (cancelTokeSource)
+            using (var cancelTokenSource = new CancellationTokenSource(_timeout))
             using (var req = GenerateRequestMessage(request, uri))
             {
-                var response = await _httpClient.SendAsync(req, cancelTokeSource.Token);
+                var response = await _httpClient.SendAsync(req, cancelTokenSource.Token);
                 return await RestResponse.FromResponseMessageAsync(response);
             }
         }
@@ -91,15 +89,21 @@ namespace StreamChat.Rest
 
         private Uri BuildUriWithQueryString(RestRequest request)
         {
-            var queryString = string.Empty;
+            var queryStringBuilder = new StringBuilder();
 
             request.QueryParameters.ForEach(p =>
             {
-                queryString += (queryString.Length == 0) ? "?" : "&";
-                queryString += $"{p.Key}={Uri.EscapeDataString(p.Value)}";
+                queryStringBuilder.Append(queryStringBuilder.Length == 0 ? "?" : "&");
+                queryStringBuilder.Append($"{p.Key}={Uri.EscapeDataString(p.Value)}");
             });
 
-            return new Uri(request.RelativeUri + queryString, UriKind.Relative);
+            var uriBuilder = new UriBuilder(_baseUrl)
+            {
+                Path = request.RelativeUri,
+                Query = queryStringBuilder.ToString(),
+            };
+
+            return uriBuilder.Uri;
         }
     }
 }

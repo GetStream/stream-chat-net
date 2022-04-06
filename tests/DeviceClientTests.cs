@@ -28,7 +28,7 @@ namespace StreamChatTests
             {
                 Id = _deviceId,
                 PushProvider = "apn",
-                UserID = _user.Id,
+                UserId = _user.Id,
             });
         }
 

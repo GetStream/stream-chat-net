@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using StreamChat.Models;
 using StreamChat.Rest;
+using StreamChat.Utils;
 using HttpMethod = StreamChat.Rest.HttpMethod;
 
 namespace StreamChat.Clients
@@ -135,7 +135,7 @@ namespace StreamChat.Clients
         {
             var body = new MultipartFormDataContent();
             body.Add(new ByteArrayContent(file), "file", fileName);
-            body.Add(new StringContent(JsonConvert.SerializeObject(user)), "user");
+            body.Add(new StringContent(StreamJsonConverter.SerializeObject(user)), "user");
 
             return await ExecuteRequestAsync<FileUrlResponse>($"channels/{channelType}/{channelId}/file",
                 HttpMethod.POST,
@@ -164,11 +164,11 @@ namespace StreamChat.Clients
         {
             var body = new MultipartFormDataContent();
             body.Add(new ByteArrayContent(file), "file", fileName);
-            body.Add(new StringContent(JsonConvert.SerializeObject(user)), "user");
+            body.Add(new StringContent(StreamJsonConverter.SerializeObject(user)), "user");
 
             if (uploadSizes != null)
             {
-                body.Add(new StringContent(JsonConvert.SerializeObject(uploadSizes)), "upload_sizes");
+                body.Add(new StringContent(StreamJsonConverter.SerializeObject(uploadSizes)), "upload_sizes");
             }
 
             return await ExecuteRequestAsync<FileUrlResponse>($"channels/{channelType}/{channelId}/image",

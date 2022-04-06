@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
@@ -17,13 +16,11 @@ namespace StreamChat.Models
         /// <summary>
         /// The date the role was created.
         /// </summary>
-        [JsonProperty("created_at")]
         public DateTimeOffset CreatedAt { get; set; }
 
         /// <summary>
         /// The date the role was last updated.
         /// </summary>
-        [JsonProperty("updated_at")]
         public DateTimeOffset UpdatedAt { get; set; }
 
         /// <summary>
@@ -98,7 +95,6 @@ namespace StreamChat.Models
         /// <summary>
         /// Whether this permission applies to teammates (multi-tenancy mode only).
         /// </summary>
-        [JsonProperty("same_team")]
         public bool? SameTeam { get; set; }
     }
 

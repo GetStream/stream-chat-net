@@ -20,16 +20,9 @@ namespace StreamChat.Models
 
     public class RateLimitsMap : ApiResponse
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "server_side")]
         public Dictionary<string, RateLimitsInfo> ServerSide { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "android")]
         public Dictionary<string, RateLimitsInfo> Android { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "ios")]
         public Dictionary<string, RateLimitsInfo> IOS { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "web")]
         public Dictionary<string, RateLimitsInfo> Web { get; set; }
     }
 
@@ -94,7 +87,7 @@ namespace StreamChat.Models
                 parameters.Add(new KeyValuePair<string, string>("web", "true"));
 
             if (_endpoints.Count > 0)
-                parameters.Add(new KeyValuePair<string, string>("endpoints", string.Join(",", _endpoints.ToArray())));
+                parameters.Add(new KeyValuePair<string, string>("endpoints", string.Join(",", _endpoints)));
 
             return parameters;
         }

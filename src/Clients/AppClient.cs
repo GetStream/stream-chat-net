@@ -71,7 +71,7 @@ namespace StreamChat.Clients
             using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(_apiSecret)))
             {
                 var sigBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(requestBody));
-                var sig = BitConverter.ToString(sigBytes).Replace("-", string.Empty).ToLower();
+                var sig = BitConverter.ToString(sigBytes).Replace("-", string.Empty).ToLowerInvariant();
                 return sig == xSignature;
             }
         }
