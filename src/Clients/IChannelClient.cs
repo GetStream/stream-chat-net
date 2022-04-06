@@ -56,7 +56,7 @@ namespace StreamChat.Clients
 
         /// <summary>
         /// <para>Mutes a channel.</para>
-        /// Messages added to a channel will not trigger push notifications, nor change the
+        /// Messages added to a muted channel will not trigger push notifications, nor change the
         /// unread count for the users that muted it. By default, mutes stay in place indefinitely
         /// until the user removes it; however, you can optionally set an expiration time. The list
         /// of muted channels and their expiration time is returned when the user connects.
@@ -66,10 +66,11 @@ namespace StreamChat.Clients
 
         /// <summary>
         /// <para>Unmutes a channel.</para>
-        /// Messages added to a channel will not trigger push notifications, nor change the
+        /// Messages added to a muted channel will not trigger push notifications, nor change the
         /// unread count for the users that muted it. By default, mutes stay in place indefinitely
         /// until the user removes it; however, you can optionally set an expiration time. The list
         /// of muted channels and their expiration time is returned when the user connects.
+        /// This method removes the mute which means the users will receive notifications again.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/muting_channels/?language=csharp</remarks>
         Task<ChannelUnmuteResponse> UnmuteChannelAsync(ChannelUnmuteRequest request);

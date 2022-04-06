@@ -50,6 +50,9 @@ namespace StreamChat.Models
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "last_message_at")]
         public DateTimeOffset? LastMessageAt { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "truncated_by")]
+        public User TruncatedBy { get; set; }
     }
 
     public class ChannelWithConfig : Channel
@@ -137,6 +140,12 @@ namespace StreamChat.Models
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "truncated_at")]
         public DateTimeOffset? TruncatedAt { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user")]
+        public User User { get; set; }
     }
 
     public class TruncateResponse : ApiResponse
