@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/GetStream/stream-chat-net/compare/1.1.1...2.0.0) (2022-04-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove json property attributes (#100)
+
+### Features
+
+* add command override ([#103](https://github.com/GetStream/stream-chat-net/issues/103)) ([23669b8](https://github.com/GetStream/stream-chat-net/commit/23669b8dfca864a6faa41bc89f97f078ef1f1f7e))
+* add device and push fields ([#104](https://github.com/GetStream/stream-chat-net/issues/104)) ([bc2a164](https://github.com/GetStream/stream-chat-net/commit/bc2a164bb99a28b80350b0b9ef455ceaec95d873))
+* add new moderation apis ([#101](https://github.com/GetStream/stream-chat-net/issues/101)) ([f11a65f](https://github.com/GetStream/stream-chat-net/commit/f11a65f2f576a483cfbf3bf39fbb550b4952b3f5))
+* add push provider api ([#102](https://github.com/GetStream/stream-chat-net/issues/102)) ([9ee847c](https://github.com/GetStream/stream-chat-net/commit/9ee847c7e3a6bf382948e072a92c9ffd03fc4c0e))
+* add reminders ([#105](https://github.com/GetStream/stream-chat-net/issues/105)) ([2f551f1](https://github.com/GetStream/stream-chat-net/commit/2f551f1bb35e818c199899fc428587accaf130e4))
+* add user custom events ([#96](https://github.com/GetStream/stream-chat-net/issues/96)) ([e94416a](https://github.com/GetStream/stream-chat-net/commit/e94416ac6b957c52006620f23ab5e9002236b348))
+* **truncate:** add user id for truncation ([#107](https://github.com/GetStream/stream-chat-net/issues/107)) ([406c994](https://github.com/GetStream/stream-chat-net/commit/406c99409b081c857e11cc867126b61fa34a018b))
+
+
+* remove json property attributes ([#100](https://github.com/GetStream/stream-chat-net/issues/100)) ([acf4b43](https://github.com/GetStream/stream-chat-net/commit/acf4b43021899bf28d3ba17f84c98563074142d0))
+
 ### [1.1.1](https://github.com/GetStream/stream-chat-net/compare/1.1.0...1.1.1) (2022-02-14)
 
 
