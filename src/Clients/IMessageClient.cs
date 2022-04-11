@@ -143,7 +143,7 @@ namespace StreamChat.Clients
         /// Stream supported image types are: image/bmp, image/gif, image/jpeg, image/png, image/webp,
         /// image/heic, image/heic-sequence, image/heif, image/heif-sequence, image/svg+xml.
         /// You can set a more restrictive list for your application if needed.
-        /// The maximum file size is 20MB.
+        /// The maximum file size is 100MB.
         /// </summary>
         /// <returns>The URL of the uploaded file.</returns>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/file_uploads/?language=csharp#how-to-upload-a-file-or-image</remarks>
@@ -154,7 +154,7 @@ namespace StreamChat.Clients
         /// Stream supported image types are: image/bmp, image/gif, image/jpeg, image/png, image/webp,
         /// image/heic, image/heic-sequence, image/heif, image/heif-sequence, image/svg+xml.
         /// You can set a more restrictive list for your application if needed.
-        /// The maximum file size is 20MB.
+        /// The maximum file size is 100MB.
         /// </summary>
         /// <returns>The URL of the uploaded file.</returns>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/file_uploads/?language=csharp#how-to-upload-a-file-or-image</remarks>
@@ -170,7 +170,7 @@ namespace StreamChat.Clients
         /// Stream supported image types are: image/bmp, image/gif, image/jpeg, image/png, image/webp,
         /// image/heic, image/heic-sequence, image/heif, image/heif-sequence, image/svg+xml.
         /// You can set a more restrictive list for your application if needed.
-        /// The maximum file size is 20MB.
+        /// The maximum file size is 100MB.
         /// </summary>
         /// <returns>The URL of the uploaded file.</returns>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/file_uploads/?language=csharp#how-to-upload-a-file-or-image</remarks>
