@@ -42,7 +42,6 @@ namespace StreamChat.Models
     {
         public string NotificationTemplate { get; set; }
         public string DataTemplate { get; set; }
-
     }
 
     public class HuaweiFields : PushNotificationBase

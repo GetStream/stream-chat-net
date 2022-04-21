@@ -37,7 +37,7 @@ jobs:
         run: dotnet restore
 
       - name: Run tests
-        run: dotnet test
+        run: dotnet test /p:CollectCoverage=true
         env:
           STREAM_SECRET: ${{ secrets.STREAM_API_SECRET }}
           STREAM_KEY: ${{ secrets.STREAM_API_KEY }}
