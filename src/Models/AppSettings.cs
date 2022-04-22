@@ -84,6 +84,7 @@ namespace StreamChat.Models
     public class PushConfigRequest
     {
         public string Version { get; set; }
+        public bool? OfflineOnly { get; set; }
     }
 
     public static class APNAuthType

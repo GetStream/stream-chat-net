@@ -21,6 +21,8 @@ namespace StreamChat.Models
         public FirebaseFields Firebase { get; set; }
         public HuaweiFields Huawei { get; set; }
         public XiaomiFields Xiaomi { get; set; }
+        public bool? OfflineOnly { get; set; }
+        public string Version { get; set; }
     }
 
     public abstract class PushNotificationBase
