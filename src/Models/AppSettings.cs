@@ -83,8 +83,8 @@ namespace StreamChat.Models
 
     public class PushConfigRequest
     {
-        public string Version { get; set; }
         public bool? OfflineOnly { get; set; }
+        public string Version { get; set; }
     }
 
     public static class APNAuthType
@@ -115,6 +115,7 @@ namespace StreamChat.Models
 
     public class FirebaseConfig : PushConfigBase
     {
+        public string ApnTemplate { get; set; }
         public string ServerKey { get; set; }
         public string NotificationTemplate { get; set; }
         public string CredentialsJson { get; set; }
