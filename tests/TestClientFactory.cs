@@ -18,6 +18,7 @@ namespace StreamChatTests
         public static IDeviceClient GetDeviceClient() => _clientFactory.GetDeviceClient();
         public static IEventClient GetEventClient() => _clientFactory.GetEventClient();
         public static IFlagClient GetFlagClient() => _clientFactory.GetFlagClient();
+        public static IImportClient GetImportClient() => _clientFactory.GetImportClient();
         public static IMessageClient GetMessageClient() => _clientFactory.GetMessageClient();
         public static IUserClient GetUserClient() => _clientFactory.GetUserClient();
         public static IPermissionClient GetPermissionClient() => _clientFactory.GetPermissionClient();

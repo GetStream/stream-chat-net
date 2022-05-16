@@ -18,6 +18,7 @@ namespace StreamChat.Clients
         private readonly CommandClient _commandClient;
         private readonly IDeviceClient _deviceClient;
         private readonly IEventClient _eventClient;
+        private readonly ImportClient _importClient;
         private readonly IFlagClient _flagClient;
         private readonly IMessageClient _messageClient;
         private readonly IUserClient _userClient;
@@ -82,6 +83,7 @@ namespace StreamChat.Clients
             _commandClient = new CommandClient(restClient);
             _deviceClient = new DeviceClient(restClient);
             _eventClient = new EventClient(restClient);
+            _importClient = new ImportClient(restClient);
             _flagClient = new FlagClient(restClient);
             _messageClient = new MessageClient(restClient);
             _permissionClient = new PermissionClient(restClient);
@@ -98,6 +100,7 @@ namespace StreamChat.Clients
         public IDeviceClient GetDeviceClient() => _deviceClient;
         public IEventClient GetEventClient() => _eventClient;
         public IFlagClient GetFlagClient() => _flagClient;
+        public IImportClient GetImportClient() => _importClient;
         public IMessageClient GetMessageClient() => _messageClient;
         public IPermissionClient GetPermissionClient() => _permissionClient;
         public IReactionClient GetReactionClient() => _reactionClient;
