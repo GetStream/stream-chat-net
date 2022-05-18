@@ -55,6 +55,12 @@ namespace StreamChat.Clients
         IFlagClient GetFlagClient();
 
         /// <summary>
+        /// Returns an <see cref="IImportClient"/> instance. The returned client can be used as a singleton in your application.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/import/?language=csharp</remarks>
+        IImportClient GetImportClient();
+
+        /// <summary>
         /// Returns an <see cref="IMessageClient"/> instance. The returned client can be used as a singleton in your application.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>

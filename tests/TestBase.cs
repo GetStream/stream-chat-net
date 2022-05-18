@@ -17,6 +17,7 @@ namespace StreamChatTests
         protected static readonly IDeviceClient _deviceClient = TestClientFactory.GetDeviceClient();
         protected static readonly IEventClient _eventClient = TestClientFactory.GetEventClient();
         protected static readonly IFlagClient _flagClient = TestClientFactory.GetFlagClient();
+        protected static readonly IImportClient _importClient = TestClientFactory.GetImportClient();
         protected static readonly IMessageClient _messageClient = TestClientFactory.GetMessageClient();
         protected static readonly IPermissionClient _permissionClient = TestClientFactory.GetPermissionClient();
         protected static readonly IReactionClient _reactionClient = TestClientFactory.GetReactionClient();
