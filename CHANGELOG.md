@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/GetStream/stream-chat-net/compare/2.0.0...2.1.0) (2022-05-30)
+
+
+### Features
+
+* add apn template field ([#111](https://github.com/GetStream/stream-chat-net/issues/111)) ([9fbd648](https://github.com/GetStream/stream-chat-net/commit/9fbd648db9e9ec6ec684c4caf46b4a2cd1e53034))
+* add offlineonly to appconfig pushconfig ([#109](https://github.com/GetStream/stream-chat-net/issues/109)) ([c65bed4](https://github.com/GetStream/stream-chat-net/commit/c65bed4a002439039ed63b2e4382f24a8bbef91f))
+* **imports:** add import endpoints ([#113](https://github.com/GetStream/stream-chat-net/issues/113)) ([6025c64](https://github.com/GetStream/stream-chat-net/commit/6025c64e51ab1c1d59550f147300d62c0e95f204))
+
 ## [2.0.0](https://github.com/GetStream/stream-chat-net/compare/1.1.1...2.0.0) (2022-04-06)
 
 
