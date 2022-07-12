@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/GetStream/stream-chat-net/compare/2.1.0...2.1.1) (2022-07-12)
+
+
+### Bug Fixes
+
+* missing request api key in .NET 4.8 ([#115](https://github.com/GetStream/stream-chat-net/issues/115)) ([#116](https://github.com/GetStream/stream-chat-net/issues/116)) ([ef375e2](https://github.com/GetStream/stream-chat-net/commit/ef375e2f5a4dfe89dcec223209b10bfc79dc15e7))
+
 ## [2.1.0](https://github.com/GetStream/stream-chat-net/compare/2.0.0...2.1.0) (2022-05-30)
 
 
