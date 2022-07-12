@@ -93,7 +93,11 @@ namespace StreamChat.Rest
 
             request.QueryParameters.ForEach(p =>
             {
-                queryStringBuilder.Append(queryStringBuilder.Length == 0 ? "?" : "&");
+                if (queryStringBuilder.Length > 0)
+                {
+                    queryStringBuilder.Append("&");
+                }
+
                 queryStringBuilder.Append($"{p.Key}={Uri.EscapeDataString(p.Value)}");
             });
 
