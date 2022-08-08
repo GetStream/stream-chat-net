@@ -128,7 +128,7 @@ namespace StreamChatTests
             permResponse.Permission.Name.Should().NotBeNull();
             permResponse.Permission.Description.Should().NotBeNull();
             permResponse.Permission.Action.Should().NotBeNull();
-            permResponse.Permission.Condition.Should().NotBeNull();
+            permResponse.Permission.Condition.Should().BeNull();
 
             // Test list
             var listResp = await _permissionClient.ListPermissionsAsync();
