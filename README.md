@@ -43,7 +43,7 @@ For the client-side integrations (web and mobile) have a look at the JavaScript,
 > - The folder structure of the project has been reorganized to follow [Microsoft's recommendation](https://gist.github.com/davidfowl/ed7564297c61fe9ab814).
 > - Unit tests have been improved. They are smaller, more focused and have cleanup methods.
 > - Added .NET 6.0 support.
-> 
+>
 > The proper usage of the library:
 > ```csharp
 > var clientFactory = new StreamClientFactory("YourApiKey", "YourApiSecret");
@@ -56,10 +56,10 @@ For the client-side integrations (web and mobile) have a look at the JavaScript,
 >
 > var jamesBond = await userClient.UpsertAsync(new UserRequest { Id = "james_bond" });
 > var agentM = await userClient.UpsertAsync(new UserRequest { Id = "agent_m" });
-> 
+>
 > var channel = await channelClient.GetOrCreateAsync("messaging", "superHeroChannel", createdBy: jamesBond.Id);
 > await channelClient.AddMembersAsync(channel.Type, channel.Id, jamesBond.Id, agentM.Id);
-> 
+>
 > var message = await messageClient.SendMessageAsync(channel.Type, channel.Id, jamesBond.Id, "I need a new quest Agent M.");
 > await reactionClient.SendReactionAsync(message.Id, "like", agentM.Id);
 > ```
