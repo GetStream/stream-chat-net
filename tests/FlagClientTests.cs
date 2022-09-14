@@ -25,13 +25,11 @@ namespace StreamChatTests
         public async Task OneTimeSetupAsync()
         {
             _channelCreatorUser = await UpsertNewUserAsync();
-            _channel = await CreateChannelAsync(_channelCreatorUser.Id, new[] { _channelCreatorUser.Id });
         }
 
         [OneTimeTearDown]
         public async Task OneTimeTeardownAsync()
         {
-            await TryDeleteChannelAsync(_channel.Cid);
             await TryDeleteUsersAsync(_channelCreatorUser.Id);
         }
 
@@ -39,6 +37,7 @@ namespace StreamChatTests
         public async Task SetupAsync()
         {
             (_chanMember1, _chanMember2) = (await UpsertNewUserAsync(), await UpsertNewUserAsync());
+            _channel = await CreateChannelAsync(_channelCreatorUser.Id, new[] { _channelCreatorUser.Id });
             await _channelClient.AddMembersAsync(_channel.Type, _channel.Id, _chanMember1.Id, _chanMember2.Id);
             var resp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _chanMember1.Id, "Hello");
             _message = resp.Message;
