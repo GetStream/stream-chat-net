@@ -77,6 +77,29 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestChannelHideForCreatorAsync()
+        {
+            var chanData = new ChannelRequest();
+            chanData.CreatedBy = new UserRequest { Id = _user1.Id };
+            chanData.Members = new List<ChannelMember>
+            {
+                new ChannelMember { UserId = _user1.Id },
+                new ChannelMember { UserId = _user2.Id },
+            };
+            chanData.HideForCreator = true;
+
+            var chanState = await _channelClient.GetOrCreateAsync("messaging", new ChannelGetRequest
+            {
+                Data = chanData,
+            });
+
+            chanState.Channel.Id.Should().NotBeEmpty();
+            chanState.Channel.MemberCount.Should().BeGreaterThan(0);
+            chanState.Members.Count.Should().BeGreaterThan(0);
+            chanState.Channel.HideForCreator.Should().BeTrue();
+        }
+
+        [Test]
         public async Task TestQueryMembersAsync()
         {
             var res = await _channelClient.QueryMembersAsync(new QueryMembersRequest

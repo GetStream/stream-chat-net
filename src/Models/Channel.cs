@@ -90,6 +90,7 @@ namespace StreamChat.Models
         public bool? Frozen { get; set; }
         public IEnumerable<ChannelMember> Members { get; set; }
         public ConfigOverridesRequest ConfigOverrides { get; set; }
+        publc bool? HideForCreator { get; set; }
     }
 
     public class QueryChannelResponse : ApiResponse
