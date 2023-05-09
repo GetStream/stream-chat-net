@@ -84,6 +84,7 @@ namespace StreamChat.Models
         [JsonProperty("filter_conditions")]
         public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
         public Dictionary<string, string> LastMessageIds { get; set; }
+        public string UserId { get; set; }
 
         public QueryChannelsOptions WithOffset(int offset)
         {
