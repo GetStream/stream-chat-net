@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/GetStream/stream-chat-net/compare/2.1.1...2.1.2) (2023-05-09)
+
+### Features
+
+* Add missing user_id field that is required by some queries (e.g. invites) ([#124](https://github.com/GetStream/stream-chat-net/issues/124))
+
 ### [2.1.1](https://github.com/GetStream/stream-chat-net/compare/2.1.0...2.1.1) (2022-07-12)
 
 
