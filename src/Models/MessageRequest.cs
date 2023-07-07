@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace StreamChat.Models
 {
-
     public enum MessageRequestType
     {
         [System.Runtime.Serialization.EnumMember(Value = @"regular")]
