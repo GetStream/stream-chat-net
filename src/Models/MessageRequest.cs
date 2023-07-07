@@ -3,10 +3,34 @@ using System.Collections.Generic;
 
 namespace StreamChat.Models
 {
+
+    public enum MessageRequestType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"regular")]
+        Regular = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ephemeral")]
+        Ephemeral = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"error")]
+        Error = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"reply")]
+        Reply = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"system")]
+        System = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"deleted")]
+        Deleted = 5,
+
+    }
+    
     public class MessageRequest : CustomDataBase
     {
         public string Id { get; set; }
-        public string Type { get; set; }
+        public MessageRequest Type { get; set; }
         public string Text { get; set; }
         public string Mml { get; set; }
         public UserRequest User { get; set; }

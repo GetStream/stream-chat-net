@@ -84,7 +84,7 @@ namespace StreamChatTests
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { Watch = false, State = true });
             var actualMsg = channel.Messages.First(m => m.Id == msgResp.Message.Id);
             actualMsg.User.Id.Should().BeEquivalentTo(_user.Id);
-            actualMsg.Type.Should().BeEquivalentTo("system");
+            actualMsg.Type.Should().BeEquivalentTo(MessageRequestType.System);
         }
 
         [Test]
