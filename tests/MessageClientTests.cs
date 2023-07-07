@@ -77,14 +77,14 @@ namespace StreamChatTests
         [Test]
         public async Task TestSendSystemMessageAsync()
         {
-            var expectedMessage = new MessageRequest { Text = Guid.NewGuid().ToString(), Type = "system" };
+            var expectedMessage = new MessageRequest { Text = Guid.NewGuid().ToString(), Type = MessageRequestType.System };
 
             var msgResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id);
 
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { Watch = false, State = true });
             var actualMsg = channel.Messages.First(m => m.Id == msgResp.Message.Id);
             actualMsg.User.Id.Should().BeEquivalentTo(_user.Id);
-            actualMsg.Type.Should().BeEquivalentTo(MessageRequestType.System);
+            actualMsg.Type.Should().BeEquivalentTo("system");
         }
 
         [Test]
