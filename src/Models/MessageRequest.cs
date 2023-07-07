@@ -23,6 +23,7 @@ namespace StreamChat.Models
         [System.Runtime.Serialization.EnumMember(Value = @"deleted")]
         Deleted = 5,
     }
+    
     public class MessageRequest : CustomDataBase
     {
         public string Id { get; set; }
