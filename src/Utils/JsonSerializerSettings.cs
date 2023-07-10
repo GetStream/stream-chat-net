@@ -13,6 +13,7 @@ namespace StreamChat.Utils
                 NamingStrategy = new SnakeCaseNamingStrategy(),
             },
             NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
         };
 
         internal static string SerializeObject(object obj) => JsonConvert.SerializeObject(obj, Settings);

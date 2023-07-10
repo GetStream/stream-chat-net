@@ -9,8 +9,11 @@ namespace StreamChat.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum MessageRequestType
     {
+        [EnumMember(Value = @"regular")]
+        Regular = 0,
+
         [EnumMember(Value = @"system")]
-        System = 0,
+        System = 1,
     }
 
     public class MessageRequest : CustomDataBase
