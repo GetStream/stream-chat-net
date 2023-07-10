@@ -8,6 +8,7 @@ using StreamChat;
 using StreamChat.Clients;
 using StreamChat.Exceptions;
 using StreamChat.Models;
+using StreamChat.Utils;
 
 namespace StreamChatTests
 {
@@ -72,6 +73,19 @@ namespace StreamChatTests
             actualMsg.User.Id.Should().BeEquivalentTo(_user.Id);
             actualMsg.GetData<string>("foo").Should().BeEquivalentTo("barsky");
             actualMsg.Attachments[0].GetData<string>("baz").Should().BeEquivalentTo("bazky");
+        }
+
+        [Test]
+        public async Task TestSendSystemMessageAsync()
+        {
+            var expectedMessage = new MessageRequest { Text = Guid.NewGuid().ToString(), Type = MessageRequestType.System };
+
+            var msgResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id);
+
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { Watch = false, State = true });
+            var actualMsg = channel.Messages.First(m => m.Id == msgResp.Message.Id);
+            actualMsg.User.Id.Should().BeEquivalentTo(_user.Id);
+            actualMsg.Type.Should().BeEquivalentTo(MessageRequestType.System.ToEnumMemberString());
         }
 
         [Test]
