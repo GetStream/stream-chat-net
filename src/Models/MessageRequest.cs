@@ -39,3 +39,8 @@ namespace StreamChat.Models
         public DateTimeOffset? PinnedAt { get; set; }
     }
 }
+
+public class SendMessageOptions {
+    public bool skipPush { get; set; }
+    public bool isPendingMessage { get; set; }
+}

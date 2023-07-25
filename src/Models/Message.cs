@@ -49,11 +49,18 @@ namespace StreamChat.Models
         public DateTimeOffset? PinnedAt { get; set; }
     }
 
+    public class PendingMessage : CustomDataBase
+    {
+        public Message Message { get; set; }
+        public Dictionary<string, object> PendingMessageMetadata { get; set; }
+    }
+
     public class MessageSendRequest
     {
         public MessageRequest Message { get; set; }
 
         public bool? SkipPush { get; set; }
+        public bool? IsPendingMessage { get; set; }
     }
 
     public class MessageSearchResponse : ApiResponse

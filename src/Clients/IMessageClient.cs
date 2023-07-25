@@ -12,6 +12,12 @@ namespace StreamChat.Clients
     public interface IMessageClient
     {
         /// <summary>
+        /// Commits a message.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/pending_messages/?language=csharp</remarks>
+        Task<GenericMessageResponse> CommitMessageAsync(string messageId);
+
+        /// <summary>
         /// Deletes a message.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
@@ -98,6 +104,13 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
         Task<GenericMessageResponse> SendMessageAsync(string channelType, string channelId, string userId, string text);
+
+        /// <summary>
+        /// <para>Sends a message to a channel.</para>
+        /// If you want to send a message to a thread, you can use <see cref="SendMessageToThreadAsync"/>.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
+        Task<GenericMessageResponse> SendMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, SendMessageOptions options);
 
         /// <summary>
         /// <para>Sends a message to a channel.</para>

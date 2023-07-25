@@ -76,6 +76,35 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestSendPendingMessageAndCommitMessageAsync()
+        {
+            var expectedMessage = new MessageRequest { Text = Guid.NewGuid().ToString() };
+            expectedMessage.SetData("foo", "barsky");
+            var attachment = new Attachment();
+            attachment.SetData("baz", "bazky");
+            expectedMessage.Attachments = new List<Attachment> { attachment };
+
+            var msg1 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id, new SendMessageOptions { isPendingMessage = true });
+            var msg2 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id, new SendMessageOptions { isPendingMessage = true });
+
+            var resp = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions { Filter = new Dictionary<string, object>
+            {
+                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+            }, UserId = _user.Id});
+            resp.Channels[0].PendingMessages.Count.Should().Be(2);
+
+            var msgResp2 = await _messageClient.CommitMessageAsync(resp.Channels[0].PendingMessages[0].Message.Id);
+            msgResp2.Message.Id.Should().BeEquivalentTo(msg1.Message.Id);
+
+            var resp1 = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions { Filter = new Dictionary<string, object>
+            {
+                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+            }, UserId = _user.Id});
+            resp1.Channels[0].PendingMessages.Count.Should().Be(1);
+            
+        }
+
+        [Test]
         public async Task TestSendSystemMessageAsync()
         {
             var expectedMessage = new MessageRequest { Text = Guid.NewGuid().ToString(), Type = MessageRequestType.System };
