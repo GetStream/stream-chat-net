@@ -40,7 +40,8 @@ namespace StreamChat.Models
     }
 }
 
-public class SendMessageOptions {
-    public bool skipPush { get; set; }
-    public bool isPendingMessage { get; set; }
+public class SendMessageOptions
+{
+    public bool SkipPush { get; set; }
+    public bool IsPendingMessage { get; set; }
 }

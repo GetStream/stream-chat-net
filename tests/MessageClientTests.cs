@@ -84,24 +84,31 @@ namespace StreamChatTests
             attachment.SetData("baz", "bazky");
             expectedMessage.Attachments = new List<Attachment> { attachment };
 
-            var msg1 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id, new SendMessageOptions { isPendingMessage = true });
-            var msg2 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id, new SendMessageOptions { isPendingMessage = true });
+            var msg1 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id, new SendMessageOptions { IsPendingMessage = true });
+            var msg2 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, expectedMessage, _user.Id, new SendMessageOptions { IsPendingMessage = true });
 
-            var resp = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions { Filter = new Dictionary<string, object>
+            var resp = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>
             {
                 { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
-            }, UserId = _user.Id});
+            },
+                UserId = _user.Id,
+            });
             resp.Channels[0].PendingMessages.Count.Should().Be(2);
 
             var msgResp2 = await _messageClient.CommitMessageAsync(resp.Channels[0].PendingMessages[0].Message.Id);
             msgResp2.Message.Id.Should().BeEquivalentTo(msg1.Message.Id);
 
-            var resp1 = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions { Filter = new Dictionary<string, object>
+            var resp1 = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>
             {
                 { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
-            }, UserId = _user.Id});
+            },
+                UserId = _user.Id,
+            });
             resp1.Channels[0].PendingMessages.Count.Should().Be(1);
-            
         }
 
         [Test]
