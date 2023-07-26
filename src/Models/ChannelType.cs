@@ -46,6 +46,7 @@ namespace StreamChat.Models
         public bool? Replies { get; set; }
         public bool? Reminders { get; set; }
         public bool? Uploads { get; set; }
+        public bool? MarkMessagesPending { get; set; }
         public bool? Mutes { get; set; }
         public string MessageRetention { get; set; }
         public int? MaxMessageLength { get; set; }

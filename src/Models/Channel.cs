@@ -34,6 +34,8 @@ namespace StreamChat.Models
         public ChannelWithConfig Channel { get; set; }
         public List<Message> Messages { get; set; }
         public List<Message> PinnedMessages { get; set; }
+
+        public List<PendingMessage> PendingMessages { get; set; }
         public int WatcherCount { get; set; }
         public List<User> Watchers { get; set; }
 

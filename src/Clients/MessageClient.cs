@@ -19,20 +19,22 @@ namespace StreamChat.Clients
         public async Task<GenericMessageResponse> SendMessageToThreadAsync(string channelType, string channelId, MessageRequest msg, string userId, string parentId, bool skipPush = false)
         {
             msg.ParentId = parentId;
-            return await SendMessageAsync(channelType, channelId, msg, userId, skipPush);
+            return await SendMessageAsync(channelType, channelId, msg, userId, new SendMessageOptions { SkipPush = skipPush });
         }
 
         public async Task<GenericMessageResponse> SendMessageAsync(string channelType, string channelId, string userId, string text)
-            => await SendMessageAsync(channelType, channelId, new MessageRequest { Text = text }, userId);
+            => await SendMessageAsync(channelType, channelId, new MessageRequest { Text = text }, userId, new SendMessageOptions { });
 
         public async Task<GenericMessageResponse> SendMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, bool skipPush = false)
+            => await SendMessageAsync(channelType, channelId, msg, userId, new SendMessageOptions { SkipPush = skipPush });
+        public async Task<GenericMessageResponse> SendMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, SendMessageOptions options)
         {
             var req = new MessageSendRequest
             {
                 Message = msg,
-                SkipPush = skipPush,
+                SkipPush = options.SkipPush,
+                IsPendingMessage = options.IsPendingMessage,
             };
-
             req.Message.UserId = userId;
 
             return await ExecuteRequestAsync<GenericMessageResponse>($"channels/{channelType}/{channelId}/message",
@@ -191,5 +193,10 @@ namespace StreamChat.Clients
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 body: new { user_id = userId, form_data = formData });
+
+        public async Task<GenericMessageResponse> CommitMessageAsync(string messageId)
+            => await ExecuteRequestAsync<GenericMessageResponse>($"/messages/{messageId}/commit",
+                HttpMethod.POST,
+                HttpStatusCode.Created);
     }
 }
