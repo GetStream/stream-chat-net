@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/GetStream/stream-chat-net/compare/2.2.0...2.3.0) (2023-07-26)
+
+
+### Features
+
+* added support for pending messages ([#128](https://github.com/GetStream/stream-chat-net/issues/128)) ([7a43569](https://github.com/GetStream/stream-chat-net/commit/7a4356997b93f91946ce03212ab8d557811b8ab8))
+
 ### [2.2.0](https://github.com/GetStream/stream-chat-net/compare/2.1.2...2.2.0) (2023-07-11)
 
 ### Features
