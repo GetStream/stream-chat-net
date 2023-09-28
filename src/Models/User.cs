@@ -66,6 +66,12 @@ namespace StreamChat.Models
     public class AddMemberOptions
     {
         public bool? HideHistory { get; set; }
+        public string InitiatorUserId { get; set; }
+    }
+
+    public class RemoveMemberOptions
+    {
+        public string InitiatorUserId { get; set; }
     }
 
     public class UserPartialRequest : CustomDataBase

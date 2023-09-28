@@ -216,6 +216,19 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestAddMembersWithInitiatorAsync()
+        {
+            var initiatingUser = await UpsertNewUserAsync();
+            var newUser = await UpsertNewUserAsync();
+
+            await _channelClient.AddMembersAsync(_channel.Type, _channel.Id, new AddMemberOptions{ InitiatorUserId = initiatingUser.Id }, newUser.Id);
+
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            channel.Members.Should().Contain(x => x.UserId == newUser.Id);
+            await TryDeleteUsersAsync(new[] { newUser.Id });
+        }
+
+        [Test]
         public async Task TestAddMembersAsync()
         {
             var newUser = await UpsertNewUserAsync();
@@ -225,6 +238,18 @@ namespace StreamChatTests
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
             channel.Members.Should().Contain(x => x.UserId == newUser.Id);
             await TryDeleteUsersAsync(new[] { newUser.Id });
+        }
+
+        [Test]
+        public async Task TestRemoveMembersWithInitiatorAsync()
+        {
+            await _channelClient.RemoveMembersAsync(_channel.Type, _channel.Id, new[] { _user3.Id }, options: new RemoveMemberOptions
+            {
+                InitiatorUserId = _user1.Id
+            });
+
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            channel.Members.Should().NotContain(x => x.UserId == _user3.Id);
         }
 
         [Test]

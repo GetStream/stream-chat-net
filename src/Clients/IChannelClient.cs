@@ -14,6 +14,12 @@ namespace StreamChat.Clients
         /// Adds members to a channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
+        Task<ApiResponse> AddMembersAsync(string channelType, string channelId, AddMemberOptions options, params string[] userIds);
+
+        /// <summary>
+        /// Adds members to a channel.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
         Task<ApiResponse> AddMembersAsync(string channelType, string channelId, params string[] userIds);
 
         /// <summary>
@@ -162,7 +168,7 @@ namespace StreamChat.Clients
         /// Removes member(s) from a channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
-        Task<ApiResponse> RemoveMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null);
+        Task<ApiResponse> RemoveMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null, RemoveMemberOptions options = null);
 
         /// <summary>
         /// <para>Removes all of the messages but not affect the channel data or channel members.</para>

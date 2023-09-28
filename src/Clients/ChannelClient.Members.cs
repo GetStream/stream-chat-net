@@ -8,6 +8,9 @@ namespace StreamChat.Clients
 {
     public partial class ChannelClient
     {
+        public async Task<ApiResponse> AddMembersAsync(string channelType, string channelId, AddMemberOptions options, params string[] userIds)
+            => await AddMembersAsync(channelType, channelId, userIds, null, options);
+
         public async Task<ApiResponse> AddMembersAsync(string channelType, string channelId, params string[] userIds)
             => await AddMembersAsync(channelType, channelId, userIds, null, null);
 
@@ -20,9 +23,10 @@ namespace StreamChat.Clients
                     AddMembers = userIds,
                     HideHistory = options?.HideHistory,
                     Message = msg,
+                    UserId = options?.InitiatorUserId,
                 });
 
-        public async Task<ApiResponse> RemoveMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null)
+        public async Task<ApiResponse> RemoveMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null, RemoveMemberOptions options = null)
             => await ExecuteRequestAsync<ApiResponse>($"channels/{channelType}/{channelId}",
                 HttpMethod.POST,
                 HttpStatusCode.Created,
@@ -30,6 +34,7 @@ namespace StreamChat.Clients
                 {
                     RemoveMembers = userIds,
                     Message = msg,
+                    UserId = options?.InitiatorUserId,
                 });
 
         public async Task<QueryMembersResponse> QueryMembersAsync(QueryMembersRequest queryMembersRequest)
