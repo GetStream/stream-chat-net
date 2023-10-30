@@ -60,4 +60,30 @@ namespace StreamChat.Models
         public string Error { get; set; }
         public Dictionary<string, object> Data { get; set; }
     }
+
+    public class AppCheckSnsRequest
+    {
+        public string SnsTopicArn { get; set; }
+        public string SnsKey { get; set; }
+        public string SnsSecret { get; set; }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum SnsCheckStatus
+    {
+        None,
+
+        [EnumMember(Value = "ok")]
+        Ok,
+
+        [EnumMember(Value = "error")]
+        Error,
+    }
+
+    public class AppCheckSnsResponse : ApiResponse
+    {
+        public SnsCheckStatus Status { get; set; }
+        public string Error { get; set; }
+        public Dictionary<string, object> Data { get; set; }
+    }
 }

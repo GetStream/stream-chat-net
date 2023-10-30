@@ -64,6 +64,9 @@ namespace StreamChat.Models
         public string SqsUrl { get; set; }
         public string SqsKey { get; set; }
         public string SqsSecret { get; set; }
+        public string SnsTopicArn { get; set; }
+        public string SnsKey { get; set; }
+        public string SnsSecret { get; set; }
         public FileUploadConfig ImageUploadConfig { get; set; }
         public FileUploadConfig FileUploadConfig { get; set; }
         public DateTimeOffset? RevokeTokensIssuedBefore { get; set; }

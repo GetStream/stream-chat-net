@@ -48,6 +48,10 @@ namespace StreamChat.Clients
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/push_test/?language=csharp</remarks>
         Task<AppCheckSqsResponse> CheckSqsPushAsync(AppCheckSqsRequest checkSqsRequest);
 
+        /// <summary>Sends a test SNS push.</summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/sns/?language=csharp</remarks>
+        Task<AppCheckSnsResponse> CheckSnsPushAsync(AppCheckSnsRequest checkSnsRequest);
+
         /// <summary>Inserts or creates a new push provider.</summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/push_introduction/?language=csharp</remarks>
         Task<UpsertPushProviderResponse> UpsertPushProviderAsync(PushProviderRequest pushProviderRequest);
