@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/GetStream/stream-chat-net/compare/2.3.0...2.4.0) (2023-10-30)
+
+
+### Features
+
+* sns ([#134](https://github.com/GetStream/stream-chat-net/issues/134)) ([fab3d6d](https://github.com/GetStream/stream-chat-net/commit/fab3d6dda062196cf518a677d937bbf4183e6702))
+
 ## [2.3.0](https://github.com/GetStream/stream-chat-net/compare/2.2.0...2.3.0) (2023-07-26)
 
 
