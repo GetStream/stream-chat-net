@@ -47,6 +47,12 @@ namespace StreamChat.Clients
                     HttpStatusCode.Created,
                     checkSqsRequest);
 
+        public async Task<AppCheckSnsResponse> CheckSnsPushAsync(AppCheckSnsRequest checkSnsRequest)
+            => await ExecuteRequestAsync<AppCheckSnsResponse>("check_sns",
+                    HttpMethod.POST,
+                    HttpStatusCode.Created,
+                    checkSnsRequest);
+
         public async Task<ApiResponse> RevokeTokensAsync(DateTimeOffset? issuedBefore)
             => await UpdateAppSettingsAsync(new AppSettingsRequest { RevokeTokensIssuedBefore = issuedBefore });
 

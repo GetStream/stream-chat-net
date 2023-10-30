@@ -101,5 +101,18 @@ namespace StreamChatTests
 
             resp.Status.Should().Be(SqsCheckStatus.Error);
         }
+
+        [Test]
+        public async Task TestTestSnsPushAsync()
+        {
+            var resp = await _appClient.CheckSnsPushAsync(new AppCheckSnsRequest
+            {
+                SnsKey = "key",
+                SnsSecret = "secret",
+                SnsTopicArn = "arn:aws:sns:us-east-1:123456789012:sns-topic",
+            });
+
+            resp.Status.Should().Be(SnsCheckStatus.Error);
+        }
     }
 }
