@@ -28,7 +28,7 @@ namespace StreamChat.Models
         public string Team { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
     }
-    
+
     /// <summary>
     /// Event model for received events
     /// </summary>

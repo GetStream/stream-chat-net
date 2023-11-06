@@ -48,7 +48,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestDeserializingReceivedEventAsync()
+        public void TestDeserializingReceivedEventAsync()
         {
             var messageDeletedEventJson = @"
 {
@@ -85,7 +85,7 @@ namespace StreamChatTests
     ""sdk"": ""stream-chat-react-10.11.0-stream-chat-javascript-client-browser-8.12.1""
   }
 }";
-            
+
             var deserializeObject = JsonConvert.DeserializeObject<EventResponse>(messageDeletedEventJson);
         }
 
