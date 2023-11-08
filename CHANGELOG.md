@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/GetStream/stream-chat-net/compare/2.4.0...2.5.0) (2023-11-08)
+
 ## [2.4.0](https://github.com/GetStream/stream-chat-net/compare/2.3.0...2.4.0) (2023-10-30)
 
 
