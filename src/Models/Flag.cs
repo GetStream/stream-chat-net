@@ -44,7 +44,7 @@ namespace StreamChat.Models
         public string BlocklistName { get; set; }
         public Thresholds ModerationThresholds { get; set; }
         public ModerationScore AiModerationResponse { get; set; }
-        public int? UserKarma { get; set; }
+        public float? UserKarma { get; set; }
         public bool? UserBadKarma { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
