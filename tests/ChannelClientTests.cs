@@ -207,10 +207,14 @@ namespace StreamChatTests
         {
             async Task<bool?> GetUserNotificationsMuted()
             {
-                var channels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions().WithFilter(new Dictionary<string, object> { { "cid", new Dictionary<string, object> { { "$in", new[] { _channel.Cid } } } }, }));
+                var queryOptions = new QueryChannelsOptions().WithFilter(new Dictionary<string, object>
+                {
+                    { "cid", new Dictionary<string, object> { { "$in", new[] { _channel.Cid } } } },
+                });
+
+                var channels = await _channelClient.QueryChannelsAsync(queryOptions);
 
                 var channelMember = channels.Channels.First().Members.First(u => u.UserId == _user1.Id);
-
                 return channelMember.NotificationsMuted;
             }
 
