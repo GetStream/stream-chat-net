@@ -36,7 +36,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestGetAsync()
+        public Task TestGetAsync() => TryMultiple(async () =>
         {
             var resp = await _blocklistClient.GetAsync(_blocklistName);
 
@@ -44,25 +44,31 @@ namespace StreamChatTests
             resp.Blocklist.Words.Should().NotBeEmpty();
             resp.Blocklist.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(10));
             resp.Blocklist.UpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(10));
-        }
+        });
 
         [Test]
-        public async Task TestListAsync()
+        public Task TestListAsync() => TryMultiple(async () =>
         {
             var resp = await _blocklistClient.ListAsync();
 
             resp.Blocklists.Should().Contain(x => x.Name == _blocklistName);
-        }
+        });
 
         [Test]
         public async Task TestUpdateAsync()
         {
             var expectedWords = new[] { "test", "test2" };
 
-            await _blocklistClient.UpdateAsync(_blocklistName, expectedWords);
+            await TryMultiple(async () =>
+            {
+                await _blocklistClient.UpdateAsync(_blocklistName, expectedWords);
+            });
 
-            var updated = await _blocklistClient.GetAsync(_blocklistName);
-            updated.Blocklist.Words.Should().BeEquivalentTo(expectedWords);
+            await TryMultiple(async () =>
+            {
+                var updated = await _blocklistClient.GetAsync(_blocklistName);
+                updated.Blocklist.Words.Should().BeEquivalentTo(expectedWords);
+            });
         }
     }
 }

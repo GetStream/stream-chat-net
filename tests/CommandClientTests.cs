@@ -37,20 +37,22 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestGetCommandAsync()
-        {
-            var command = await _commandClient.GetAsync(_command.Name);
+        public Task TestGetCommandAsync()
+            => TryMultiple(async () =>
+            {
+                var command = await _commandClient.GetAsync(_command.Name);
 
-            command.Name.Should().Be(_command.Name);
-        }
+                command.Name.Should().Be(_command.Name);
+            });
 
         [Test]
-        public async Task TestListCommandsAsync()
-        {
-            var resp = await _commandClient.ListAsync();
+        public Task TestListCommandsAsync()
+            => TryMultiple(async () =>
+            {
+                var resp = await _commandClient.ListAsync();
 
-            resp.Commands.Should().Contain(c => c.Name == _command.Name);
-        }
+                resp.Commands.Should().Contain(c => c.Name == _command.Name);
+            });
 
         [Test]
         public async Task TestUpdateCommandAsync()

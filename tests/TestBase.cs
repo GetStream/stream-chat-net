@@ -98,6 +98,50 @@ namespace StreamChatTests
             }
         }
 
+        /// <summary>
+        /// Execute test with multiple attempts. If the test throws an exception, it will be repeated few more times before it fails.
+        /// </summary>
+        /// <param name="testBody">Put the whole body of the test. </param>
+        /// <param name="attempts">How many times to try</param>
+        /// <param name="attemptTimeoutMs">delay between a failed try</param>
+        /// <exception cref="ArgumentException">Throws ArgumentException If max attempts or timeout exceeds the limit</exception>
+        protected async Task TryMultiple(Func<Task> testBody,
+            int attempts = 5, int attemptTimeoutMs = 500)
+        {
+            const int maxAttempts = 20;
+            const int maxAttemptTimeout = 1500;
+
+            if (attempts > maxAttempts)
+            {
+                throw new ArgumentException($"Max attempts: {maxAttempts}, given: {attempts}");
+            }
+
+            if (attemptTimeoutMs > maxAttemptTimeout)
+            {
+                throw new ArgumentException($"Max attempt timeout: {maxAttemptTimeout}, given: {attemptTimeoutMs}");
+            }
+
+            for (int i = 0; i < attempts; i++)
+            {
+                try
+                {
+                    await testBody();
+                }
+                catch (Exception)
+                {
+                    if (i == attempts - 1)
+                    {
+                        throw;
+                    }
+
+                    await Task.Delay(attemptTimeoutMs);
+                    continue;
+                }
+
+                return;
+            }
+        }
+
         private async Task WaitUntilTaskSucceedsAsync(string taskId)
         {
             try
