@@ -203,6 +203,37 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestMuteUnmuteChannelMemberNotificationsMutedAsync()
+        {
+            async Task<bool?> GetUserNotificationsMuted()
+            {
+                var channels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions().WithFilter(new Dictionary<string, object> { { "cid", new Dictionary<string, object> { { "$in", new[] { _channel.Cid } } } }, }));
+
+                var channelMember = channels.Channels.First().Members.First(u => u.UserId == _user1.Id);
+
+                return channelMember.NotificationsMuted;
+            }
+
+            (await GetUserNotificationsMuted()).Should().BeFalse();
+
+            await _channelClient.MuteChannelAsync(new ChannelMuteRequest
+            {
+                ChannelCids = new[] { _channel.Cid },
+                UserId = _user1.Id,
+            });
+
+            (await GetUserNotificationsMuted()).Should().BeTrue();
+
+            await _channelClient.UnmuteChannelAsync(new ChannelUnmuteRequest
+            {
+                ChannelCids = new[] { _channel.Cid },
+                UserId = _user1.Id,
+            });
+
+            (await GetUserNotificationsMuted()).Should().BeFalse();
+        }
+
+        [Test]
         public async Task TestGetExportChannelAsync()
         {
             var resp = await _channelClient.ExportChannelAsync(new ExportChannelItem { Id = _channel.Id, Type = _channel.Type });
