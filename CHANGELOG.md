@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://github.com/GetStream/stream-chat-net/compare/2.5.0...2.6.0) (2024-05-08)
+
+
+### Bug Fixes
+
+* Fix invalid type of MessageModerationResult.UserKarma property ([#139](https://github.com/GetStream/stream-chat-net/issues/139)) ([340d3d0](https://github.com/GetStream/stream-chat-net/commit/340d3d0e1c085a8cca464e7ef67803ec75def23d))
+
 ## [2.5.0](https://github.com/GetStream/stream-chat-net/compare/2.4.0...2.5.0) (2023-11-08)
 
 ## [2.4.0](https://github.com/GetStream/stream-chat-net/compare/2.3.0...2.4.0) (2023-10-30)
