@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.6.0](https://github.com/GetStream/stream-chat-net/compare/2.5.0...2.6.0) (2024-05-08)
 
+### Features
+
+* Add ChannelMember.NotificationsMuted property
 
 ### Bug Fixes
 
