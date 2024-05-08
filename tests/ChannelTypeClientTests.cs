@@ -51,12 +51,12 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestGetChannelTypeAsync()
-        {
-            var actualChannelType = await _channelTypeClient.GetChannelTypeAsync(_channelType.Name);
-
-            actualChannelType.Name.Should().BeEquivalentTo(_channelType.Name);
-        }
+        public Task TestGetChannelTypeAsync()
+            => TryMultiple(testBody: async () =>
+            {
+                var actualChannelType = await _channelTypeClient.GetChannelTypeAsync(_channelType.Name);
+                actualChannelType.Name.Should().BeEquivalentTo(_channelType.Name);
+            });
 
         [Test]
         public async Task TestListChannelTypeAsync()
@@ -75,10 +75,11 @@ namespace StreamChatTests
             {
                 try
                 {
-                    var updated = await _channelTypeClient.UpdateChannelTypeAsync(_channelType.Name, new ChannelTypeWithStringCommandsRequest
-                    {
-                        Automod = expectedAutomod,
-                    });
+                    var updated = await _channelTypeClient.UpdateChannelTypeAsync(_channelType.Name,
+                        new ChannelTypeWithStringCommandsRequest
+                        {
+                            Automod = expectedAutomod,
+                        });
 
                     return updated.Automod == expectedAutomod;
                 }
