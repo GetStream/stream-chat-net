@@ -24,5 +24,6 @@ namespace StreamChat.Models
         public bool? Banned { get; set; }
         public DateTimeOffset? BanExpires { get; set; }
         public bool? ShadowBanned { get; set; }
+        public bool? NotificationsMuted { get; set; }
     }
 }
