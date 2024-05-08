@@ -74,6 +74,7 @@ namespace StreamChat.Clients
             var generatedJwt = jwtGeneratorClient.GenerateServerSideJwt(apiSecret);
             var assemblyVersion = typeof(StreamClientFactory).GetTypeInfo().Assembly.GetName().Version;
             var sdkVersion = assemblyVersion.ToString(3);
+
             var restClient = new RestClient(opts, generatedJwt, apiKey, sdkVersion);
 
             _appClient = new AppClient(restClient, apiSecret);
