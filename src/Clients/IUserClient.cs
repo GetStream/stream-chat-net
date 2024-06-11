@@ -238,5 +238,23 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/query_users/?language=csharp/</remarks>
         Task<QueryUsersResponse> QueryAsync(QueryUserOptions opts);
+
+        /// <summary>
+        /// Block user from sending 1x1 messages
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/javascript/block_user/</remarks>
+        Task<BlockUserResponse> BlockUserAsync(string targetId, string userID);
+
+        /// <summary>
+        /// Get list of blocked users by this user
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/javascript/block_user/</remarks>
+        Task<GetBlockedUsersResponse> GetBlockedUsersAsync(string userID);
+
+        /// <summary>
+        /// Unblock user
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/javascript/block_user/</remarks>
+        Task<ApiResponse> UnblockUserAsync(string targetId, string userID);
     }
 }

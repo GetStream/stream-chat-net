@@ -147,6 +147,33 @@ namespace StreamChat.Clients
                         user_id = id,
                     });
 
+        public async Task<BlockUserResponse> BlockUserAsync(string targetId, string userID)
+            => await ExecuteRequestAsync<BlockUserResponse>("users/block",
+                    HttpMethod.POST,
+                    HttpStatusCode.OK,
+                    body: new
+                    {
+                        blocked_user_id = targetId,
+                        user_id = userID,
+                    });
+        public async Task<ApiResponse> UnblockUserAsync(string targetId, string userID)
+            => await ExecuteRequestAsync<BlockUserResponse>("users/unblock",
+                    HttpMethod.POST,
+                    HttpStatusCode.OK,
+                    body: new
+                    {
+                        blocked_user_id = targetId,
+                        user_id = userID,
+                    });
+        public async Task<GetBlockedUsersResponse> GetBlockedUsersAsync(string userID)
+            => await ExecuteRequestAsync<GetBlockedUsersResponse>("users/block",
+                    HttpMethod.GET,
+                    HttpStatusCode.OK,
+                    queryParams: new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("user_id", userID),
+                    });
+
         public async Task<ApiResponse> UnmuteAsync(string targetId, string id)
             => await ExecuteRequestAsync<ApiResponse>("moderation/unmute",
                     HttpMethod.POST,
