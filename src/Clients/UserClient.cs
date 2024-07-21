@@ -150,7 +150,7 @@ namespace StreamChat.Clients
         public async Task<BlockUserResponse> BlockUserAsync(string targetId, string userID)
             => await ExecuteRequestAsync<BlockUserResponse>("users/block",
                     HttpMethod.POST,
-                    HttpStatusCode.OK,
+                    HttpStatusCode.Created,
                     body: new
                     {
                         blocked_user_id = targetId,
@@ -159,7 +159,7 @@ namespace StreamChat.Clients
         public async Task<ApiResponse> UnblockUserAsync(string targetId, string userID)
             => await ExecuteRequestAsync<BlockUserResponse>("users/unblock",
                     HttpMethod.POST,
-                    HttpStatusCode.OK,
+                    HttpStatusCode.Created,
                     body: new
                     {
                         blocked_user_id = targetId,

@@ -290,7 +290,8 @@ namespace StreamChatTests
                 { "id", _user1.Id },
             }));
             queryUsersResp.Users.Should().NotBeEmpty();
-            queryUsersResp.Users[0].BlockedUserIDs[0].Should().BeEquivalentTo(_user2.Id);
+
+            queryUsersResp.Users[0].BlockedUserIds[0].Should().BeEquivalentTo(_user2.Id);
 
             await _userClient.UnblockUserAsync(_user2.Id, _user1.Id);
 
@@ -302,7 +303,7 @@ namespace StreamChatTests
                 { "id", _user1.Id },
             }));
             queryUsersResp.Users.Should().NotBeEmpty();
-            queryUsersResp.Users[0].BlockedUserIDs.Length.Should().Be(0);
+            queryUsersResp.Users[0].BlockedUserIds.Length.Should().Be(0);
         }
 
         [Test]
