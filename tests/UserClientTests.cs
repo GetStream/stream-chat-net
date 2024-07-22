@@ -272,6 +272,41 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestBlockUserAsync()
+        {
+            var blockResp = await _userClient.BlockUserAsync(_user2.Id, _user1.Id);
+
+            blockResp.BlockedByUserID.Should().BeEquivalentTo(_user1.Id);
+            blockResp.BlockedUserID.Should().BeEquivalentTo(_user2.Id);
+
+            var getBlockResp = await _userClient.GetBlockedUsersAsync(_user1.Id);
+            getBlockResp.Blocks[0].BlockedUserID.Should().BeEquivalentTo(_user2.Id);
+            getBlockResp.Blocks[0].BlockedByUserID.Should().BeEquivalentTo(_user1.Id);
+            getBlockResp.Blocks[0].BlockedUser.Id.Should().BeEquivalentTo(_user2.Id);
+            getBlockResp.Blocks[0].BlockedByUser.Id.Should().BeEquivalentTo(_user1.Id);
+
+            var queryUsersResp = await _userClient.QueryAsync(QueryUserOptions.Default.WithFilter(new Dictionary<string, object>
+            {
+                { "id", _user1.Id },
+            }));
+            queryUsersResp.Users.Should().NotBeEmpty();
+
+            queryUsersResp.Users[0].BlockedUserIds[0].Should().BeEquivalentTo(_user2.Id);
+
+            await _userClient.UnblockUserAsync(_user2.Id, _user1.Id);
+
+            getBlockResp = await _userClient.GetBlockedUsersAsync(_user1.Id);
+            getBlockResp.Blocks.Length.Should().Be(0);
+
+            queryUsersResp = await _userClient.QueryAsync(QueryUserOptions.Default.WithFilter(new Dictionary<string, object>
+            {
+                { "id", _user1.Id },
+            }));
+            queryUsersResp.Users.Should().NotBeEmpty();
+            queryUsersResp.Users[0].BlockedUserIds.Length.Should().Be(0);
+        }
+
+        [Test]
         public async Task TestUnmuteUserAsync()
         {
             await _userClient.MuteAsync(_user2.Id, _user1.Id);
