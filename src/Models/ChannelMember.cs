@@ -10,7 +10,7 @@ namespace StreamChat.Models
         public const string Owner = "owner";
     }
 
-    public class ChannelMember
+    public class ChannelMember : CustomDataBase
     {
         public string UserId { get; set; }
         public UserRequest User { get; set; }
@@ -25,5 +25,12 @@ namespace StreamChat.Models
         public DateTimeOffset? BanExpires { get; set; }
         public bool? ShadowBanned { get; set; }
         public bool? NotificationsMuted { get; set; }
+        public DateTimeOffset? PinnedAt { get; set; }
+        public DateTimeOffset? ArchivedAt { get; set; }
+    }
+
+    public class ChannelMemberResponse : ApiResponse
+    {
+        public ChannelMember ChannelMember { get; set; }
     }
 }

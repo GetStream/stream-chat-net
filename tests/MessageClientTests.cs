@@ -35,9 +35,8 @@ namespace StreamChatTests
         }
 
         [TearDown]
-        public async Task TearownAsync()
+        public async Task TearDownAsync()
         {
-            await TryDeleteChannelAsync(_channel.Cid);
             await TryDeleteUsersAsync(_user.Id);
         }
 

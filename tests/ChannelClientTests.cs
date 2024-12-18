@@ -24,15 +24,16 @@ namespace StreamChatTests
         [OneTimeSetUp]
         public async Task SetupAsync()
         {
-            (_user1, _user2, _user3) = (await UpsertNewUserAsync(), await UpsertNewUserAsync(), await UpsertNewUserAsync());
-            _channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id, _user2.Id, _user3.Id });
+            (_user1, _user2, _user3) = (await UpsertNewUserAsync(), await UpsertNewUserAsync(),
+                await UpsertNewUserAsync());
+            _channel = await CreateChannelAsync(createdByUserId: _user1.Id,
+                members: new[] { _user1.Id, _user2.Id, _user3.Id });
             await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text");
         }
 
         [OneTimeTearDown]
         public async Task TeardownAsync()
         {
-            await TryDeleteChannelAsync(_channel.Cid);
             await TryDeleteUsersAsync(_user1.Id, _user2.Id, _user3.Id);
         }
 
@@ -62,16 +63,17 @@ namespace StreamChatTests
         [Test]
         public async Task TestChannelQueryAsync()
         {
-            var currentChannelState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest
-            {
-                State = true,
-                Watch = false,
-                MembersPagination = new PaginationParams
+            var currentChannelState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                new ChannelGetRequest
                 {
-                    Limit = 1,
-                    Offset = 1,
-                },
-            });
+                    State = true,
+                    Watch = false,
+                    MembersPagination = new PaginationParams
+                    {
+                        Limit = 1,
+                        Offset = 1,
+                    },
+                });
 
             currentChannelState.Members.Count.Should().Be(1);
         }
@@ -100,8 +102,10 @@ namespace StreamChatTests
 
             var actualChannel = await _channelClient.UpdateAsync(_channel.Type, _channel.Id, expectedChannel);
 
-            actualChannel.Channel.GetData<string>("plain").Should().BeEquivalentTo(expectedChannel.Data.GetData<string>("plain"));
-            actualChannel.Channel.GetData<string[]>("complex").Should().BeEquivalentTo(expectedChannel.Data.GetData<string[]>("complex"));
+            actualChannel.Channel.GetData<string>("plain").Should()
+                .BeEquivalentTo(expectedChannel.Data.GetData<string>("plain"));
+            actualChannel.Channel.GetData<string[]>("complex").Should()
+                .BeEquivalentTo(expectedChannel.Data.GetData<string[]>("complex"));
         }
 
         [Test]
@@ -122,7 +126,8 @@ namespace StreamChatTests
         public async Task TestDeleteChannelAsync()
         {
             // Let's not delete the channel that the other tests are using, so let's create a new one
-            var channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id, _user2.Id, _user3.Id });
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id,
+                members: new[] { _user1.Id, _user2.Id, _user3.Id }, autoDelete: false);
 
             await WaitForAsync(async () =>
             {
@@ -137,10 +142,11 @@ namespace StreamChatTests
                 }
             });
 
-            var resp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(new Dictionary<string, object>
-            {
-                { "cid", new Dictionary<string, object> { { "$eq", channel.Cid } } },
-            }));
+            var resp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(
+                new Dictionary<string, object>
+                {
+                    { "cid", new Dictionary<string, object> { { "$eq", channel.Cid } } },
+                }));
             resp.Channels.Count.Should().Be(0);
         }
 
@@ -148,12 +154,16 @@ namespace StreamChatTests
         public async Task TestChannelTruncateAsync()
         {
             await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text");
-            var originalChannel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { State = true });
+            var originalChannel
+                = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                    new ChannelGetRequest { State = true });
             originalChannel.Messages.Should().NotBeEmpty();
 
             await _channelClient.TruncateAsync(_channel.Type, _channel.Id, new TruncateOptions { UserId = _user2.Id });
 
-            var afterTruncateChannel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { State = true });
+            var afterTruncateChannel
+                = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                    new ChannelGetRequest { State = true });
             afterTruncateChannel.Messages.Should().BeEmpty();
 
             // this isn't deployed to the test environment, so uncomment it a bit later:
@@ -163,10 +173,11 @@ namespace StreamChatTests
         [Test]
         public async Task TestQueryChannelsAsync()
         {
-            var queryResp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(new Dictionary<string, object>
-            {
-                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
-            }));
+            var queryResp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(
+                new Dictionary<string, object>
+                {
+                    { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+                }));
 
             var read = queryResp.Channels[0].Reads[0];
             read.LastRead.Should().NotBe(default(DateTimeOffset));
@@ -240,7 +251,8 @@ namespace StreamChatTests
         [Test]
         public async Task TestGetExportChannelAsync()
         {
-            var resp = await _channelClient.ExportChannelAsync(new ExportChannelItem { Id = _channel.Id, Type = _channel.Type });
+            var resp = await _channelClient.ExportChannelAsync(new ExportChannelItem
+                { Id = _channel.Id, Type = _channel.Type });
 
             await WaitForAsync(async () =>
             {
@@ -257,7 +269,8 @@ namespace StreamChatTests
 
             await _channelClient.AddMembersAsync(_channel.Type, _channel.Id, newUser.Id);
 
-            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                ChannelGetRequest.WithoutWatching());
             channel.Members.Should().Contain(x => x.UserId == newUser.Id);
             await TryDeleteUsersAsync(new[] { newUser.Id });
         }
@@ -267,7 +280,8 @@ namespace StreamChatTests
         {
             await _channelClient.RemoveMembersAsync(_channel.Type, _channel.Id, new[] { _user3.Id });
 
-            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                ChannelGetRequest.WithoutWatching());
             channel.Members.Should().NotContain(x => x.UserId == _user3.Id);
         }
 
@@ -276,7 +290,8 @@ namespace StreamChatTests
         {
             await _channelClient.AddModeratorsAsync(_channel.Type, _channel.Id, new[] { _user2.Id });
 
-            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                ChannelGetRequest.WithoutWatching());
             var user2 = channel.Members.First(x => x.UserId == _user2.Id);
             user2.IsModerator.Should().BeTrue();
         }
@@ -288,7 +303,8 @@ namespace StreamChatTests
 
             await _channelClient.DemoteModeratorsAsync(_channel.Type, _channel.Id, new[] { _user2.Id });
 
-            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                ChannelGetRequest.WithoutWatching());
             var user2 = channel.Members.First(x => x.UserId == _user2.Id);
             user2.IsModerator.Should().BeNull();
         }
@@ -299,16 +315,17 @@ namespace StreamChatTests
             await _channelClient.AssignRolesAsync(_channel.Type, _channel.Id, new AssignRoleRequest
             {
                 AssignRoles = new List<RoleAssignment>
-                 {
-                     new RoleAssignment
-                     {
-                         UserId = _user2.Id,
-                         ChannelRole = Role.ChannelModerator,
-                     },
-                 },
+                {
+                    new RoleAssignment
+                    {
+                        UserId = _user2.Id,
+                        ChannelRole = Role.ChannelModerator,
+                    },
+                },
             });
 
-            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, ChannelGetRequest.WithoutWatching());
+            var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                ChannelGetRequest.WithoutWatching());
             var user2 = channel.Members.First(x => x.UserId == _user2.Id);
             user2.IsModerator.Should().BeTrue();
         }
@@ -333,6 +350,169 @@ namespace StreamChatTests
 
             await inviteTask.Should().NotThrowAsync();
             await rejectTask.Should().NotThrowAsync();
+        }
+
+        [Test]
+        public async Task TestChannelMemberPartialUpdateAsync()
+        {
+            await _channelClient.AddMembersAsync(_channel.Type, _channel.Id, _user1.Id);
+
+            var partialRequest = new ChannelMemberPartialRequest
+            {
+                UserId = _user1.Id,
+                Set = new Dictionary<string, object>()
+                {
+                    { "hat", "blue" },
+                },
+            };
+            await _channelClient.UpdateMemberPartialAsync(_channel.Type, _channel.Id, partialRequest);
+
+            var result = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = _channel.Type,
+                Id = _channel.Id,
+                FilterConditions = new Dictionary<string, object>()
+                {
+                    {
+                        "id", new Dictionary<string, object>
+                        {
+                            { "$eq", _user1.Id },
+                        }
+                    },
+                },
+            });
+
+            result.Members.First().GetData<string>("hat").Should().Be("blue");
+        }
+
+        [Test]
+        public async Task TestPinChannelForMemberAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, _user1.Id);
+
+            var timestamp = DateTimeOffset.UtcNow;
+
+            // Pin
+            var response = await _channelClient.PinAsync(channel.Type, channel.Id, _user1.Id);
+
+            // Assert pinned_at
+            response.ChannelMember.UserId.Should().Be(_user1.Id);
+            response.ChannelMember.PinnedAt.Should().BeCloseTo(timestamp, TimeSpan.FromSeconds(1));
+
+            // Assert query pinned channel
+            var pinnedChannels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "pinned", true },
+                },
+                UserId = _user1.Id,
+            });
+
+            pinnedChannels.Channels.Single().Channel.Cid.Should().Be(channel.Cid);
+        }
+
+        [Test]
+        public async Task TestUnpinChannelForMemberAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, _user1.Id);
+
+            var timestamp = DateTimeOffset.UtcNow;
+
+            // Pin
+            var pinResponse = await _channelClient.PinAsync(channel.Type, channel.Id, _user1.Id);
+
+            // Assert pinned_at
+            pinResponse.ChannelMember.UserId.Should().Be(_user1.Id);
+            pinResponse.ChannelMember.PinnedAt.Should().BeCloseTo(timestamp, TimeSpan.FromSeconds(1));
+
+            // Unpin
+            var unpinResponse = await _channelClient.UnpinAsync(channel.Type, channel.Id, _user1.Id);
+
+            // Assert unpinned
+            unpinResponse.ChannelMember.UserId.Should().Be(_user1.Id);
+            unpinResponse.ChannelMember.PinnedAt.Should().BeNull();
+
+            // Assert query pinned channel
+            var pinnedChannels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "pinned", true },
+                },
+                UserId = _user1.Id,
+            });
+
+            pinnedChannels.Channels.Should().NotContain(c => c.Channel.Cid == channel.Cid);
+        }
+
+        [Test]
+        public async Task TestArchiveChannelForMemberAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, _user1.Id);
+
+            var timestamp = DateTimeOffset.UtcNow;
+
+            // Archive
+            var response = await _channelClient.ArchiveAsync(channel.Type, channel.Id, _user1.Id);
+
+            // Assert archived_at
+            response.ChannelMember.UserId.Should().Be(_user1.Id);
+            response.ChannelMember.ArchivedAt.Should().BeCloseTo(timestamp, TimeSpan.FromSeconds(1));
+
+            // Assert query archived channel
+            var pinnedChannels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "archived", true },
+                },
+                UserId = _user1.Id,
+            });
+
+            pinnedChannels.Channels.Single().Channel.Cid.Should().Be(channel.Cid);
+        }
+
+        [Test]
+        public async Task TestUnarchiveChannelForMemberAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, _user1.Id);
+
+            var timestamp = DateTimeOffset.UtcNow;
+
+            // Archive
+            var archiveResponse = await _channelClient.ArchiveAsync(channel.Type, channel.Id, _user1.Id);
+
+            // Assert archived_at
+            archiveResponse.ChannelMember.UserId.Should().Be(_user1.Id);
+            archiveResponse.ChannelMember.ArchivedAt.Should().BeCloseTo(timestamp, TimeSpan.FromSeconds(1));
+
+            // Unarchive
+            var unarchiveResponse = await _channelClient.UnarchiveAsync(channel.Type, channel.Id, _user1.Id);
+
+            // Assert unarchived
+            unarchiveResponse.ChannelMember.UserId.Should().Be(_user1.Id);
+            unarchiveResponse.ChannelMember.ArchivedAt.Should().BeNull();
+
+            // Assert query archived channel
+            var archivedChannels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "archived", true },
+                },
+                UserId = _user1.Id,
+            });
+
+            archivedChannels.Channels.Should().NotContain(c => c.Channel.Cid == channel.Cid);
         }
     }
 }
