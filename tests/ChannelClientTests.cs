@@ -407,6 +407,7 @@ namespace StreamChatTests
                 Filter = new Dictionary<string, object>()
                 {
                     { "pinned", true },
+                    { "cid", channel.Cid },
                 },
                 UserId = _user1.Id,
             });
@@ -443,6 +444,7 @@ namespace StreamChatTests
                 Filter = new Dictionary<string, object>()
                 {
                     { "pinned", true },
+                    { "cid", channel.Cid },
                 },
                 UserId = _user1.Id,
             });
@@ -472,6 +474,7 @@ namespace StreamChatTests
                 Filter = new Dictionary<string, object>()
                 {
                     { "archived", true },
+                    { "cid", channel.Cid },
                 },
                 UserId = _user1.Id,
             });
@@ -508,6 +511,7 @@ namespace StreamChatTests
                 Filter = new Dictionary<string, object>()
                 {
                     { "archived", true },
+                    { "cid", channel.Cid },
                 },
                 UserId = _user1.Id,
             });
