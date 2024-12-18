@@ -75,7 +75,7 @@ namespace StreamChat.Models
         public Dictionary<string, object> Set { get; set; }
         public IEnumerable<string> Unset { get; set; }
     }
-    
+
     public class ChannelMemberPartialRequest
     {
         public string UserId { get; set; }
