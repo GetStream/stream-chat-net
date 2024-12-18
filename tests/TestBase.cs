@@ -31,6 +31,11 @@ namespace StreamChatTests
         private async Task OneTimeTearDown()
         {
             var cids = _testChannels.Select(x => x.Cid).ToArray();
+            if (cids.Length == 0)
+            {
+                return;
+            }
+
             var resp = await _channelClient.DeleteChannelsAsync(cids, hardDelete: true);
             await WaitUntilTaskSucceedsAsync(resp.TaskId);
         }
