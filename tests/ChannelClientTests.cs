@@ -410,7 +410,7 @@ namespace StreamChatTests
 
             if (pinnedChannels.Channels.Count == 0)
             {
-                Console.WriteLine("No pinned channels found. Try again");
+                Console.WriteLine($"No pinned channels found. Try again. Channel Cid: {channel.Cid}, user ID: {_user1.Id}");
                 await Task.Delay(2000);
 
                 var pinnedChannels2 = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
