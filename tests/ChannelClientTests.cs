@@ -408,45 +408,6 @@ namespace StreamChatTests
                 UserId = _user1.Id,
             });
 
-            if (pinnedChannels.Channels.Count == 0)
-            {
-                Console.WriteLine($"No pinned channels found. Try again. Channel Cid: {channel.Cid}, user ID: {_user1.Id}");
-                await Task.Delay(4000);
-
-                var pinnedChannels2 = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
-                {
-                    Filter = new Dictionary<string, object>()
-                    {
-                        { "pinned", true },
-                        { "cid", channel.Cid },
-                    },
-                    UserId = _user1.Id,
-                    Limit = 20,
-                });
-
-                Console.WriteLine("Second attempt channels: " + pinnedChannels2.Channels.Count);
-
-                var pinnedChannels3 = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
-                {
-                    Filter = new Dictionary<string, object>()
-                    {
-                        { "cid", channel.Cid },
-                    },
-                    UserId = _user1.Id,
-                });
-
-                Console.WriteLine("Third attempt channels: " + pinnedChannels3.Channels.Count);
-
-                if (pinnedChannels3.Channels.Count > 0)
-                {
-                    var channelToInspect = pinnedChannels3.Channels.First();
-                    var json = JsonConvert.SerializeObject(channelToInspect);
-                    Console.WriteLine("Serialized: " + json);
-                }
-
-                return;
-            }
-
             pinnedChannels.Channels.Single().Channel.Cid.Should().Be(channel.Cid);
         }
 
