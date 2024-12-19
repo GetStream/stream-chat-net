@@ -145,7 +145,7 @@ namespace StreamChatTests
             var resp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(
                 new Dictionary<string, object>
                 {
-                    { "cid", new Dictionary<string, object> { { "$eq", channel.Cid } } },
+                    { "cid", channel.Cid },
                 }));
             resp.Channels.Count.Should().Be(0);
         }
@@ -176,7 +176,7 @@ namespace StreamChatTests
             var queryResp = await _channelClient.QueryChannelsAsync(QueryChannelsOptions.Default.WithFilter(
                 new Dictionary<string, object>
                 {
-                    { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+                    { "cid", _channel.Cid },
                 }));
 
             var read = queryResp.Channels[0].Reads[0];
@@ -373,12 +373,7 @@ namespace StreamChatTests
                 Id = _channel.Id,
                 FilterConditions = new Dictionary<string, object>()
                 {
-                    {
-                        "id", new Dictionary<string, object>
-                        {
-                            { "$eq", _user1.Id },
-                        }
-                    },
+                    { "id", _user1.Id },
                 },
             });
 
@@ -469,7 +464,7 @@ namespace StreamChatTests
             response.ChannelMember.ArchivedAt.Should().BeCloseTo(timestamp, TimeSpan.FromSeconds(1));
 
             // Assert query archived channel
-            var pinnedChannels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            var archivedChannels = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
             {
                 Filter = new Dictionary<string, object>()
                 {
@@ -479,7 +474,7 @@ namespace StreamChatTests
                 UserId = _user1.Id,
             });
 
-            pinnedChannels.Channels.Single().Channel.Cid.Should().Be(channel.Cid);
+            archivedChannels.Channels.Single().Channel.Cid.Should().Be(channel.Cid);
         }
 
         [Test]

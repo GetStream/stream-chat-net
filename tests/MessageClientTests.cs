@@ -90,7 +90,7 @@ namespace StreamChatTests
             {
                 Filter = new Dictionary<string, object>
             {
-                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+                { "cid", _channel.Cid },
             },
                 UserId = _user.Id,
             });
@@ -103,7 +103,7 @@ namespace StreamChatTests
             {
                 Filter = new Dictionary<string, object>
             {
-                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+                { "cid", _channel.Cid },
             },
                 UserId = _user.Id,
             });
