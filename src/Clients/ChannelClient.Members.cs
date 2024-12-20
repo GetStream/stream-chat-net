@@ -32,6 +32,12 @@ namespace StreamChat.Clients
                     Message = msg,
                 });
 
+        public async Task<ChannelMemberResponse> UpdateMemberPartialAsync(string channelType, string channelId, ChannelMemberPartialRequest channelMemberPartialRequest)
+            => await ExecuteRequestAsync<ChannelMemberResponse>($"channels/{channelType}/{channelId}/member/{channelMemberPartialRequest.UserId}",
+                HttpMethod.PATCH,
+                HttpStatusCode.OK,
+                channelMemberPartialRequest);
+
         public async Task<QueryMembersResponse> QueryMembersAsync(QueryMembersRequest queryMembersRequest)
             => await ExecuteRequestAsync<QueryMembersResponse>("members",
                 HttpMethod.GET,

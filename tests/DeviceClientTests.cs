@@ -27,7 +27,8 @@ namespace StreamChatTests
             await _deviceClient.AddDeviceAsync(new Device
             {
                 Id = _deviceId,
-                PushProvider = "apn",
+                PushProvider = "firebase",
+                PushProviderName = "FirebaseTestApp",
                 UserId = _user.Id,
             });
         }

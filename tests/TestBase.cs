@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using StreamChat.Clients;
 using StreamChat.Models;
 
@@ -23,6 +24,21 @@ namespace StreamChatTests
         protected static readonly IReactionClient _reactionClient = TestClientFactory.GetReactionClient();
         protected static readonly IUserClient _userClient = TestClientFactory.GetUserClient();
         protected static readonly ITaskClient _taskClient = TestClientFactory.GetTaskClient();
+
+        private readonly List<ChannelWithConfig> _testChannels = new List<ChannelWithConfig>();
+
+        [OneTimeTearDown]
+        private async Task OneTimeTearDown()
+        {
+            var cids = _testChannels.Select(x => x.Cid).ToArray();
+            if (cids.Length == 0)
+            {
+                return;
+            }
+
+            var resp = await _channelClient.DeleteChannelsAsync(cids, hardDelete: true);
+            await WaitUntilTaskSucceedsAsync(resp.TaskId);
+        }
 
         protected async Task WaitForAsync(Func<Task<bool>> condition, int timeout = 5000, int delay = 500)
         {
@@ -62,16 +78,21 @@ namespace StreamChatTests
             return user;
         }
 
-        protected async Task<ChannelWithConfig> CreateChannelAsync(string createdByUserId, IEnumerable<string> members)
+        protected async Task<ChannelWithConfig> CreateChannelAsync(string createdByUserId, IEnumerable<string> members = null, bool autoDelete = true)
         {
             var channelResp = await _channelClient.GetOrCreateAsync("messaging", Guid.NewGuid().ToString(), new ChannelGetRequest
             {
                 Data = new ChannelRequest
                 {
-                    Members = members.Select((x, idx) => new ChannelMember { UserId = x, Role = idx == 0 ? Role.Admin : null }),
+                    Members = members?.Select((x, idx) => new ChannelMember { UserId = x, Role = idx == 0 ? Role.Admin : null }),
                     CreatedBy = new UserRequest { Id = createdByUserId },
                 },
             });
+
+            if (autoDelete)
+            {
+                _testChannels.Add(channelResp.Channel);
+            }
 
             return channelResp.Channel;
         }

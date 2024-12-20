@@ -35,9 +35,8 @@ namespace StreamChatTests
         }
 
         [TearDown]
-        public async Task TearownAsync()
+        public async Task TearDownAsync()
         {
-            await TryDeleteChannelAsync(_channel.Cid);
             await TryDeleteUsersAsync(_user.Id);
         }
 
@@ -91,7 +90,7 @@ namespace StreamChatTests
             {
                 Filter = new Dictionary<string, object>
             {
-                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+                { "cid", _channel.Cid },
             },
                 UserId = _user.Id,
             });
@@ -104,7 +103,7 @@ namespace StreamChatTests
             {
                 Filter = new Dictionary<string, object>
             {
-                { "cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
+                { "cid", _channel.Cid },
             },
                 UserId = _user.Id,
             });

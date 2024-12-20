@@ -20,7 +20,8 @@ namespace StreamChat.Clients
         /// Adds members to a channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
-        Task<ApiResponse> AddMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg, AddMemberOptions options);
+        Task<ApiResponse> AddMembersAsync(string channelType, string channelId, IEnumerable<string> userIds,
+            MessageRequest msg, AddMemberOptions options);
 
         /// <summary>
         /// Makes a member a moderator in a channel.
@@ -32,7 +33,8 @@ namespace StreamChat.Clients
         /// Assigns a role to a user.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/chat_permission_policies/?language=csharp</remarks>
-        Task<UpdateChannelResponse> AssignRolesAsync(string channelType, string channelId, AssignRoleRequest roleRequest);
+        Task<UpdateChannelResponse> AssignRolesAsync(string channelType, string channelId,
+            AssignRoleRequest roleRequest);
 
         /// <summary>
         /// Deletes a channel.
@@ -103,13 +105,15 @@ namespace StreamChat.Clients
         /// Returns a channel. If it doesn't exist yet with the given name, it will be created.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/creating_channels/?language=csharp</remarks>
-        Task<ChannelGetResponse> GetOrCreateAsync(string channelType, string channelId, string createdBy, params string[] members);
+        Task<ChannelGetResponse> GetOrCreateAsync(string channelType, string channelId, string createdBy,
+            params string[] members);
 
         /// <summary>
         /// Returns a channel. If it doesn't exist yet with the given name, it will be created.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/creating_channels/?language=csharp</remarks>
-        Task<ChannelGetResponse> GetOrCreateAsync(string channelType, string channelId, ChannelGetRequest channelRequest);
+        Task<ChannelGetResponse> GetOrCreateAsync(string channelType, string channelId,
+            ChannelGetRequest channelRequest);
 
         /// <summary>
         /// Returns a channel. If it doesn't exist yet with the given name, it will be created.
@@ -136,7 +140,8 @@ namespace StreamChat.Clients
         /// Can be used to set and unset specific fields when it is necessary to retain additional custom data fields on the object.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/?language=csharp</remarks>
-        Task<PartialUpdateChannelResponse> PartialUpdateAsync(string channelType, string channelId, PartialUpdateChannelRequest partialUpdateChannelRequest);
+        Task<PartialUpdateChannelResponse> PartialUpdateAsync(string channelType, string channelId,
+            PartialUpdateChannelRequest partialUpdateChannelRequest);
 
         /// <summary>
         /// <para>Queries channels.</para>
@@ -162,17 +167,25 @@ namespace StreamChat.Clients
         /// Removes member(s) from a channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
-        Task<ApiResponse> RemoveMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null);
+        Task<ApiResponse> RemoveMembersAsync(string channelType, string channelId, IEnumerable<string> userIds,
+            MessageRequest msg = null);
 
         /// <summary>
-        /// <para>Removes all of the messages but not affect the channel data or channel members.</para>
+        /// Update channel member partially.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_member/#update-channel-members</remarks>
+        Task<ChannelMemberResponse> UpdateMemberPartialAsync(string channelType, string channelId,
+            ChannelMemberPartialRequest channelMemberPartialRequest);
+
+        /// <summary>
+        /// <para>Removes all messages but not affect the channel data or channel members.</para>
         /// If you want to delete both channel and message data then use <see cref="DeleteAsync"/> method instead.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/truncate_channel/?language=csharp</remarks>
         Task<TruncateResponse> TruncateAsync(string channelType, string channelId);
 
         /// <summary>
-        /// <para>Removes all of the messages but not affect the channel data or channel members.</para>
+        /// <para>Removes all messages but not affect the channel data or channel members.</para>
         /// If you want to delete both channel and message data then use <see cref="DeleteAsync"/> method instead.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/truncate_channel/?language=csharp</remarks>
@@ -182,7 +195,8 @@ namespace StreamChat.Clients
         /// Invites a user to the channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
-        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, string userId, MessageRequest msg = null);
+        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, string userId,
+            MessageRequest msg = null);
 
         /// <summary>
         /// Invites a user to the channel.
@@ -194,7 +208,8 @@ namespace StreamChat.Clients
         /// Invites a user to the channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_invites/?language=csharp/</remarks>
-        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg = null);
+        Task<UpdateChannelResponse> InviteAsync(string channelType, string channelId, IEnumerable<string> userIds,
+            MessageRequest msg = null);
 
         /// <summary>
         /// Accepts an invitaton to a channel.
@@ -210,11 +225,36 @@ namespace StreamChat.Clients
 
         /// <summary>
         /// <para>Updates a channel.</para>
-        /// The update function updates all of the channel data. Any data that is present on the channel
+        /// The update function updates all channel data. Any data that is present on the channel
         /// and not included in a full update will be deleted. If you don't want that, use
         /// the <see cref="PartialUpdateAsync"/> method instead.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/?language=csharp</remarks>
-        Task<UpdateChannelResponse> UpdateAsync(string channelType, string channelId, ChannelUpdateRequest updateRequest);
+        Task<UpdateChannelResponse> UpdateAsync(string channelType, string channelId,
+            ChannelUpdateRequest updateRequest);
+
+        /// <summary>
+        /// Pins the channel for the user.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/#pinning-a-channel</remarks>
+        Task<ChannelMemberResponse> PinAsync(string channelType, string channelId, string userId);
+
+        /// <summary>
+        /// Unpins the channel for the user.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/#pinning-a-channel</remarks>
+        Task<ChannelMemberResponse> UnpinAsync(string channelType, string channelId, string userId);
+
+        /// <summary>
+        /// Archives the channel for the user.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/#archiving-a-channel</remarks>
+        Task<ChannelMemberResponse> ArchiveAsync(string channelType, string channelId, string userId);
+
+        /// <summary>
+        /// Unarchives the channel for the user.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/#archiving-a-channel</remarks>
+        Task<ChannelMemberResponse> UnarchiveAsync(string channelType, string channelId, string userId);
     }
 }
