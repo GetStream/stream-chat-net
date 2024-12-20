@@ -173,7 +173,7 @@ namespace StreamChat.Clients
         /// <summary>
         /// Update channel member partially.
         /// </summary>
-        /// <remarks>https://getstream.io/chat/docs/node/channel_member/#update-channel-members</remarks>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_member/#update-channel-members</remarks>
         Task<ChannelMemberResponse> UpdateMemberPartialAsync(string channelType, string channelId,
             ChannelMemberPartialRequest channelMemberPartialRequest);
 
