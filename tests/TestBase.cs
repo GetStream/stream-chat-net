@@ -28,16 +28,18 @@ namespace StreamChatTests
         private readonly List<ChannelWithConfig> _testChannels = new List<ChannelWithConfig>();
 
         [OneTimeTearDown]
-        private async Task OneTimeTearDown()
+        public async Task OneTimeTearDown()
         {
-            var cids = _testChannels.Select(x => x.Cid).ToArray();
-            if (cids.Length == 0)
-            {
-                return;
-            }
+            const int chunkSize = 50;
 
-            var resp = await _channelClient.DeleteChannelsAsync(cids, hardDelete: true);
-            await WaitUntilTaskSucceedsAsync(resp.TaskId);
+            var cids = _testChannels.Select(x => x.Cid).ToArray();
+            for (int i = 0; i < cids.Length; i += chunkSize)
+            {
+                var chunk = cids.Skip(i).Take(chunkSize).ToArray();
+
+                var resp = await _channelClient.DeleteChannelsAsync(chunk, hardDelete: true);
+                await WaitUntilTaskSucceedsAsync(resp.TaskId);
+            }
         }
 
         protected async Task WaitForAsync(Func<Task<bool>> condition, int timeout = 5000, int delay = 500)
