@@ -95,6 +95,304 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestQueryMembersSortingAsync()
+        {
+            // Setup channel with Members
+            var userIds = Enumerable.Range(0, 10).Select(i => Guid.NewGuid().ToString()).ToArray();
+
+            userIds.Should().OnlyHaveUniqueItems();
+
+            var userRequests = userIds.Select(id => new UserRequest { Id = id }).ToArray();
+            var upsertResponse = await _userClient.UpsertManyAsync(userRequests);
+
+            upsertResponse.Users.Should().HaveCount(10);
+
+            var channel = await CreateChannelAsync(_user1.Id);
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, userIds);
+
+            // Set custom members data
+            for (int i = 0; i < userIds.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    continue;
+                }
+
+                var request = new ChannelMemberPartialRequest()
+                {
+                    UserId = userIds[i],
+                    Set = new Dictionary<string, object>()
+                    {
+                        { "color", "blue" },
+                    },
+                };
+
+                await _channelClient.UpdateMemberPartialAsync(channel.Type, channel.Id, request);
+            }
+
+            // Test member queries without filter and sort
+            var response = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>(),
+            });
+
+            response.Members.Should().HaveCount(10);
+
+            // Test member queries sort
+            var response2 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>(),
+                Limit = 20,
+                Sorts = new[]
+                {
+                    new SortParameter
+                    {
+                        Field = "created_at",
+                        Direction = SortDirection.Ascending,
+                    },
+                },
+            });
+
+            response2.Members.Should().HaveCount(10);
+            response2.Members.Select(member => member.CreatedAt).Should().BeInAscendingOrder();
+
+            // Test member queries with offset
+            var response3 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>(),
+                Limit = 20,
+                Offset = 5,
+            });
+
+            response3.Members.Should().HaveCount(5);
+
+            // Test member queries filter and sort
+            var response4 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "color", "blue" }, // Filters by member custom data (not user custom data)
+                },
+                Limit = 20,
+                Sorts = new[]
+                {
+                    new SortParameter
+                    {
+                        Field = "created_at",
+                        Direction = SortDirection.Descending,
+                    },
+                },
+            });
+
+            response4.Members.Should().HaveCount(5);
+            response4.Members.Select(member => member.CreatedAt).Should().BeInDescendingOrder();
+        }
+
+        [Test]
+        public async Task TestMembersQueryAsync()
+        {
+            // Setup channel with Members
+            var userIds = Enumerable.Range(0, 10).Select(i => Guid.NewGuid().ToString()).ToArray();
+            var userIdsToInvite = Enumerable.Range(0, 2).Select(i => Guid.NewGuid().ToString()).ToArray();
+            var usersToBan = userIds.Take(2).ToArray();
+            var usersModerators = userIds.Skip(2).Take(2).ToArray();
+            var usersWithMemberCustomData = userIds.Skip(4).Take(2).ToArray();
+            var usersWithUserCustomData = userIds.Skip(6).Take(2).ToArray();
+
+            userIds.Should().OnlyHaveUniqueItems();
+            userIdsToInvite.Should().OnlyHaveUniqueItems();
+
+            var allUserIds = userIds.Concat(userIdsToInvite).ToArray();
+            var userRequests = allUserIds.Select(id => new UserRequest { Id = id }).ToArray();
+            userRequests[6].Name = "Tommaso";
+            userRequests[6].SetData("email", "example@getstream.io");
+
+            var upsertResponse = await _userClient.UpsertManyAsync(userRequests);
+
+            upsertResponse.Users.Should().HaveCount(12);
+
+            var channel = await CreateChannelAsync(_user1.Id);
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, userIds);
+
+            // Invite members
+            await _channelClient.InviteAsync(channel.Type, channel.Id, userIdsToInvite);
+
+            // Ban members
+            foreach (var userToBanId in usersToBan)
+            {
+                await _userClient.BanAsync(new BanRequest
+                {
+                    Type = channel.Type,
+                    Id = channel.Id,
+                    TargetUserId = userToBanId,
+                    UserId = allUserIds[10],
+                    Reason = "spam",
+                });
+            }
+
+            // Set moderators
+            await _channelClient.AddModeratorsAsync(channel.Type, channel.Id, usersModerators);
+
+            // Set member custom data
+            foreach (var member in usersWithMemberCustomData)
+            {
+                await _channelClient.UpdateMemberPartialAsync(channel.Type, channel.Id, new ChannelMemberPartialRequest
+                {
+                    UserId = member,
+                    Set = new Dictionary<string, object>
+                    {
+                        { "subscription", "gold_plan" },
+                    },
+                });
+            }
+
+            // Set user custom data
+            foreach (var member in usersWithUserCustomData)
+            {
+                await _userClient.UpdatePartialAsync(new UserPartialRequest
+                {
+                    Id = member,
+                    Set = new Dictionary<string, object>
+                    {
+                        { "color", "red" },
+                    },
+                });
+            }
+
+            // Tests start here
+
+            // Get members with pending invites
+            var response = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "invite", "pending" },
+                },
+            });
+
+            response.Members.Should().HaveCount(2);
+            response.Members.Should().OnlyHaveUniqueItems();
+            foreach (var invitedUserId in userIdsToInvite)
+            {
+                response.Members.Should().Contain(m => m.UserId == invitedUserId);
+            }
+
+            // Search by name autocomplete
+            var response2 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    {
+                        "name", new Dictionary<string, string>
+                        {
+                            { "$autocomplete", "Tomm" },
+                        }
+                    },
+                },
+            });
+
+            response2.Members.Should().HaveCount(1);
+            response2.Members.Single().User.Name.Should().StartWith("Tomm");
+
+            // Get moderators
+            var response3 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "channel_role", "channel_moderator" },
+                },
+            });
+
+            response3.Members.Should().HaveCount(2);
+            response3.Members.Should().OnlyHaveUniqueItems();
+            foreach (var invitedUserId in usersModerators)
+            {
+                response3.Members.Should().Contain(m => m.UserId == invitedUserId);
+            }
+
+            // Get members who have joined the channel
+            var response4 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "joined", true },
+                },
+            });
+
+            response4.Members.Should().HaveCount(10);
+            response4.Members.Should().OnlyHaveUniqueItems();
+            foreach (var bannedUserId in userIds)
+            {
+                response4.Members.Should().Contain(m => m.UserId == bannedUserId);
+            }
+
+            // Get banned members
+            var response5 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "banned", true },
+                },
+            });
+
+            response5.Members.Should().HaveCount(2);
+            response5.Members.Should().OnlyHaveUniqueItems();
+            foreach (var bannedUserId in usersToBan)
+            {
+                response5.Members.Should().Contain(m => m.UserId == bannedUserId);
+            }
+
+            // Get members by custom data
+            var response6 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "subscription", "gold_plan" },
+                },
+            });
+
+            response6.Members.Should().HaveCount(2);
+            response6.Members.Should().OnlyHaveUniqueItems();
+            foreach (var userId in usersWithMemberCustomData)
+            {
+                response6.Members.Should().Contain(m => m.UserId == userId);
+            }
+
+            // Get members by user custom data
+            // Note that members custom data is separate from user custom data
+            var response7 = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            {
+                Type = channel.Type,
+                Id = channel.Id,
+                FilterConditions = new Dictionary<string, object>
+                {
+                    { "user.email", "example@getstream.io" },
+                },
+            });
+            response7.Members.Should().HaveCount(1);
+        }
+
+        [Test]
         public async Task TestChannelUpdateAsync()
         {
             var expectedChannel = new ChannelUpdateRequest { Data = new ChannelRequest() };
