@@ -37,6 +37,7 @@ namespace StreamChat.Models
         public DateTimeOffset? PinExpires { get; set; }
         public UserRequest PinnedBy { get; set; }
         public DateTimeOffset? PinnedAt { get; set; }
+        public IEnumerable<string> RestrictedVisibility { get; set; }
     }
 }
 
