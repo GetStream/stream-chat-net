@@ -218,7 +218,7 @@ namespace StreamChatTests
                         await _channelTypeClient.DeleteChannelTypeAsync(tempChannelType.Name);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // ignored
                 }

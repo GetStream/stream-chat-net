@@ -53,6 +53,4 @@ internal class UserRolesTests : TestBase
         });
         resp.Members.First().ChannelRole.Should().BeEquivalentTo("channel_moderator");
     }
-
-
 }

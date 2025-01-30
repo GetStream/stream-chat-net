@@ -13,6 +13,16 @@ internal class UserPermissions
     private readonly IPermissionClient _permissionClient;
     private readonly IChannelTypeClient _channelTypeClient;
     private readonly IAppClient _appClient;
+    
+    public UserPermissions()
+    {
+        var factory = new StreamClientFactory("{{ api_key }}", "{{ api_secret }}");
+        _userClient = factory.GetUserClient();
+        _channelClient = factory.GetChannelClient();
+        _permissionClient = factory.GetPermissionClient();
+        _channelTypeClient = factory.GetChannelTypeClient();
+        _appClient = factory.GetAppClient();
+    }
 
     internal async Task ChangeUserRole()
     {
