@@ -19,6 +19,7 @@ namespace StreamChat.Models
         public DateTimeOffset? InviteAcceptedAt { get; set; }
         public DateTimeOffset? InviteRejectedAt { get; set; }
         public string Role { get; set; }
+        public string ChannelRole { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public bool? Banned { get; set; }

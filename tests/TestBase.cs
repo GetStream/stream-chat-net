@@ -128,7 +128,7 @@ namespace StreamChatTests
         /// <param name="attempts">How many times to try</param>
         /// <param name="attemptTimeoutMs">delay between a failed try</param>
         /// <exception cref="ArgumentException">Throws ArgumentException If max attempts or timeout exceeds the limit</exception>
-        protected async Task TryMultiple(Func<Task> testBody,
+        protected async Task TryMultipleAsync(Func<Task> testBody,
             int attempts = 5, int attemptTimeoutMs = 500)
         {
             const int maxAttempts = 20;

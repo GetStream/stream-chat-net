@@ -8,11 +8,11 @@ namespace StreamChat.Clients
 {
     public partial class ChannelClient
     {
-        public async Task<ApiResponse> AddMembersAsync(string channelType, string channelId, params string[] userIds)
+        public async Task<UpdateChannelResponse> AddMembersAsync(string channelType, string channelId, params string[] userIds)
             => await AddMembersAsync(channelType, channelId, userIds, null, null);
 
-        public async Task<ApiResponse> AddMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg, AddMemberOptions options)
-            => await ExecuteRequestAsync<ApiResponse>($"channels/{channelType}/{channelId}",
+        public async Task<UpdateChannelResponse> AddMembersAsync(string channelType, string channelId, IEnumerable<string> userIds, MessageRequest msg, AddMemberOptions options)
+            => await ExecuteRequestAsync<UpdateChannelResponse>($"channels/{channelType}/{channelId}",
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 new ChannelUpdateRequest

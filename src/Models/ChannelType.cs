@@ -72,6 +72,15 @@ namespace StreamChat.Models
 
     public class ChannelTypeWithStringCommandsRequest : ChannelTypeRequestBase
     {
+        public ChannelTypeWithStringCommandsRequest()
+        {
+        }
+
+        public ChannelTypeWithStringCommandsRequest(Dictionary<string, List<string>> grants)
+        {
+            Grants = grants;
+        }
+
         public List<string> Commands { get; set; }
     }
 

@@ -51,6 +51,7 @@ namespace StreamChat.Models
     {
         public ChannelWithConfig Channel { get; set; }
         public Message Message { get; set; }
+        public List<ChannelMember> Members { get; set; }
     }
 
     public class PartialUpdateChannelRequest

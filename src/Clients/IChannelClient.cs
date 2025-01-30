@@ -14,13 +14,13 @@ namespace StreamChat.Clients
         /// Adds members to a channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
-        Task<ApiResponse> AddMembersAsync(string channelType, string channelId, params string[] userIds);
+        Task<UpdateChannelResponse> AddMembersAsync(string channelType, string channelId, params string[] userIds);
 
         /// <summary>
         /// Adds members to a channel.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_members/?language=csharp</remarks>
-        Task<ApiResponse> AddMembersAsync(string channelType, string channelId, IEnumerable<string> userIds,
+        Task<UpdateChannelResponse> AddMembersAsync(string channelType, string channelId, IEnumerable<string> userIds,
             MessageRequest msg, AddMemberOptions options);
 
         /// <summary>

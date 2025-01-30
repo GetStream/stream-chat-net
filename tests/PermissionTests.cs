@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using StreamChat;
+using StreamChat.Clients;
 using StreamChat.Exceptions;
 using StreamChat.Models;
 
@@ -24,12 +24,27 @@ namespace StreamChatTests
     {
         private const string TestPermissionDescription = "Test Permission";
 
+        private UserRequest _user1;
+        private UserRequest _user2;
+
         [OneTimeSetUp]
         [OneTimeTearDown]
         public async Task CleanupAsync()
         {
             await DeleteCustomRolesAsync();
-            await DeleteCustomPermissonsAsync();
+            await DeleteCustomPermissionsAsync();
+        }
+
+        [SetUp]
+        public async Task SetupAsync()
+        {
+            (_user1, _user2) = (await UpsertNewUserAsync(), await UpsertNewUserAsync());
+        }
+
+        [TearDown]
+        public async Task TeardownAsync()
+        {
+            await TryDeleteUsersAsync(_user1.Id, _user2.Id);
         }
 
         private async Task DeleteCustomRolesAsync()
@@ -49,7 +64,7 @@ namespace StreamChatTests
             }
         }
 
-        private async Task DeleteCustomPermissonsAsync()
+        private async Task DeleteCustomPermissionsAsync()
         {
             var permResp = await _permissionClient.ListPermissionsAsync();
             foreach (var perm in permResp.Permissions.Where(x => x.Description == TestPermissionDescription))
@@ -67,7 +82,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestRolesEnd2endAsync()
+        public async Task TestRolesEnd2EndAsync()
         {
             // Test create
             var roleResp = await _permissionClient.CreateRoleAsync(Guid.NewGuid().ToString());
@@ -100,7 +115,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestPermissionsEnd2endAsync()
+        public async Task TestPermissionsEnd2EndAsync()
         {
             var permission = new Permission
             {
@@ -143,13 +158,187 @@ namespace StreamChatTests
             {
                 if (ex.Message.Contains("not found"))
                 {
-                    // Unfortounatly, the backend is too slow to propagate the permission creation
+                    // Unfortunately, the backend is too slow to propagate the permission creation
                     // so this error message is expected. Facepalm.
                     return;
                 }
 
                 throw;
             }
+        }
+
+        [Test]
+        public async Task WhenUpdatingChannelGrantsExpectChannelGrantsChanged()
+        {
+            ChannelTypeWithStringCommandsResponse tempChannelType = null;
+            try
+            {
+                tempChannelType = await _channelTypeClient.CreateChannelTypeAsync(
+                    new ChannelTypeWithStringCommandsRequest()
+                    {
+                        Name = Guid.NewGuid().ToString(),
+                    });
+
+                // Expect delete-message-owner to not be present by default
+                tempChannelType.Grants.First(g => g.Key == "channel_member").Value.Should()
+                    .NotContain("delete-message-owner");
+
+                var update = new ChannelTypeWithStringCommandsRequest
+                {
+                    Grants = new Dictionary<string, List<string>>
+                    {
+                        {
+                            "channel_member", new List<string>
+                            {
+                                "delete-message-owner",
+                            }
+                        },
+                    },
+                };
+                await TryMultipleAsync(() => _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, update));
+
+                var getChannelType2 = await _channelTypeClient.GetChannelTypeAsync(tempChannelType.Name);
+
+                // Expect delete-message-owner to not be present by default
+                var channelMemberGrants = getChannelType2.Grants.First(g => g.Key == "channel_member").Value;
+                channelMemberGrants.Should().HaveCount(1);
+                channelMemberGrants.Should().Contain("delete-message-owner");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
+                try
+                {
+                    if (tempChannelType != null)
+                    {
+                        await _channelTypeClient.DeleteChannelTypeAsync(tempChannelType.Name);
+                    }
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            }
+        }
+
+        [Test]
+        public async Task WhenUpdatingGrantsWithEmptyListExpectResetToDefault()
+        {
+            var tempChannelType = await _channelTypeClient.CreateChannelTypeAsync(
+                new ChannelTypeWithStringCommandsRequest
+                {
+                    Name = Guid.NewGuid().ToString(),
+                });
+
+            var channelMemberInitialGrantsCounts
+                = tempChannelType.Grants.First(g => g.Key == "channel_member").Value.Count;
+
+            // We expect more than 1 grant by default
+            channelMemberInitialGrantsCounts.Should().NotBe(1);
+
+            // Wait for data propagation - channel type is sometimes not present immediately after creation
+            await WaitForAsync(async () =>
+            {
+                try
+                {
+                    var channelType = await _channelTypeClient.GetChannelTypeAsync(tempChannelType.Name);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            });
+
+            // Override channel_members grants to replace with a single grant
+            var updateGrants = new ChannelTypeWithStringCommandsRequest
+            {
+                Grants = new Dictionary<string, List<string>>
+                {
+                    {
+                        "channel_member", new List<string>
+                        {
+                            "delete-message-owner",
+                        }
+                    },
+                },
+            };
+            var updateChannelTypeResponse
+                = await _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, updateGrants);
+
+            // Confirm a single grant is present
+            updateChannelTypeResponse.Grants.First(g => g.Key == "channel_member").Value.Should().HaveCount(1);
+
+            // Restore grants
+            var restoreGrantsRequest
+                = new ChannelTypeWithStringCommandsRequest(grants: new Dictionary<string, List<string>>());
+            var restoreGrantsResponse
+                = await _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, restoreGrantsRequest);
+
+            // Assert more than 1 grant is present
+            restoreGrantsResponse.Grants.First(g => g.Key == "channel_member").Value.Should().HaveCountGreaterThan(1);
+        }
+
+        [Test]
+        public async Task WhenAssigningAppScopedPermissionsExpectAppGrantsMatchingAsync()
+        {
+            var settings = new AppSettingsRequest
+            {
+                Grants = new Dictionary<string, List<string>>
+                {
+                    { "anonymous", new List<string>() },
+                    { "guest", new List<string>() },
+                    { "user", new List<string> { "search-user", "mute-user" } },
+                    { "admin", new List<string> { "search-user", "mute-user", "ban-user" } },
+                },
+            };
+            await _appClient.UpdateAppSettingsAsync(settings);
+
+            var getAppResponse = await _appClient.GetAppSettingsAsync();
+            getAppResponse.App.Grants.Should().NotBeNull();
+            getAppResponse.App.Grants["anonymous"].Should().BeEmpty();
+            getAppResponse.App.Grants["guest"].Should().BeEmpty();
+            getAppResponse.App.Grants["user"].Should().BeEquivalentTo(new[] { "search-user", "mute-user" });
+            getAppResponse.App.Grants["admin"].Should()
+                .BeEquivalentTo(new[] { "search-user", "mute-user", "ban-user" });
+        }
+
+        [Test]
+        public async Task WhenUpdatingChannelConfigGrantsOverridesExpectGrantsOverridenAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+            await _channelClient.AddMembersAsync(channel.Type, channel.Id, new[] { _user2.Id });
+
+            var request = new PartialUpdateChannelRequest
+            {
+                Set = new Dictionary<string, object>
+                {
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            {
+                                "grants", new Dictionary<string, object>
+                                {
+                                    {
+                                        "user", new List<string> { "!add-links", "create-reaction" }
+                                    },
+                                }
+                            },
+                        }
+                    },
+                },
+            };
+            var partialUpdateChannelResponse
+                = await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
+
+            var channelResp = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id, new ChannelGetRequest());
+            channelResp.Channel.Config.Grants["user"].Should()
+                .BeEquivalentTo(new List<string> { "!add-links", "create-reaction" });
         }
     }
 }
