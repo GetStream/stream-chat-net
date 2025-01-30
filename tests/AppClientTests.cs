@@ -118,14 +118,14 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestReadingAppGrants()
+        public async Task TestReadingAppGrantsAsync()
         {
             var resp = await _appClient.GetAppSettingsAsync();
             resp.App.Grants.Should().NotBeNull();
         }
 
         [Test]
-        public async Task TestWritingAppGrants()
+        public async Task TestWritingAppGrantsAsync()
         {
             var getAppResponse = await _appClient.GetAppSettingsAsync();
             var userGrants = GetUserGrants(getAppResponse.App.Grants);
