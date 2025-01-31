@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
@@ -113,6 +115,43 @@ namespace StreamChatTests
             });
 
             resp.Status.Should().Be(SnsCheckStatus.Error);
+        }
+
+        [Test]
+        public async Task TestReadingAppGrantsAsync()
+        {
+            var resp = await _appClient.GetAppSettingsAsync();
+            resp.App.Grants.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task TestWritingAppGrantsAsync()
+        {
+            var getAppResponse = await _appClient.GetAppSettingsAsync();
+            var userGrants = GetUserGrants(getAppResponse.App.Grants);
+
+            // Remove permission
+            userGrants.Remove("delete-poll-owner");
+            await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { Grants = getAppResponse.App.Grants });
+
+            // Assert permissions is removed
+            var getAppResponse2 = await _appClient.GetAppSettingsAsync();
+            var userGrants2 = GetUserGrants(getAppResponse2.App.Grants);
+            userGrants2.Should().NotContain("delete-poll-owner");
+
+            // Add permission
+            userGrants2.Add("delete-poll-owner");
+            await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { Grants = getAppResponse2.App.Grants });
+
+            // Assert permissions is added
+            var getAppResponse3 = await _appClient.GetAppSettingsAsync();
+            var userGrants3 = GetUserGrants(getAppResponse3.App.Grants);
+            userGrants3.Should().Contain("delete-poll-owner");
+
+            return;
+
+            List<string> GetUserGrants(Dictionary<string, List<string>> grants)
+                => grants.First(g => g.Key == "user").Value;
         }
     }
 }
