@@ -62,7 +62,12 @@ namespace StreamChat.Models
         [Obsolete("Use V2 Permissions APIs instead. " +
             "See https://getstream.io/chat/docs/dotnet-csharp/migrating_from_legacy/?language=csharp")]
         public List<ChannelTypePermission> Permissions { get; set; }
-        public Dictionary<string, List<string>> Grants { get; set; }
+
+        // JsonProperty is needed because passing NULL is a special case where API resets the grants to the default settings.
+        // Empty Dictionary as a default value is needed in order for the default object to not reset the grants
+        [JsonProperty(NullValueHandling = NullValueHandling.Include,
+            DefaultValueHandling = DefaultValueHandling.Include)]
+        public Dictionary<string, List<string>> Grants { get; set; } = new Dictionary<string, List<string>>();
     }
 
     public class ChannelTypeWithCommandsRequest : ChannelTypeRequestBase
@@ -72,15 +77,6 @@ namespace StreamChat.Models
 
     public class ChannelTypeWithStringCommandsRequest : ChannelTypeRequestBase
     {
-        public ChannelTypeWithStringCommandsRequest()
-        {
-        }
-
-        public ChannelTypeWithStringCommandsRequest(Dictionary<string, List<string>> grants)
-        {
-            Grants = grants;
-        }
-
         public List<string> Commands { get; set; }
     }
 
