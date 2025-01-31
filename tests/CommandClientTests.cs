@@ -38,7 +38,7 @@ namespace StreamChatTests
 
         [Test]
         public Task TestGetCommandAsync()
-            => TryMultiple(async () =>
+            => TryMultipleAsync(async () =>
             {
                 var command = await _commandClient.GetAsync(_command.Name);
 
@@ -47,7 +47,7 @@ namespace StreamChatTests
 
         [Test]
         public Task TestListCommandsAsync()
-            => TryMultiple(async () =>
+            => TryMultipleAsync(async () =>
             {
                 var resp = await _commandClient.ListAsync();
 

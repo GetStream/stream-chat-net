@@ -36,7 +36,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public Task TestGetAsync() => TryMultiple(async () =>
+        public Task TestGetAsync() => TryMultipleAsync(async () =>
         {
             var resp = await _blocklistClient.GetAsync(_blocklistName);
 
@@ -47,7 +47,7 @@ namespace StreamChatTests
         });
 
         [Test]
-        public Task TestListAsync() => TryMultiple(async () =>
+        public Task TestListAsync() => TryMultipleAsync(async () =>
         {
             var resp = await _blocklistClient.ListAsync();
 
@@ -59,12 +59,12 @@ namespace StreamChatTests
         {
             var expectedWords = new[] { "test", "test2" };
 
-            await TryMultiple(async () =>
+            await TryMultipleAsync(async () =>
             {
                 await _blocklistClient.UpdateAsync(_blocklistName, expectedWords);
             });
 
-            await TryMultiple(async () =>
+            await TryMultipleAsync(async () =>
             {
                 var updated = await _blocklistClient.GetAsync(_blocklistName);
                 updated.Blocklist.Words.Should().BeEquivalentTo(expectedWords);
