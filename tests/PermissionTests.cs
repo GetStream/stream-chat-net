@@ -168,16 +168,12 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task WhenUpdatingChannelGrantsExpectChannelGrantsChanged()
+        public async Task WhenUpdatingChannelGrantsExpectChannelGrantsChangedAsync()
         {
             ChannelTypeWithStringCommandsResponse tempChannelType = null;
             try
             {
-                tempChannelType = await _channelTypeClient.CreateChannelTypeAsync(
-                    new ChannelTypeWithStringCommandsRequest()
-                    {
-                        Name = Guid.NewGuid().ToString(),
-                    });
+                tempChannelType = await CreateChannelTypeAsync();
 
                 // Expect delete-message-owner to not be present by default
                 tempChannelType.Grants.First(g => g.Key == "channel_member").Value.Should()
@@ -226,13 +222,9 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task WhenUpdatingGrantsWithEmptyListExpectResetToDefault()
+        public async Task WhenUpdatingGrantsWithEmptyListExpectResetToDefaultAsync()
         {
-            var tempChannelType = await _channelTypeClient.CreateChannelTypeAsync(
-                new ChannelTypeWithStringCommandsRequest
-                {
-                    Name = Guid.NewGuid().ToString(),
-                });
+            var tempChannelType = await CreateChannelTypeAsync();
 
             var channelMemberInitialGrantsCounts
                 = tempChannelType.Grants.First(g => g.Key == "channel_member").Value.Count;
@@ -241,18 +233,9 @@ namespace StreamChatTests
             channelMemberInitialGrantsCounts.Should().NotBe(1);
 
             // Wait for data propagation - channel type is sometimes not present immediately after creation
-            await WaitForAsync(async () =>
+            await TryMultipleAsync(async () =>
             {
-                try
-                {
-                    var channelType = await _channelTypeClient.GetChannelTypeAsync(tempChannelType.Name);
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+                await _channelTypeClient.GetChannelTypeAsync(tempChannelType.Name);
             });
 
             // Override channel_members grants to replace with a single grant
@@ -268,20 +251,32 @@ namespace StreamChatTests
                     },
                 },
             };
-            var updateChannelTypeResponse
-                = await _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, updateGrants);
 
-            // Confirm a single grant is present
-            updateChannelTypeResponse.Grants.First(g => g.Key == "channel_member").Value.Should().HaveCount(1);
+            // Try multiple times because it may fail due to data propagation
+            await TryMultipleAsync(async () =>
+            {
+                var updateChannelTypeResponse
+                    = await _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, updateGrants);
 
-            // Restore grants
-            var restoreGrantsRequest
-                = new ChannelTypeWithStringCommandsRequest(grants: new Dictionary<string, List<string>>());
-            var restoreGrantsResponse
-                = await _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, restoreGrantsRequest);
+                // Confirm a single grant is present
+                updateChannelTypeResponse.Grants.First(g => g.Key == "channel_member").Value.Should().HaveCount(1);
+            });
 
-            // Assert more than 1 grant is present
-            restoreGrantsResponse.Grants.First(g => g.Key == "channel_member").Value.Should().HaveCountGreaterThan(1);
+            // Try multiple times because it may fail due to data propagation
+            await TryMultipleAsync(async () =>
+            {
+                // Restore grants
+                var restoreGrantsRequest
+                    = new ChannelTypeWithStringCommandsRequest
+                    {
+                        Grants = null,
+                    };
+                var restoreGrantsResponse
+                    = await _channelTypeClient.UpdateChannelTypeAsync(tempChannelType.Name, restoreGrantsRequest);
+
+                // Assert more than 1 grant is present
+                restoreGrantsResponse.Grants.First(g => g.Key == "channel_member").Value.Should().HaveCountGreaterThan(1);
+            });
         }
 
         [Test]

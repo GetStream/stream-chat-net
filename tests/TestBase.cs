@@ -26,6 +26,7 @@ namespace StreamChatTests
         protected static readonly ITaskClient _taskClient = TestClientFactory.GetTaskClient();
 
         private readonly List<ChannelWithConfig> _testChannels = new List<ChannelWithConfig>();
+        private readonly List<string> _testChannelTypes = new List<string>();
 
         [OneTimeTearDown]
         public async Task OneTimeTearDown()
@@ -33,13 +34,36 @@ namespace StreamChatTests
             const int chunkSize = 50;
 
             var cids = _testChannels.Select(x => x.Cid).ToArray();
-            for (int i = 0; i < cids.Length; i += chunkSize)
+            for (var i = 0; i < cids.Length; i += chunkSize)
             {
                 var chunk = cids.Skip(i).Take(chunkSize).ToArray();
 
-                var resp = await _channelClient.DeleteChannelsAsync(chunk, hardDelete: true);
-                await WaitUntilTaskSucceedsAsync(resp.TaskId);
+                try
+                {
+                    var resp = await _channelClient.DeleteChannelsAsync(chunk, hardDelete: true);
+                    await WaitUntilTaskSucceedsAsync(resp.TaskId);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception thrown while deleting channels: {e.Message}. Channels to delete: {string.Join(", ", chunk)}");
+                }
             }
+
+            _testChannels.Clear();
+
+            foreach (var channelType in _testChannelTypes)
+            {
+                try
+                {
+                    await _channelTypeClient.DeleteChannelTypeAsync(channelType);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception thrown while deleting channel type: {e.Message}. Channel type to delete: {channelType}");
+                }
+            }
+
+            _testChannelTypes.Clear();
         }
 
         protected async Task WaitForAsync(Func<Task<bool>> condition, int timeout = 5000, int delay = 500)
@@ -103,6 +127,27 @@ namespace StreamChatTests
         {
             var resp = await _channelClient.DeleteChannelsAsync(new[] { cid }, hardDelete: true);
             await WaitUntilTaskSucceedsAsync(resp.TaskId);
+        }
+
+        protected async Task<ChannelTypeWithStringCommandsResponse> CreateChannelTypeAsync(string name = null, bool autoDelete = true)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                name = Guid.NewGuid().ToString();
+            }
+
+            var channelType = await _channelTypeClient.CreateChannelTypeAsync(
+                new ChannelTypeWithStringCommandsRequest
+                {
+                    Name = name,
+                });
+
+            if (autoDelete)
+            {
+                _testChannelTypes.Add(channelType.Name);
+            }
+
+            return channelType;
         }
 
         protected async Task TryDeleteUsersAsync(params string[] userIds)
