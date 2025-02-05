@@ -76,6 +76,8 @@ namespace StreamChat.Models
 
         public int Offset { get; set; } = DefaultOffset;
         public int Limit { get; set; } = DefaultLimit;
+        public int MemberLimit { get; set; }
+        public int MessageLimit { get; set; }
         public bool Presence { get; set; }
         public bool State { get; set; }
         public bool Watch { get; set; }

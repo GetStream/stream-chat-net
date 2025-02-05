@@ -30,6 +30,10 @@ namespace StreamChatTests
             _channel = await CreateChannelAsync(createdByUserId: _user1.Id,
                 members: new[] { _user1.Id, _user2.Id, _user3.Id });
             await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text");
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text 2");
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text 3");
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text 4");
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text 5");
         }
 
         [OneTimeTearDown]
@@ -811,6 +815,68 @@ namespace StreamChatTests
             });
 
             archivedChannels.Channels.Should().NotContain(c => c.Channel.Cid == channel.Cid);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithoutMembersLimit()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel.Cid },
+                },
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Members.Should().HaveCount(3);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithMembersLimit()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel.Cid },
+                },
+                MemberLimit = 1,
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Members.Should().HaveCount(1);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithoutMessageLimit()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel.Cid },
+                },
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Messages.Should().HaveCount(5);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithMessageLimit()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel.Cid },
+                },
+                MessageLimit = 2,
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Messages.Should().HaveCount(2);
         }
     }
 }
