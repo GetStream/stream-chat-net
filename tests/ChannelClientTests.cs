@@ -820,7 +820,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestQueryChannelsWithoutMembersLimit()
+        public async Task TestQueryChannelsWithoutMembersLimitAsync()
         {
             var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
             {
@@ -835,7 +835,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestQueryChannelsWithMembersLimit()
+        public async Task TestQueryChannelsWithMembersLimitAsync()
         {
             var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
             {
@@ -851,7 +851,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestQueryChannelsWithoutMessageLimit()
+        public async Task TestQueryChannelsWithoutMessageLimitAsync()
         {
             var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
             {
@@ -866,7 +866,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestQueryChannelsWithMessageLimit()
+        public async Task TestQueryChannelsWithMessageLimitAsync()
         {
             var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
             {
