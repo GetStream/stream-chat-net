@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using StreamChat.Models;
 
@@ -21,6 +20,7 @@ namespace StreamChatTests
         private UserRequest _user2;
         private UserRequest _user3;
         private ChannelWithConfig _channel;
+        private ChannelWithConfig _channel2;
 
         [OneTimeSetUp]
         public async Task SetupAsync()
@@ -29,7 +29,13 @@ namespace StreamChatTests
                 await UpsertNewUserAsync());
             _channel = await CreateChannelAsync(createdByUserId: _user1.Id,
                 members: new[] { _user1.Id, _user2.Id, _user3.Id });
-            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "text");
+            _channel2 = await CreateChannelAsync(createdByUserId: _user1.Id,
+                members: new[] { _user1.Id, _user2.Id, _user3.Id });
+            await _messageClient.SendMessageAsync(_channel2.Type, _channel2.Id, _user1.Id, "text");
+            await _messageClient.SendMessageAsync(_channel2.Type, _channel2.Id, _user1.Id, "text 2");
+            await _messageClient.SendMessageAsync(_channel2.Type, _channel2.Id, _user1.Id, "text 3");
+            await _messageClient.SendMessageAsync(_channel2.Type, _channel2.Id, _user1.Id, "text 4");
+            await _messageClient.SendMessageAsync(_channel2.Type, _channel2.Id, _user1.Id, "text 5");
         }
 
         [OneTimeTearDown]
@@ -811,6 +817,68 @@ namespace StreamChatTests
             });
 
             archivedChannels.Channels.Should().NotContain(c => c.Channel.Cid == channel.Cid);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithoutMembersLimitAsync()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel2.Cid },
+                },
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Members.Should().HaveCount(3);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithMembersLimitAsync()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel2.Cid },
+                },
+                MemberLimit = 1,
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Members.Should().HaveCount(1);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithoutMessageLimitAsync()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel2.Cid },
+                },
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Messages.Should().HaveCount(5);
+        }
+
+        [Test]
+        public async Task TestQueryChannelsWithMessageLimitAsync()
+        {
+            var queryChannelResponse = await _channelClient.QueryChannelsAsync(new QueryChannelsOptions
+            {
+                Filter = new Dictionary<string, object>()
+                {
+                    { "cid", _channel2.Cid },
+                },
+                MessageLimit = 2,
+                UserId = _user1.Id,
+            });
+            queryChannelResponse.Channels.Should().HaveCount(1);
+            queryChannelResponse.Channels.First().Messages.Should().HaveCount(2);
         }
     }
 }
