@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.0](https://github.com/GetStream/stream-chat-net/compare/2.8.0...2.9.0) (2025-02-07)
+
+
+### Features
+
+* Add support for `MemberLimit` and `MessageLimit` when querying channels. ([#156](https://github.com/GetStream/stream-chat-net/issues/156)) ([3e4d64c](https://github.com/GetStream/stream-chat-net/commit/3e4d64c1e61fe0942e94083c4126b9b8c46a98c4))
+
+## [2.8.0](https://github.com/GetStream/stream-chat-net/compare/2.7.0...2.8.0) (2025-01-31)
+
+### Features
+
+* Add support for reading and writing app scoped permissions (grants) ([#151](https://github.com/GetStream/stream-chat-net/issues/151))
+
 ## [2.7.0](https://github.com/GetStream/stream-chat-net/compare/2.6.0...2.7.0) (2024-12-20)
 
 ## [2.6.0](https://github.com/GetStream/stream-chat-net/compare/2.5.0...2.6.0) (2024-05-08)

@@ -18,6 +18,7 @@ namespace StreamChat.Models
         public string MessageRetention { get; set; }
         public int MaxMessageLength { get; set; }
         public string Automod { get; set; }
+        public Dictionary<string, List<string>> Grants { get; set; }
     }
 
     public class ChannelConfig : ChannelConfigBase

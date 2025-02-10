@@ -71,6 +71,7 @@ namespace StreamChat.Models
         public FileUploadConfig FileUploadConfig { get; set; }
         public DateTimeOffset? RevokeTokensIssuedBefore { get; set; }
         public UniqueUsernameEnforcementPolicy? EnforceUniqueUsernames { get; set; }
+        public Dictionary<string, List<string>> Grants { get; set; }
     }
 
     public class AppSettingsRequest : AppSettingsBase

@@ -52,7 +52,7 @@ namespace StreamChatTests
 
         [Test]
         public Task TestGetChannelTypeAsync()
-            => TryMultiple(testBody: async () =>
+            => TryMultipleAsync(testBody: async () =>
             {
                 var actualChannelType = await _channelTypeClient.GetChannelTypeAsync(_channelType.Name);
                 actualChannelType.Name.Should().BeEquivalentTo(_channelType.Name);
