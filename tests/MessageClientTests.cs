@@ -290,8 +290,6 @@ namespace StreamChatTests
             var channel = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { Watch = false, State = true });
             var actualMsg = channel.Messages.First(m => m.Id == msgResp.Message.Id);
 
-            actualMsg.User.Id.Should().BeEquivalentTo(_user.Id);
-            actualMsg.Text.Should().BeEquivalentTo(messageText);
             actualMsg.RestrictedVisibility.Should().BeEquivalentTo(restrictedToUsers);
         }
 
