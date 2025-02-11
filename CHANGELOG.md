@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/GetStream/stream-chat-net/compare/2.9.0...2.10.0) (2025-02-11)
+
+
+### Features
+
+* added restricted visibility feature ([#153](https://github.com/GetStream/stream-chat-net/issues/153)) ([d7dbd2d](https://github.com/GetStream/stream-chat-net/commit/d7dbd2d93a71751489953e9dda1bba338082b674))
+
 ## [2.9.0](https://github.com/GetStream/stream-chat-net/compare/2.8.0...2.9.0) (2025-02-07)
 
 
