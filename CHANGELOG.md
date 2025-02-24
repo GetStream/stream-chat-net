@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.11.0](https://github.com/GetStream/stream-chat-net/compare/2.10.0...2.11.0) (2025-02-24)
+
+
+### Features
+
+* Add support for `export/users` endpoint that allows for scheduling an async users exports task ([#159](https://github.com/GetStream/stream-chat-net/issues/159)) ([bbe9330](https://github.com/GetStream/stream-chat-net/commit/bbe9330952d5be10c336be4cecc8e0f1e9a95d0f))
+
 ## [2.10.0](https://github.com/GetStream/stream-chat-net/compare/2.9.0...2.10.0) (2025-02-11)
 
 
