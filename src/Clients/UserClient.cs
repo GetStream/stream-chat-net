@@ -109,6 +109,15 @@ namespace StreamChat.Clients
                 HttpMethod.GET,
                 HttpStatusCode.OK);
 
+        public async Task<GenericTaskIdResponse> ExportUsersAsync(IEnumerable<string> userIds)
+            => await ExecuteRequestAsync<GenericTaskIdResponse>("export/users",
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                body: new
+                {
+                    user_ids = userIds,
+                });
+
         public async Task<ApiResponse> ShadowBanAsync(ShadowBanRequest shadowBanRequest)
             => await BanAsync(shadowBanRequest.ToBanRequest());
 

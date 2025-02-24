@@ -150,10 +150,18 @@ namespace StreamChat.Clients
         Task<GenericUserResponse> ReactivateAsync(string id, bool restoreMessages = false, string name = null, string createdById = null);
 
         /// <summary>
-        /// Exports a user and returns an object containing all of it's data.
+        /// Exports a user and returns an object containing all of its data.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/update_users/?language=csharp#exporting-users</remarks>
         Task<ExportedUser> ExportAsync(string userId);
+
+        /// <summary>
+        /// Schedules user export task for a list of users
+        /// </summary>
+        /// <param name="userIds">user IDs to export</param>
+        /// <returns>returns task ID that you can use to get export status (see <see cref="ITaskClient.GetTaskStatusAsync"/>)</returns>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/exporting_users/?language=csharp</remarks>
+        Task<GenericTaskIdResponse> ExportUsersAsync(IEnumerable<string> userIds);
 
         /// <summary>
         /// <para>Shadow bans a user.</para>
