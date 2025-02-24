@@ -6,12 +6,12 @@ namespace DocsExamples;
 /// <summary>
 /// Code examples for <see href="https://getstream.io/chat/docs/dotnet-csharp/exporting_channels/"/>
 /// </summary>
-internal class ChannelExporting
+internal class ExportingChannels
 {
     private readonly IUserClient _userClient;
     private readonly ITaskClient _taskClient;
 
-    public ChannelExporting()
+    public ExportingChannels()
     {
         var factory = new StreamClientFactory("{{ api_key }}", "{{ api_secret }}");
         _userClient = factory.GetUserClient();
