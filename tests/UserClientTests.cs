@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using StreamChat;
+using StreamChat.Clients;
 using StreamChat.Exceptions;
 using StreamChat.Models;
 
@@ -344,7 +346,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestQueryBannedUsers()
+        public async Task TestQueryBannedUsersAsync()
         {
             await _userClient.BanAsync(new BanRequest
             {
@@ -363,6 +365,37 @@ namespace StreamChatTests
             });
 
             resp.Bans.Should().NotBeEmpty();
+        }
+
+        [Test]
+        public async Task TestExportUsersAsync()
+        {
+            var resp = await _userClient.ExportUsersAsync(new[] { _user1.Id, _user2.Id });
+
+            resp.TaskId.Should().NotBeNullOrEmpty();
+
+            AsyncTaskStatusResponse status = null;
+            await WaitForAsync(async () =>
+            {
+                status = await _taskClient.GetTaskStatusAsync(resp.TaskId);
+
+                return status.Status == AsyncTaskStatus.Completed;
+            }, timeout: 10000);
+
+            status.Should().NotBeNull();
+            status.Status.Should().Be(AsyncTaskStatus.Completed);
+            status.CreatedAt.Should().NotBeNull();
+            status.Result.Should().NotBeNullOrEmpty();
+            var exportUrl = status.Result.Values.First().ToString();
+            exportUrl.Should().Contain("exports/users");
+
+            using var client = new HttpClient();
+            using var response = await client.GetAsync(exportUrl);
+            response.EnsureSuccessStatusCode();
+
+            var exportFile = await response.Content.ReadAsStringAsync();
+            exportFile.Should().Contain(_user1.Id);
+            exportFile.Should().Contain(_user2.Id);
         }
     }
 }
