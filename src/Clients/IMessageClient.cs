@@ -192,5 +192,41 @@ namespace StreamChat.Clients
         /// <summary>Runs a message command action.</summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/file_uploads/?language=csharp#how-to-upload-a-file-or-image</remarks>
         Task<GenericMessageResponse> RunMessageCommandActionAsync(string messageId, string userId, Dictionary<string, string> formData);
+
+        /// <summary>
+        /// Creates a reminder for a message.
+        /// </summary>
+        /// <param name="messageId">The ID of the message to create a reminder for</param>
+        /// <param name="userId">The ID of the user creating the reminder</param>
+        /// <param name="remindAt">When to remind the user (optional)</param>
+        /// <returns>API response with the created reminder</returns>
+        Task<ReminderResponse> CreateReminderAsync(string messageId, string userId, DateTime? remindAt = null);
+
+        /// <summary>
+        /// Updates a reminder for a message.
+        /// </summary>
+        /// <param name="messageId">The ID of the message with the reminder</param>
+        /// <param name="userId">The ID of the user who owns the reminder</param>
+        /// <param name="remindAt">When to remind the user (optional)</param>
+        /// <returns>API response with the updated reminder</returns>
+        Task<ReminderResponse> UpdateReminderAsync(string messageId, string userId, DateTime? remindAt = null);
+
+        /// <summary>
+        /// Deletes a reminder for a message.
+        /// </summary>
+        /// <param name="messageId">The ID of the message with the reminder</param>
+        /// <param name="userId">The ID of the user who owns the reminder</param>
+        /// <returns>API response</returns>
+        Task<ReminderResponse> DeleteReminderAsync(string messageId, string userId);
+
+        /// <summary>
+        /// Queries reminders based on filter conditions.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose reminders to query</param>
+        /// <param name="filterConditions">Conditions to filter reminders</param>
+        /// <param name="sort">Sort parameters (default: [{ field: 'remind_at', direction: 1 }])</param>
+        /// <param name="options">Additional query options like limit, offset</param>
+        /// <returns>API response with reminders</returns>
+        Task<QueryRemindersResponse> QueryRemindersAsync(string userId, Dictionary<string, object> filterConditions = null, List<Dictionary<string, object>> sort = null, Dictionary<string, object> options = null);
     }
 }

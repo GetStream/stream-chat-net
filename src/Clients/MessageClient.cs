@@ -198,5 +198,94 @@ namespace StreamChat.Clients
             => await ExecuteRequestAsync<GenericMessageResponse>($"/messages/{messageId}/commit",
                 HttpMethod.POST,
                 HttpStatusCode.Created);
+
+        public async Task<ReminderResponse> CreateReminderAsync(string messageId, string userId, DateTime? remindAt = null)
+        {
+            var data = new Dictionary<string, object>
+            {
+                { "user_id", userId },
+            };
+
+            if (remindAt.HasValue)
+            {
+                data["remind_at"] = remindAt.Value.ToString("o"); // ISO 8601 format
+            }
+
+            return await ExecuteRequestAsync<ReminderResponse>($"messages/{messageId}/reminders",
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                data);
+        }
+
+        public async Task<ReminderResponse> UpdateReminderAsync(string messageId, string userId, DateTime? remindAt = null)
+        {
+            var data = new Dictionary<string, object>
+            {
+                { "user_id", userId },
+            };
+
+            if (remindAt.HasValue)
+            {
+                data["remind_at"] = remindAt.Value.ToString("o"); // ISO 8601 format
+            }
+
+            return await ExecuteRequestAsync<ReminderResponse>($"messages/{messageId}/reminders",
+                HttpMethod.PATCH,
+                HttpStatusCode.OK,
+                data);
+        }
+
+        public async Task<ReminderResponse> DeleteReminderAsync(string messageId, string userId)
+        {
+            return await ExecuteRequestAsync<ReminderResponse>($"messages/{messageId}/reminders",
+                HttpMethod.DELETE,
+                HttpStatusCode.OK,
+                queryParams: new Dictionary<string, string>
+                {
+                    { "user_id", userId },
+                });
+        }
+
+        public async Task<QueryRemindersResponse> QueryRemindersAsync(string userId, Dictionary<string, object> filterConditions = null, List<Dictionary<string, object>> sort = null, Dictionary<string, object> options = null)
+        {
+            var data = new Dictionary<string, object>
+            {
+                { "user_id", userId },
+            };
+
+            if (filterConditions != null)
+            {
+                data["filter_conditions"] = filterConditions;
+            }
+
+            if (sort != null)
+            {
+                data["sort"] = sort;
+            }
+            else
+            {
+                data["sort"] = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>
+                    {
+                        { "field", "remind_at" },
+                        { "direction", 1 },
+                    },
+                };
+            }
+
+            if (options != null)
+            {
+                foreach (var option in options)
+                {
+                    data[option.Key] = option.Value;
+                }
+            }
+
+            return await ExecuteRequestAsync<QueryRemindersResponse>("reminders/query",
+                HttpMethod.POST,
+                HttpStatusCode.OK,
+                data);
+        }
     }
 }
