@@ -25,6 +25,7 @@ namespace StreamChat.Clients
         private readonly IPermissionClient _permissionClient;
         private readonly IReactionClient _reactionClient;
         private readonly ITaskClient _taskClient;
+        private readonly RestClient _restClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamClientFactory"/> class.
@@ -74,22 +75,22 @@ namespace StreamChat.Clients
             var generatedJwt = jwtGeneratorClient.GenerateServerSideJwt(apiSecret);
             var assemblyVersion = typeof(StreamClientFactory).GetTypeInfo().Assembly.GetName().Version;
             var sdkVersion = assemblyVersion.ToString(3);
-            var restClient = new RestClient(opts, generatedJwt, apiKey, sdkVersion);
+            _restClient = new RestClient(opts, generatedJwt, apiKey, sdkVersion);
 
-            _appClient = new AppClient(restClient, apiSecret);
-            _blocklistClient = new BlocklistClient(restClient);
-            _channelClient = new ChannelClient(restClient);
-            _channelTypeClient = new ChannelTypeClient(restClient);
-            _commandClient = new CommandClient(restClient);
-            _deviceClient = new DeviceClient(restClient);
-            _eventClient = new EventClient(restClient);
-            _importClient = new ImportClient(restClient);
-            _flagClient = new FlagClient(restClient);
-            _messageClient = new MessageClient(restClient);
-            _permissionClient = new PermissionClient(restClient);
-            _reactionClient = new ReactionClient(restClient);
-            _taskClient = new TaskClient(restClient);
-            _userClient = new UserClient(restClient, jwtGeneratorClient, apiSecret);
+            _appClient = new AppClient(_restClient, apiSecret);
+            _blocklistClient = new BlocklistClient(_restClient);
+            _channelClient = new ChannelClient(_restClient);
+            _channelTypeClient = new ChannelTypeClient(_restClient);
+            _commandClient = new CommandClient(_restClient);
+            _deviceClient = new DeviceClient(_restClient);
+            _eventClient = new EventClient(_restClient);
+            _importClient = new ImportClient(_restClient);
+            _flagClient = new FlagClient(_restClient);
+            _messageClient = new MessageClient(_restClient);
+            _permissionClient = new PermissionClient(_restClient);
+            _reactionClient = new ReactionClient(_restClient);
+            _taskClient = new TaskClient(_restClient);
+            _userClient = new UserClient(_restClient, jwtGeneratorClient, apiSecret);
         }
 
         public IAppClient GetAppClient() => _appClient;
@@ -106,5 +107,6 @@ namespace StreamChat.Clients
         public IReactionClient GetReactionClient() => _reactionClient;
         public ITaskClient GetTaskClient() => _taskClient;
         public IUserClient GetUserClient() => _userClient;
+        public IModerationClient GetModerationClient() => new ModerationClient(_restClient);
     }
 }

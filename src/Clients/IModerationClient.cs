@@ -34,4 +34,4 @@ namespace StreamChat.Clients
         /// <param name="profile">User profile data containing username and/or profile image</param>
         Task<ModerationCheckResponse> CheckUserProfileAsync(string userId, UserProfileCheckRequest profile);
     }
-} 
+}

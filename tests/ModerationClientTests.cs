@@ -28,7 +28,7 @@ namespace StreamChatTests
             var response = await _moderationClient.CheckUserProfileAsync(_userId, new UserProfileCheckRequest
             {
                 Username = "fucking_bitch_001",
-                Image = "https://github.com/user-attachments/assets/b5ea60fd-e5dd-4d5e-8d72-013941358865"
+                Image = "https://github.com/user-attachments/assets/b5ea60fd-e5dd-4d5e-8d72-013941358865",
             });
 
             response.RecommendedAction.Should().Be("remove");
@@ -39,7 +39,7 @@ namespace StreamChatTests
         {
             var response = await _moderationClient.CheckUserProfileAsync(Guid.NewGuid().ToString(), new UserProfileCheckRequest
             {
-                Username = "fucking_bitch_001"
+                Username = "fucking_bitch_001",
             });
 
             response.RecommendedAction.Should().Be("remove");
@@ -50,7 +50,7 @@ namespace StreamChatTests
         {
             var response = await _moderationClient.CheckUserProfileAsync(Guid.NewGuid().ToString(), new UserProfileCheckRequest
             {
-                Image = "https://github.com/user-attachments/assets/b5ea60fd-e5dd-4d5e-8d72-013941358865"
+                Image = "https://github.com/user-attachments/assets/b5ea60fd-e5dd-4d5e-8d72-013941358865",
             });
 
             response.RecommendedAction.Should().Be("remove");
@@ -61,7 +61,7 @@ namespace StreamChatTests
         {
             var response = await _moderationClient.CheckUserProfileAsync(Guid.NewGuid().ToString(), new UserProfileCheckRequest
             {
-                Username = "avenger_001"
+                Username = "avenger_001",
             });
 
             response.RecommendedAction.Should().Be("keep");
@@ -76,4 +76,4 @@ namespace StreamChatTests
                 .WithMessage("Either username or image must be provided (Parameter 'profile')");
         }
     }
-} 
+}

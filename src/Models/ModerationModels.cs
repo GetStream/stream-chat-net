@@ -36,7 +36,7 @@ namespace StreamChat.Models
         public string Image { get; set; }
     }
 
-    public class ModerationCheckResponse
+    public class ModerationCheckResponse : ApiResponse
     {
         [JsonProperty("recommended_action")]
         public string RecommendedAction { get; set; }
@@ -50,4 +50,4 @@ namespace StreamChat.Models
         public const string Message = "stream:chat:v1:message";
         public const string UserProfile = "stream:v1:user_profile";
     }
-} 
+}

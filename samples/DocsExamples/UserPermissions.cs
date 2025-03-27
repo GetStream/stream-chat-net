@@ -13,7 +13,7 @@ internal class UserPermissions
     private readonly IPermissionClient _permissionClient;
     private readonly IChannelTypeClient _channelTypeClient;
     private readonly IAppClient _appClient;
-    
+
     public UserPermissions()
     {
         var factory = new StreamClientFactory("{{ api_key }}", "{{ api_secret }}");

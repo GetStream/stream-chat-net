@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using StreamChat.Models;
@@ -27,7 +28,7 @@ namespace StreamChat.Clients
                 entity_creator_id = entityCreatorId,
                 moderation_payload = moderationPayload,
                 config_key = configKey,
-                options
+                options,
             };
 
             return await ExecuteRequestAsync<ModerationCheckResponse>(
@@ -47,7 +48,7 @@ namespace StreamChat.Clients
             var payload = new ModerationPayload
             {
                 Texts = !string.IsNullOrEmpty(profile.Username) ? new[] { profile.Username }.ToList() : null,
-                Images = !string.IsNullOrEmpty(profile.Image) ? new[] { profile.Image }.ToList() : null
+                Images = !string.IsNullOrEmpty(profile.Image) ? new[] { profile.Image }.ToList() : null,
             };
 
             return await CheckAsync(
@@ -59,8 +60,8 @@ namespace StreamChat.Clients
                 new ModerationCheckOptions
                 {
                     ForceSync = true,
-                    TestMode = true
+                    TestMode = true,
                 });
         }
     }
-} 
+}
