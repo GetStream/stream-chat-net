@@ -33,7 +33,7 @@ internal class ChannelUpdate
             },
             UserId = "user-id",
         });
-        
+
         // Unarchive
         var unarchiveResponse = await _channelClient.UnarchiveAsync("messaging", "channel-id", "user-id");
     }
@@ -55,7 +55,7 @@ internal class ChannelUpdate
             },
             UserId = "user-id",
         });
-        
+
         // Unpin
         var unpinResponse = await _channelClient.UnpinAsync("messaging", "channel-id", "user-id");
     }

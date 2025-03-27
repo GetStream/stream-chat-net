@@ -11,6 +11,11 @@ namespace StreamChat.Clients
     public interface IAppClient
     {
         /// <summary>
+        /// Gets the moderation client that can be used to access moderation endpoints.
+        /// </summary>
+        IModerationClient Moderation { get; }
+
+        /// <summary>
         /// <para>Returns the application settings.</para>
         /// Application level settings allow you to configure settings that impact all the channel types in your app.
         /// Our backend SDKs make it easy to change the app settings. You can also change most of these using the CLI or the dashboard.
