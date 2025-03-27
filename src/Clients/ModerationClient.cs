@@ -34,7 +34,7 @@ namespace StreamChat.Clients
             return await ExecuteRequestAsync<ModerationCheckResponse>(
                 "api/v2/moderation/check",
                 HttpMethod.POST,
-                HttpStatusCode.OK,
+                HttpStatusCode.Created,
                 request);
         }
 
