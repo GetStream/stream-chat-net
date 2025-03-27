@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using StreamChat.Models;
@@ -38,20 +38,20 @@ namespace StreamChat.Clients
                 request);
         }
 
-        public async Task<ModerationCheckResponse> CheckUserProfileAsync(string userId, UserProfileCheckRequest profile)
+        public Task<ModerationCheckResponse> CheckUserProfileAsync(string userId, UserProfileCheckRequest profile)
         {
             if (string.IsNullOrEmpty(profile?.Username) && string.IsNullOrEmpty(profile?.Image))
             {
-                throw new ArgumentException("Either username or image must be provided", nameof(profile));
+                throw new ArgumentException($"Either `{nameof(profile.Username)}` or `{nameof(profile.Image)}` must be provided", nameof(profile));
             }
 
             var payload = new ModerationPayload
             {
-                Texts = !string.IsNullOrEmpty(profile.Username) ? new[] { profile.Username }.ToList() : null,
-                Images = !string.IsNullOrEmpty(profile.Image) ? new[] { profile.Image }.ToList() : null,
+                Texts = !string.IsNullOrEmpty(profile.Username) ? new List<string> { profile.Username } : null,
+                Images = !string.IsNullOrEmpty(profile.Image) ? new List<string> { profile.Image } : null,
             };
 
-            return await CheckAsync(
+            return CheckAsync(
                 ModerationEntityTypes.UserProfile,
                 userId,
                 userId,

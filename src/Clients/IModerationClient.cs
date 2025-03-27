@@ -11,7 +11,7 @@ namespace StreamChat.Clients
         /// <summary>
         /// Check content for moderation.
         /// </summary>
-        /// <param name="entityType">Type of entity to be checked E.g., stream:user, stream:chat:v1:message, or any custom string</param>
+        /// <param name="entityType">Type of entity to be checked E.g., stream:user, stream:chat:v1:message, or any custom string. Predefined values are listed in <see cref="ModerationEntityTypes"/></param>
         /// <param name="entityId">ID of the entity to be checked. This is mainly for tracking purposes</param>
         /// <param name="entityCreatorId">ID of the entity creator</param>
         /// <param name="moderationPayload">Content to be checked for moderation. E.g., texts, images, videos</param>

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using StreamChat.Clients;
 using StreamChat.Models;
 
 namespace StreamChatTests
@@ -14,18 +15,10 @@ namespace StreamChatTests
     [TestFixture]
     public class ModerationClientTests : TestBase
     {
-        private string _userId;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _userId = Guid.NewGuid().ToString();
-        }
-
         [Test]
         public async Task TestCheckUserProfileAsync_WithInappropriateUsernameAndImage()
         {
-            var response = await _moderationClient.CheckUserProfileAsync(_userId, new UserProfileCheckRequest
+            var response = await _moderationClient.CheckUserProfileAsync(Guid.NewGuid().ToString(), new UserProfileCheckRequest
             {
                 Username = "fucking_bitch_001",
                 Image = "https://github.com/user-attachments/assets/b5ea60fd-e5dd-4d5e-8d72-013941358865",
@@ -70,10 +63,8 @@ namespace StreamChatTests
         [Test]
         public void TestCheckUserProfileAsync_WithNoUsernameAndNoImage()
         {
-            Func<Task> action = () => _moderationClient.CheckUserProfileAsync(_userId, new UserProfileCheckRequest());
-
-            action.Should().ThrowAsync<ArgumentException>()
-                .WithMessage("Either username or image must be provided (Parameter 'profile')");
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _moderationClient.CheckUserProfileAsync(Guid.NewGuid().ToString(), new UserProfileCheckRequest()));
         }
     }
 }
