@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -70,7 +71,7 @@ internal class UserRolesTests : TestBase
         };
 
         var response = await _userClient.UpsertAsync(userWithTeamRole);
-        response.Users[userWithTeamRole.Id].TeamsRole.Should().ContainKey("blud");
+        response.Users[userWithTeamRole.Id].TeamsRole.Should().ContainKey("blue");
         response.Users[userWithTeamRole.Id].TeamsRole["blue"].Should().Be("admin");
 
         // Update the team role
@@ -83,7 +84,7 @@ internal class UserRolesTests : TestBase
             }
         });
 
-        var updatedUser = await _userClient.GetAsync(userWithTeamRole.Id);
+        var updatedUser = await _userClient.GetUserAsync(userWithTeamRole.Id);
         updatedUser.User.TeamsRole.Should().ContainKey("blue");
         updatedUser.User.TeamsRole["blue"].Should().Be("user");
 
