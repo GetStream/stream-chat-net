@@ -84,9 +84,18 @@ internal class UserRolesTests : TestBase
             }
         });
 
-        var updatedUser = await _userClient.GetUserAsync(userWithTeamRole.Id);
-        updatedUser.User.TeamsRole.Should().ContainKey("blue");
-        updatedUser.User.TeamsRole["blue"].Should().Be("user");
+        // Query the user to verify the team role was updated
+        var queryResponse = await _userClient.QueryAsync(new QueryUserOptions
+        {
+            Filter = new Dictionary<string, object>
+            {
+                { "id", userWithTeamRole.Id }
+            }
+        });
+
+        var updatedUser = queryResponse.Users.First();
+        updatedUser.TeamsRole.Should().ContainKey("blue");
+        updatedUser.TeamsRole["blue"].Should().Be("user");
 
         await TryDeleteUsersAsync(userWithTeamRole.Id);
     }
