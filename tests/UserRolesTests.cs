@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -52,5 +53,50 @@ internal class UserRolesTests : TestBase
             },
         });
         resp.Members.First().ChannelRole.Should().BeEquivalentTo("channel_moderator");
+    }
+
+    [Test]
+    public async Task WhenSettingTeamRoleExpectRoleAssignedAsync()
+    {
+        // Create a user with team role
+        var userWithTeamRole = new UserRequest
+        {
+            Id = Guid.NewGuid().ToString(),
+            Role = Role.User,
+            Teams = new[] { "blue" },
+            TeamsRole = new Dictionary<string, string>
+            {
+                { "blue", "admin" },
+            },
+        };
+
+        var response = await _userClient.UpsertAsync(userWithTeamRole);
+        response.Users[userWithTeamRole.Id].TeamsRole.Should().ContainKey("blue");
+        response.Users[userWithTeamRole.Id].TeamsRole["blue"].Should().Be("admin");
+
+        // Update the team role
+        var updateResponse = await _userClient.UpdatePartialAsync(new UserPartialRequest
+        {
+            Id = userWithTeamRole.Id,
+            Set = new Dictionary<string, object>
+            {
+                { "teams_role", new Dictionary<string, string> { { "blue", "user" } } },
+            },
+        });
+
+        // Query the user to verify the team role was updated
+        var queryResponse = await _userClient.QueryAsync(new QueryUserOptions
+        {
+            Filter = new Dictionary<string, object>
+            {
+                { "id", userWithTeamRole.Id },
+            },
+        });
+
+        var updatedUser = queryResponse.Users.First();
+        updatedUser.TeamsRole.Should().ContainKey("blue");
+        updatedUser.TeamsRole["blue"].Should().Be("user");
+
+        await TryDeleteUsersAsync(userWithTeamRole.Id);
     }
 }
