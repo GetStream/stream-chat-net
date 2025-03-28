@@ -66,8 +66,8 @@ internal class UserRolesTests : TestBase
             Teams = new[] { "blue" },
             TeamsRole = new Dictionary<string, string>
             {
-                { "blue", "admin" }
-            }
+                { "blue", "admin" },
+            },
         };
 
         var response = await _userClient.UpsertAsync(userWithTeamRole);
@@ -80,8 +80,8 @@ internal class UserRolesTests : TestBase
             Id = userWithTeamRole.Id,
             Set = new Dictionary<string, object>
             {
-                { "teams_role", new Dictionary<string, string> { { "blue", "user" } } }
-            }
+                { "teams_role", new Dictionary<string, string> { { "blue", "user" } } },
+            },
         });
 
         // Query the user to verify the team role was updated
@@ -89,8 +89,8 @@ internal class UserRolesTests : TestBase
         {
             Filter = new Dictionary<string, object>
             {
-                { "id", userWithTeamRole.Id }
-            }
+                { "id", userWithTeamRole.Id },
+            },
         });
 
         var updatedUser = queryResponse.Users.First();
