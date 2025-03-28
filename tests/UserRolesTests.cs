@@ -53,4 +53,40 @@ internal class UserRolesTests : TestBase
         });
         resp.Members.First().ChannelRole.Should().BeEquivalentTo("channel_moderator");
     }
+
+    [Test]
+    public async Task WhenSettingTeamRoleExpectRoleAssignedAsync()
+    {
+        // Create a user with team role
+        var userWithTeamRole = new UserRequest
+        {
+            Id = Guid.NewGuid().ToString(),
+            Role = Role.User,
+            Teams = new[] { "blue" },
+            TeamsRole = new Dictionary<string, string>
+            {
+                { "blue", "admin" }
+            }
+        };
+
+        var response = await _userClient.UpsertAsync(userWithTeamRole);
+        response.Users[userWithTeamRole.Id].TeamsRole.Should().ContainKey("blud");
+        response.Users[userWithTeamRole.Id].TeamsRole["blue"].Should().Be("admin");
+
+        // Update the team role
+        var updateResponse = await _userClient.UpdatePartialAsync(new UserPartialRequest
+        {
+            Id = userWithTeamRole.Id,
+            Set = new Dictionary<string, object>
+            {
+                { "teams_role", new Dictionary<string, string> { { "blue", "user" } } }
+            }
+        });
+
+        var updatedUser = await _userClient.GetAsync(userWithTeamRole.Id);
+        updatedUser.User.TeamsRole.Should().ContainKey("blue");
+        updatedUser.User.TeamsRole["blue"].Should().Be("user");
+
+        await TryDeleteUsersAsync(userWithTeamRole.Id);
+    }
 }
