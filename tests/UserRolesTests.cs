@@ -80,7 +80,7 @@ internal class UserRolesTests : TestBase
             Id = userWithTeamRole.Id,
             Set = new Dictionary<string, object>
             {
-                { "TeamsRole", new Dictionary<string, string> { { "blue", "user" } } },
+                { "teams_role", new Dictionary<string, string> { { "blue", "user" } } },
             },
         });
 
