@@ -260,6 +260,7 @@ namespace StreamChat.Models
         public int Limit { get; set; } = DefaultLimit;
         public List<SortParameter> Sort { get; set; } = new List<SortParameter>();
         public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
+        public string UserId { get; set; }
 
         public QueryThreadsOptions WithOffset(int offset)
         {
@@ -282,6 +283,12 @@ namespace StreamChat.Models
         public QueryThreadsOptions WithFilter(Dictionary<string, object> filter)
         {
             Filter = filter;
+            return this;
+        }
+
+        public QueryThreadsOptions WithUserId(string userId)
+        {
+            UserId = userId;
             return this;
         }
 

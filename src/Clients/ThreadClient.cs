@@ -22,6 +22,7 @@ namespace StreamChat.Clients
                 limit = opts.Limit,
                 filter = opts.Filter,
                 sort = opts.Sort,
+                user_id = opts.UserId,
             };
 
             return await ExecuteRequestAsync<QueryThreadsResponse>(Endpoint(),
