@@ -6,7 +6,7 @@ using StreamChat.Rest;
 
 namespace StreamChat.Clients
 {
-    public class ThreadClient : ClientBase
+    public class ThreadClient : ClientBase, IThreadClient
     {
         internal ThreadClient(IRestClient client) : base(client)
         {

@@ -12,7 +12,6 @@ namespace StreamChatTests
     [TestFixture]
     public class ThreadClientTests : TestBase
     {
-        private ThreadClient _threadClient;
         private ChannelWithConfig _channel;
         private UserRequest _user;
 
@@ -21,7 +20,6 @@ namespace StreamChatTests
         {
             _user = await UpsertNewUserAsync();
             _channel = await CreateChannelAsync(createdByUserId: _user.Id, members: new[] { _user.Id });
-            _threadClient = new ThreadClient(TestClientFactory.GetRestClient());
         }
 
         [TearDown]
