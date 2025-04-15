@@ -25,5 +25,15 @@ namespace StreamChatTests
         public static IReactionClient GetReactionClient() => _clientFactory.GetReactionClient();
         public static ITaskClient GetTaskClient() => _clientFactory.GetTaskClient();
         public static IModerationClient GetModerationClient() => _clientFactory.GetModerationClient();
+
+        public static IRestClient GetRestClient()
+        {
+            // Use reflection to get the private restClient from the StreamClientFactory instance
+            var field = _clientFactory.GetType().GetField("_appClient", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var appClient = field.GetValue(_clientFactory);
+            var clientBaseType = appClient.GetType().BaseType;
+            var restClientField = clientBaseType.GetField("_client", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (IRestClient)restClientField.GetValue(appClient);
+        }
     }
 }
