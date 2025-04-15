@@ -8,7 +8,7 @@ namespace StreamChat.Clients
 {
     public class ThreadClient : ClientBase
     {
-        public ThreadClient(IRestClient client) : base(client)
+        internal ThreadClient(IRestClient client) : base(client)
         {
         }
 

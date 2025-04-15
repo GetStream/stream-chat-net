@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace StreamChat.Rest
 {
-    public interface IRestClient
+    internal interface IRestClient
     {
         RestRequest BuildRestRequest(string fullPath,
             HttpMethod method,
