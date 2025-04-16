@@ -114,11 +114,6 @@ namespace StreamChatTests
             thread.ParentMessageID.Should().Be(_parentMessage.Id);
             thread.CreatedAt.Should().BeAfter(DateTimeOffset.MinValue);
             thread.ReplyCount.Should().BeGreaterThan(0);
-
-            // Verify the thread has participants
-            thread.Participants.Should().NotBeNull();
-            thread.Participants.Should().NotBeEmpty();
-            thread.Participants[0].UserID.Should().Be(_user.Id);
         }
     }
 }

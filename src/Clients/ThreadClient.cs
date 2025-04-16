@@ -27,7 +27,7 @@ namespace StreamChat.Clients
 
             return await ExecuteRequestAsync<QueryThreadsResponse>(Endpoint(),
                 HttpMethod.POST,
-                HttpStatusCode.OK,
+                HttpStatusCode.Created,
                 body: payload);
         }
     }
