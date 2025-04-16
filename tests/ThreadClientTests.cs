@@ -115,5 +115,24 @@ namespace StreamChatTests
             thread.CreatedAt.Should().BeAfter(DateTimeOffset.MinValue);
             thread.ReplyCount.Should().BeGreaterThan(0);
         }
+
+        [Test]
+        public async Task TestQueryThreadsWithoutFilterAndSort()
+        {
+            // Use default options without filter or sort
+            var opts = QueryThreadsOptions.Default.WithUserId(_user.Id);
+
+            var resp = await _threadClient.QueryThreads(opts);
+
+            resp.Threads.Should().NotBeNull();
+            resp.Threads.Should().NotBeEmpty();
+
+            // Verify the thread contains our parent message
+            var thread = resp.Threads[0];
+            thread.ChannelCID.Should().Be(_channel.Cid);
+            thread.ParentMessageID.Should().Be(_parentMessage.Id);
+            thread.CreatedByUserID.Should().Be(_user.Id);
+            thread.ReplyCount.Should().BeGreaterThan(0);
+        }
     }
 }
