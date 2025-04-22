@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using StreamChat.Models;
@@ -16,11 +15,12 @@ namespace StreamChat.Clients
         {
             var payload = new
             {
-                offset = options.Offset,
                 limit = options.Limit,
                 filter = options.Filter,
                 sort = options.Sort,
                 user_id = options.UserId,
+                next = options.Next,
+                watch = options.Watch,
             };
 
             return await ExecuteRequestAsync<QueryThreadsResponse>("threads",

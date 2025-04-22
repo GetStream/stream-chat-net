@@ -119,5 +119,8 @@ namespace StreamChat.Models
     {
         [JsonProperty("threads")]
         public List<ThreadResponse> Threads { get; set; }
+
+        [JsonProperty("next")]
+        public string Next { get; set; }
     }
 }

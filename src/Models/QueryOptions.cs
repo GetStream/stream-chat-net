@@ -253,18 +253,20 @@ namespace StreamChat.Models
 
     public class QueryThreadsOptions
     {
-        private const int DefaultOffset = 0;
         private const int DefaultLimit = 10;
 
-        public int Offset { get; set; } = DefaultOffset;
         public int Limit { get; set; } = DefaultLimit;
+
+        public string Next { get; set; }
         public List<SortParameter> Sort { get; set; } = new List<SortParameter>();
         public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
         public string UserId { get; set; }
 
-        public QueryThreadsOptions WithOffset(int offset)
+        public bool Watch { get; set; } = false;
+
+        public QueryThreadsOptions WithNext(string next)
         {
-            Offset = offset;
+            Next = next;
             return this;
         }
 
@@ -292,11 +294,16 @@ namespace StreamChat.Models
             return this;
         }
 
+        public QueryThreadsOptions WithWatch(bool watch)
+        {
+            Watch = watch;
+            return this;
+        }
+
         public static QueryThreadsOptions Default
         {
             get => new QueryThreadsOptions
             {
-                Offset = DefaultOffset,
                 Limit = DefaultLimit,
             };
         }

@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using StreamChat.Clients;
 using StreamChat.Models;
 
 namespace StreamChatTests
@@ -113,6 +112,40 @@ namespace StreamChatTests
             foreach (var thread in resp.Threads)
             {
                 thread.ChannelCID.Should().Be(_channel.Cid);
+            }
+        }
+
+        [Test]
+        public async Task TestQueryThreadsWithPagination()
+        {
+            var firstPageOpts = QueryThreadsOptions.Default
+                .WithUserId(_user.Id)
+                .WithLimit(2)
+                .WithSortBy(new SortParameter { Field = "created_at", Direction = SortDirection.Descending })
+                .WithFilter(new Dictionary<string, object> { { "channel_cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } } });
+
+            var firstPageResp = await _threadClient.QueryThreadsAsync(firstPageOpts);
+
+            firstPageResp.Threads.Should().HaveCount(2);
+            firstPageResp.Next.Should().NotBeNullOrEmpty();
+
+            var secondPageOpts = QueryThreadsOptions.Default
+                .WithUserId(_user.Id)
+                .WithLimit(2)
+                .WithSortBy(new SortParameter { Field = "created_at", Direction = SortDirection.Descending })
+                .WithFilter(new Dictionary<string, object> { { "channel_cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } } })
+                .WithNext(firstPageResp.Next);
+
+            var secondPageResp = await _threadClient.QueryThreadsAsync(secondPageOpts);
+
+            secondPageResp.Threads.Should().HaveCount(1);
+
+            var allThreads = firstPageResp.Threads.Concat(secondPageResp.Threads).ToList();
+            allThreads.Should().HaveCount(3);
+
+            for (int i = 0; i < allThreads.Count - 1; i++)
+            {
+                allThreads[i].CreatedAt.Should().BeAfter(allThreads[i + 1].CreatedAt);
             }
         }
 
