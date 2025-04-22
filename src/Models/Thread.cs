@@ -4,58 +4,7 @@ using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
-    public class Thread : CustomDataBase
-    {
-        [JsonProperty("app_pk")]
-        public int AppPK { get; set; }
-
-        [JsonProperty("channel_cid")]
-        public string ChannelCID { get; set; }
-
-        [JsonProperty("channel")]
-        public Channel Channel { get; set; }
-
-        [JsonProperty("parent_message_id")]
-        public string ParentMessageID { get; set; }
-
-        [JsonProperty("parent_message")]
-        public Message ParentMessage { get; set; }
-
-        [JsonProperty("created_by_user_id")]
-        public string CreatedByUserID { get; set; }
-
-        [JsonProperty("created_by")]
-        public User CreatedBy { get; set; }
-
-        [JsonProperty("reply_count")]
-        public int ReplyCount { get; set; }
-
-        [JsonProperty("participant_count")]
-        public int ParticipantCount { get; set; }
-
-        [JsonProperty("active_participant_count")]
-        public int ActiveParticipantCount { get; set; }
-
-        [JsonProperty("participants")]
-        public List<ThreadParticipant> Participants { get; set; }
-
-        [JsonProperty("last_message_at")]
-        public DateTimeOffset? LastMessageAt { get; set; }
-
-        [JsonProperty("created_at")]
-        public DateTimeOffset CreatedAt { get; set; }
-
-        [JsonProperty("updated_at")]
-        public DateTimeOffset? UpdatedAt { get; set; }
-
-        [JsonProperty("deleted_at")]
-        public DateTimeOffset? DeletedAt { get; set; }
-
-        [JsonProperty("title")]
-        public string Title { get; set; }
-    }
-
-    public class ThreadParticipant : CustomDataBase
+    public class ThreadParticipantResponse : CustomDataBase
     {
         [JsonProperty("app_pk")]
         public int AppPK { get; set; }
@@ -87,6 +36,9 @@ namespace StreamChat.Models
 
     public class ThreadResponse : CustomDataBase
     {
+        [JsonProperty("app_pk")]
+        public int AppPK { get; set; }
+
         [JsonProperty("channel_cid")]
         public string ChannelCID { get; set; }
 
@@ -115,7 +67,7 @@ namespace StreamChat.Models
         public int ActiveParticipantCount { get; set; }
 
         [JsonProperty("participants")]
-        public List<ThreadParticipant> Participants { get; set; }
+        public List<ThreadParticipantResponse> Participants { get; set; }
 
         [JsonProperty("last_message_at")]
         public DateTimeOffset? LastMessageAt { get; set; }

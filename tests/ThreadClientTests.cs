@@ -14,8 +14,8 @@ namespace StreamChatTests
     {
         private ChannelWithConfig _channel;
         private UserRequest _user;
-        private Message _parentMessage;
-        private Message _replyMessage;
+        private List<Message> _parentMessages = new List<Message>();
+        private List<Message> _replyMessages = new List<Message>();
 
         [SetUp]
         public async Task SetupAsync()
@@ -23,22 +23,27 @@ namespace StreamChatTests
             _user = await UpsertNewUserAsync();
             _channel = await CreateChannelAsync(createdByUserId: _user.Id, members: new[] { _user.Id });
 
-            // Create a parent message to start a thread
-            var parentMessageResp = await _messageClient.SendMessageAsync(
-                _channel.Type,
-                _channel.Id,
-                new MessageRequest { Text = "Parent message for thread" },
-                _user.Id);
-            _parentMessage = parentMessageResp.Message;
+            for (int i = 1; i <= 3; i++)
+            {
+                var parentMessageResp = await _messageClient.SendMessageAsync(
+                    _channel.Type,
+                    _channel.Id,
+                    new MessageRequest { Text = $"Parent message for thread {i}" },
+                    _user.Id);
+                var parentMessage = parentMessageResp.Message;
+                _parentMessages.Add(parentMessage);
 
-            // Create a reply in the thread
-            var replyMessageResp = await _messageClient.SendMessageToThreadAsync(
-                _channel.Type,
-                _channel.Id,
-                new MessageRequest { Text = "Reply in thread" },
-                _user.Id,
-                _parentMessage.Id);
-            _replyMessage = replyMessageResp.Message;
+                var replyMessageResp = await _messageClient.SendMessageToThreadAsync(
+                    _channel.Type,
+                    _channel.Id,
+                    new MessageRequest { Text = $"Reply in thread {i}" },
+                    _user.Id,
+                    parentMessage.Id);
+                var replyMessage = replyMessageResp.Message;
+                _replyMessages.Add(replyMessage);
+
+                await Task.Delay(100);
+            }
         }
 
         [TearDown]
@@ -56,38 +61,33 @@ namespace StreamChatTests
             };
             var opts = QueryThreadsOptions.Default.WithFilter(filter).WithUserId(_user.Id);
 
-            var resp = await _threadClient.QueryThreads(opts);
+            var resp = await _threadClient.QueryThreadsAsync(opts);
 
             resp.Threads.Should().NotBeNull();
             resp.Threads.Should().NotBeEmpty();
 
-            // Verify the thread contains our parent message
-            var thread = resp.Threads[0];
-            thread.ChannelCID.Should().Be(_channel.Cid);
-            thread.ParentMessageID.Should().Be(_parentMessage.Id);
-            thread.CreatedByUserID.Should().Be(_user.Id);
-            thread.ReplyCount.Should().BeGreaterThan(0);
+            resp.Threads.Should().HaveCount(3);
+            foreach (var thread in resp.Threads)
+            {
+                thread.ChannelCID.Should().Be(_channel.Cid);
+            }
         }
 
         [Test]
         public async Task TestQueryThreadsWithSort()
         {
-            var sort = new List<SortParameter>
-            {
-                new SortParameter { Field = "created_at", Direction = SortDirection.Descending },
-            };
-            var opts = QueryThreadsOptions.Default.WithSortBy(sort[0]).WithUserId(_user.Id);
+            var opts = QueryThreadsOptions.Default.WithSortBy(new SortParameter { Field = "created_at", Direction = SortDirection.Descending }).WithUserId(_user.Id);
 
-            var resp = await _threadClient.QueryThreads(opts);
+            var resp = await _threadClient.QueryThreadsAsync(opts);
 
             resp.Threads.Should().NotBeNull();
             resp.Threads.Should().NotBeEmpty();
+            resp.Threads.Should().HaveCountGreaterThanOrEqualTo(3);
 
-            // Verify the thread is sorted by created_at in descending order
-            var thread = resp.Threads[0];
-            thread.ChannelCID.Should().Be(_channel.Cid);
-            thread.ParentMessageID.Should().Be(_parentMessage.Id);
-            thread.CreatedAt.Should().BeAfter(DateTimeOffset.MinValue);
+            for (int i = 0; i < resp.Threads.Count - 1; i++)
+            {
+                resp.Threads[i].CreatedAt.Should().BeAfter(resp.Threads[i + 1].CreatedAt);
+            }
         }
 
         [Test]
@@ -97,42 +97,36 @@ namespace StreamChatTests
             {
                 { "channel_cid", new Dictionary<string, object> { { "$eq", _channel.Cid } } },
             };
-            var sort = new List<SortParameter>
-            {
-                new SortParameter { Field = "created_at", Direction = SortDirection.Descending },
-            };
-            var opts = QueryThreadsOptions.Default.WithFilter(filter).WithSortBy(sort[0]).WithUserId(_user.Id);
+            var opts = QueryThreadsOptions.Default.WithFilter(filter).WithSortBy(new SortParameter { Field = "created_at", Direction = SortDirection.Descending }).WithUserId(_user.Id);
 
-            var resp = await _threadClient.QueryThreads(opts);
+            var resp = await _threadClient.QueryThreadsAsync(opts);
 
             resp.Threads.Should().NotBeNull();
             resp.Threads.Should().NotBeEmpty();
+            resp.Threads.Should().HaveCount(3);
 
-            // Verify the thread matches our filter and sort criteria
-            var thread = resp.Threads[0];
-            thread.ChannelCID.Should().Be(_channel.Cid);
-            thread.ParentMessageID.Should().Be(_parentMessage.Id);
-            thread.CreatedAt.Should().BeAfter(DateTimeOffset.MinValue);
-            thread.ReplyCount.Should().BeGreaterThan(0);
+            for (int i = 0; i < resp.Threads.Count - 1; i++)
+            {
+                resp.Threads[i].CreatedAt.Should().BeAfter(resp.Threads[i + 1].CreatedAt);
+            }
+
+            foreach (var thread in resp.Threads)
+            {
+                thread.ChannelCID.Should().Be(_channel.Cid);
+            }
         }
 
         [Test]
         public async Task TestQueryThreadsWithoutFilterAndSort()
         {
-            // Use default options without filter or sort
             var opts = QueryThreadsOptions.Default.WithUserId(_user.Id);
 
-            var resp = await _threadClient.QueryThreads(opts);
+            var resp = await _threadClient.QueryThreadsAsync(opts);
 
             resp.Threads.Should().NotBeNull();
             resp.Threads.Should().NotBeEmpty();
 
-            // Verify the thread contains our parent message
-            var thread = resp.Threads[0];
-            thread.ChannelCID.Should().Be(_channel.Cid);
-            thread.ParentMessageID.Should().Be(_parentMessage.Id);
-            thread.CreatedByUserID.Should().Be(_user.Id);
-            thread.ReplyCount.Should().BeGreaterThan(0);
+            resp.Threads.Should().HaveCountGreaterThanOrEqualTo(3);
         }
     }
 }

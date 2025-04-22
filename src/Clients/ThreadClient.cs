@@ -12,20 +12,18 @@ namespace StreamChat.Clients
         {
         }
 
-        private static string Endpoint() => "threads";
-
-        public async Task<QueryThreadsResponse> QueryThreads(QueryThreadsOptions opts)
+        public async Task<QueryThreadsResponse> QueryThreadsAsync(QueryThreadsOptions options)
         {
             var payload = new
             {
-                offset = opts.Offset,
-                limit = opts.Limit,
-                filter = opts.Filter,
-                sort = opts.Sort,
-                user_id = opts.UserId,
+                offset = options.Offset,
+                limit = options.Limit,
+                filter = options.Filter,
+                sort = options.Sort,
+                user_id = options.UserId,
             };
 
-            return await ExecuteRequestAsync<QueryThreadsResponse>(Endpoint(),
+            return await ExecuteRequestAsync<QueryThreadsResponse>("threads",
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 body: payload);
