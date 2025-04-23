@@ -25,5 +25,6 @@ namespace StreamChatTests
         public static IReactionClient GetReactionClient() => _clientFactory.GetReactionClient();
         public static ITaskClient GetTaskClient() => _clientFactory.GetTaskClient();
         public static IModerationClient GetModerationClient() => _clientFactory.GetModerationClient();
+        public static IThreadClient GetThreadClient() => _clientFactory.GetThreadClient();
     }
 }
