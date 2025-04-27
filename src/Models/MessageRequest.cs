@@ -45,4 +45,5 @@ public class SendMessageOptions
 {
     public bool SkipPush { get; set; }
     public bool IsPendingMessage { get; set; }
+    public bool? ForceModeration { get; set; }
 }
