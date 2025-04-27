@@ -59,9 +59,9 @@ namespace StreamChat.Models
     public class MessageSendRequest
     {
         public MessageRequest Message { get; set; }
-
         public bool? SkipPush { get; set; }
         public bool? IsPendingMessage { get; set; }
+        public bool? ForceModeration { get; set; }
     }
 
     public class MessageSearchResponse : ApiResponse
