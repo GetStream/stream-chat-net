@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using StreamChat;
+using StreamChat.Exceptions;
 using StreamChat.Models;
 
 namespace StreamChatTests
@@ -152,6 +154,57 @@ namespace StreamChatTests
 
             List<string> GetUserGrants(Dictionary<string, List<string>> grants)
                 => grants.First(g => g.Key == "user").Value;
+        }
+
+        [Test]
+        public async Task TestEventHooksAsync()
+        {
+            // Arrange
+            var eventHook = new EventHook
+            {
+                HookType = HookType.Webhook,
+                Enabled = true,
+                EventTypes = new List<string> { "message.new", "message.updated" },
+                WebhookUrl = "https://example.com/webhook",
+            };
+
+            var sqsHook = new EventHook
+            {
+                HookType = HookType.SQS,
+                Enabled = true,
+                EventTypes = new List<string> { "user.updated" },
+                SqsQueueUrl = "https://sqs.region.amazonaws.com/123456789012/queue-name",
+                SqsRegion = "us-east-1",
+                SqsAuthType = AuthType.Resource,
+            };
+
+            var snsHook = new EventHook
+            {
+                HookType = HookType.SNS,
+                Enabled = true,
+                EventTypes = new List<string> { "channel.updated" },
+                SnsTopicArn = "arn:aws:sns:us-east-1:123456789012:topic-name",
+                SnsRegion = "us-east-1",
+                SnsAuthType = AuthType.Resource,
+            };
+
+            var eventHooks = new List<EventHook> { eventHook, sqsHook, snsHook };
+
+            try
+            {
+                await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest
+                {
+                    EventHooks = eventHooks,
+                });
+
+                var response = await _appClient.GetAppSettingsAsync();
+                response.App.EventHooks.Should().NotBeNull();
+                response.App.EventHooks.Should().HaveCount(3);
+            }
+            catch (StreamChatException ex)
+            {
+                ex.Message.Should().Contain("cannot set event hooks in hook v1 system");
+            }
         }
     }
 }

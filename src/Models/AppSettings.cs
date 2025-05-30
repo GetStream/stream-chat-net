@@ -41,6 +41,55 @@ namespace StreamChat.Models
         Team,
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum HookType
+    {
+        [EnumMember(Value = "webhook")]
+        Webhook,
+
+        [EnumMember(Value = "sqs")]
+        SQS,
+
+        [EnumMember(Value = "sns")]
+        SNS
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum AuthType
+    {
+        [EnumMember(Value = "keys")]
+        Keys,
+
+        [EnumMember(Value = "role")]
+        Role,
+
+        [EnumMember(Value = "resource")]
+        Resource,
+    }
+
+    public class EventHook
+    {
+        public string Id { get; set; }
+        public HookType HookType { get; set; }
+        public bool Enabled { get; set; }
+        public List<string> EventTypes { get; set; }
+        public string WebhookUrl { get; set; }
+        public string SqsQueueUrl { get; set; }
+        public string SqsRegion { get; set; }
+        public AuthType? SqsAuthType { get; set; }
+        public string SqsKey { get; set; }
+        public string SqsSecret { get; set; }
+        public string SqsRoleArn { get; set; }
+        public string SnsTopicArn { get; set; }
+        public string SnsRegion { get; set; }
+        public AuthType? SnsAuthType { get; set; }
+        public string SnsKey { get; set; }
+        public string SnsSecret { get; set; }
+        public string SnsRoleArn { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
+    }
+
     public abstract class AppSettingsBase
     {
         [JsonProperty("disable_auth_checks")]
@@ -72,6 +121,7 @@ namespace StreamChat.Models
         public DateTimeOffset? RevokeTokensIssuedBefore { get; set; }
         public UniqueUsernameEnforcementPolicy? EnforceUniqueUsernames { get; set; }
         public Dictionary<string, List<string>> Grants { get; set; }
+        public List<EventHook> EventHooks { get; set; }
     }
 
     public class AppSettingsRequest : AppSettingsBase
