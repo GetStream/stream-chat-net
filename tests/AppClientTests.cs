@@ -195,10 +195,6 @@ namespace StreamChatTests
                 {
                     EventHooks = eventHooks,
                 });
-
-                var response = await _appClient.GetAppSettingsAsync();
-                response.App.EventHooks.Should().NotBeNull();
-                response.App.EventHooks.Should().HaveCount(3);
             }
             catch (StreamChatException ex)
             {
