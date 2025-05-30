@@ -51,7 +51,7 @@ namespace StreamChat.Models
         SQS,
 
         [EnumMember(Value = "sns")]
-        SNS
+        SNS,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
