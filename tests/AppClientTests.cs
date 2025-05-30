@@ -159,7 +159,6 @@ namespace StreamChatTests
         [Test]
         public async Task TestEventHooksAsync()
         {
-            // Arrange
             var eventHook = new EventHook
             {
                 HookType = HookType.Webhook,
