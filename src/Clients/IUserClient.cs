@@ -264,5 +264,18 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/javascript/block_user/</remarks>
         Task<ApiResponse> UnblockUserAsync(string targetId, string userID);
+
+        /// <summary>
+        /// Updates a user's live location.
+        /// </summary>
+        /// <param name="location">The location data to update</param>
+        /// <returns>The server response</returns>
+        Task<ApiResponse> UpdateLocationAsync(SharedLocationRequest location);
+
+        /// <summary>
+        /// Gets all active live locations.
+        /// </summary>
+        /// <returns>The server response containing active live locations</returns>
+        Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync();
     }
 }
