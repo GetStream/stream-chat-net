@@ -76,7 +76,6 @@ namespace StreamChat.Models
         public DateTimeOffset? TruncatedAt { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
-        public List<string> MemberIds { get; set; }
     }
 
     public class TruncateResponse : ApiResponse
