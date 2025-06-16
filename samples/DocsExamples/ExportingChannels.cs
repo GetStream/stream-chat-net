@@ -27,7 +27,7 @@ internal class ExportingChannels
     public async Task RetrievingTaskStatusAsync()
     {
         var taskId = string.Empty;
-        
+
         // ITaskClient can provide the status of the export operation
         var taskStatus = await _taskClient.GetTaskStatusAsync(taskId);
         if (taskStatus.Status == AsyncTaskStatus.Completed)

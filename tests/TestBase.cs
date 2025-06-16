@@ -24,6 +24,8 @@ namespace StreamChatTests
         protected static readonly IReactionClient _reactionClient = TestClientFactory.GetReactionClient();
         protected static readonly IUserClient _userClient = TestClientFactory.GetUserClient();
         protected static readonly ITaskClient _taskClient = TestClientFactory.GetTaskClient();
+        protected static readonly IModerationClient _moderationClient = TestClientFactory.GetModerationClient();
+        protected static readonly IThreadClient _threadClient = TestClientFactory.GetThreadClient();
 
         private readonly List<ChannelWithConfig> _testChannels = new List<ChannelWithConfig>();
         private readonly List<string> _testChannelTypes = new List<string>();

@@ -21,6 +21,7 @@ namespace StreamChat.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public string Role { get; set; }
+        public Dictionary<string, string> TeamsRole { get; set; }
         public bool? Banned { get; set; }
         public DateTimeOffset? BanExpires { get; set; }
         public Language? Language { get; set; }
@@ -31,6 +32,7 @@ namespace StreamChat.Models
     {
         public string Id { get; set; }
         public string Role { get; set; }
+        public Dictionary<string, string> TeamsRole { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? LastActive { get; set; }
@@ -44,6 +46,7 @@ namespace StreamChat.Models
     {
         public string Id { get; set; }
         public string Role { get; set; }
+        public Dictionary<string, string> TeamsRole { get; set; }
         public List<string> Roles { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }

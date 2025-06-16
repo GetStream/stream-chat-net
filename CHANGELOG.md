@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.14.0](https://github.com/GetStream/stream-chat-net/compare/2.13.0...2.14.0) (2025-04-27)
+
+
+### Features
+
+* [CHA-794] Add Query Threads ([#167](https://github.com/GetStream/stream-chat-net/issues/167)) ([3b0ce10](https://github.com/GetStream/stream-chat-net/commit/3b0ce10222658d75f35757018319dac5c32f2598))
+
+## [2.13.0](https://github.com/GetStream/stream-chat-net/compare/v2.12.0...v2.13.0) (2025-04-07)
+
+## [2.12.0](https://github.com/GetStream/stream-chat-net/compare/2.11.0...2.12.0) (2025-03-27)
+
+
+### Features
+
+* moderation apis ([#163](https://github.com/GetStream/stream-chat-net/issues/163)) ([d548c9a](https://github.com/GetStream/stream-chat-net/commit/d548c9a4f83ce6f789d5d0825f2b96e159cc1278))
+
 ## [2.11.0](https://github.com/GetStream/stream-chat-net/compare/2.10.0...2.11.0) (2025-02-24)
 
 

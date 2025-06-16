@@ -108,6 +108,7 @@ namespace StreamChat.Clients
         /// <summary>
         /// <para>Sends a message to a channel.</para>
         /// If you want to send a message to a thread, you can use <see cref="SendMessageToThreadAsync"/>.
+        /// <para>Supports force moderation via <see cref="SendMessageOptions.ForceModeration"/>.</para>
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
         Task<GenericMessageResponse> SendMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, SendMessageOptions options);
