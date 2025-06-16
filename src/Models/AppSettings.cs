@@ -97,13 +97,13 @@ namespace StreamChat.Models
         public string WebhookUrl { get; set; }
         public string SqsQueueUrl { get; set; }
         public string SqsRegion { get; set; }
-        public string SqsAuthType { get; set; }
+        public AuthType SqsAuthType { get; set; }
         public string SqsKey { get; set; }
         public string SqsSecret { get; set; }
         public string SqsRoleArn { get; set; }
         public string SnsTopicArn { get; set; }
         public string SnsRegion { get; set; }
-        public string SnsAuthType { get; set; }
+        public AuthType SnsAuthType { get; set; }
         public string SnsKey { get; set; }
         public string SnsSecret { get; set; }
         public string SnsRoleArn { get; set; }
