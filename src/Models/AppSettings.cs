@@ -52,6 +52,9 @@ namespace StreamChat.Models
 
         [EnumMember(Value = "sns")]
         SNS,
+
+        [EnumMember(Value = "pending_message")]
+        PendingMessage,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -67,6 +70,24 @@ namespace StreamChat.Models
         Resource,
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum CallbackMode
+    {
+        [EnumMember(Value = "CALLBACK_MODE_NONE")]
+        None,
+
+        [EnumMember(Value = "CALLBACK_MODE_REST")]
+        Rest,
+
+        [EnumMember(Value = "CALLBACK_MODE_TWIRP")]
+        Twirp,
+    }
+
+    public class CallbackConfig
+    {
+        public CallbackMode Mode { get; set; }
+    }
+
     public class EventHook
     {
         public string Id { get; set; }
@@ -76,18 +97,20 @@ namespace StreamChat.Models
         public string WebhookUrl { get; set; }
         public string SqsQueueUrl { get; set; }
         public string SqsRegion { get; set; }
-        public AuthType? SqsAuthType { get; set; }
+        public string SqsAuthType { get; set; }
         public string SqsKey { get; set; }
         public string SqsSecret { get; set; }
         public string SqsRoleArn { get; set; }
         public string SnsTopicArn { get; set; }
         public string SnsRegion { get; set; }
-        public AuthType? SnsAuthType { get; set; }
+        public string SnsAuthType { get; set; }
         public string SnsKey { get; set; }
         public string SnsSecret { get; set; }
         public string SnsRoleArn { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
+        public int TimeoutMs { get; set; }
+        public CallbackConfig Callback { get; set; }
+        public string CreatedAt { get; set; }
+        public string UpdatedAt { get; set; }
     }
 
     public abstract class AppSettingsBase
