@@ -12,11 +12,15 @@ namespace StreamChat.Clients
     public class AppClient : ClientBase, IAppClient
     {
         private readonly string _apiSecret;
+        private readonly Lazy<IModerationClient> _moderationClient;
 
         internal AppClient(IRestClient client, string apiSecret) : base(client)
         {
             _apiSecret = apiSecret;
+            _moderationClient = new Lazy<IModerationClient>(() => new ModerationClient(client));
         }
+
+        public IModerationClient Moderation => _moderationClient.Value;
 
         public async Task<GetAppResponse> GetAppSettingsAsync()
             => await ExecuteRequestAsync<GetAppResponse>("app",

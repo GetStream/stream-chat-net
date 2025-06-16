@@ -89,5 +89,17 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/tokens_and_authentication/?language=csharp</remarks>
         IUserClient GetUserClient();
+
+        /// <summary>
+        /// Gets a client that can be used to access moderation endpoints.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp</remarks>
+        IModerationClient GetModerationClient();
+
+        /// <summary>
+        /// Returns an <see cref="IThreadClient"/> instance. The returned client can be used as a singleton in your application.
+        /// </summary>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/threads/?language=csharp#filtering-and-sorting-threads</remarks>
+        IThreadClient GetThreadClient();
     }
 }

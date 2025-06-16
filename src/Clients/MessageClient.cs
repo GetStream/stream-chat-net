@@ -34,6 +34,7 @@ namespace StreamChat.Clients
                 Message = msg,
                 SkipPush = options.SkipPush,
                 IsPendingMessage = options.IsPendingMessage,
+                ForceModeration = options.ForceModeration,
             };
             req.Message.UserId = userId;
 

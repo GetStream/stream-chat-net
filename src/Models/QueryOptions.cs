@@ -250,4 +250,62 @@ namespace StreamChat.Models
             };
         }
     }
+
+    public class QueryThreadsOptions
+    {
+        private const int DefaultLimit = 10;
+
+        public int Limit { get; set; } = DefaultLimit;
+
+        public string Next { get; set; }
+        public List<SortParameter> Sort { get; set; } = new List<SortParameter>();
+        public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
+        public string UserId { get; set; }
+
+        public bool Watch { get; set; } = false;
+
+        public QueryThreadsOptions WithNext(string next)
+        {
+            Next = next;
+            return this;
+        }
+
+        public QueryThreadsOptions WithLimit(int limit)
+        {
+            Limit = limit;
+            return this;
+        }
+
+        public QueryThreadsOptions WithSortBy(SortParameter param)
+        {
+            Sort.Add(param);
+            return this;
+        }
+
+        public QueryThreadsOptions WithFilter(Dictionary<string, object> filter)
+        {
+            Filter = filter;
+            return this;
+        }
+
+        public QueryThreadsOptions WithUserId(string userId)
+        {
+            UserId = userId;
+            return this;
+        }
+
+        public QueryThreadsOptions WithWatch(bool watch)
+        {
+            Watch = watch;
+            return this;
+        }
+
+        public static QueryThreadsOptions Default
+        {
+            get => new QueryThreadsOptions
+            {
+                Limit = DefaultLimit,
+            };
+        }
+    }
 }

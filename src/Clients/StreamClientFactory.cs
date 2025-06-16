@@ -25,6 +25,8 @@ namespace StreamChat.Clients
         private readonly IPermissionClient _permissionClient;
         private readonly IReactionClient _reactionClient;
         private readonly ITaskClient _taskClient;
+        private readonly IModerationClient _moderationClient;
+        private readonly IThreadClient _threadClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamClientFactory"/> class.
@@ -90,6 +92,8 @@ namespace StreamChat.Clients
             _reactionClient = new ReactionClient(restClient);
             _taskClient = new TaskClient(restClient);
             _userClient = new UserClient(restClient, jwtGeneratorClient, apiSecret);
+            _moderationClient = new ModerationClient(restClient);
+            _threadClient = new ThreadClient(restClient);
         }
 
         public IAppClient GetAppClient() => _appClient;
@@ -106,5 +110,7 @@ namespace StreamChat.Clients
         public IReactionClient GetReactionClient() => _reactionClient;
         public ITaskClient GetTaskClient() => _taskClient;
         public IUserClient GetUserClient() => _userClient;
+        public IModerationClient GetModerationClient() => _moderationClient;
+        public IThreadClient GetThreadClient() => _threadClient;
     }
 }
