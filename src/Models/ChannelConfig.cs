@@ -42,5 +42,6 @@ namespace StreamChat.Models
         public string Blocklist { get; set; }
         public ModerationBehaviour BlocklistBehavior { get; set; }
         public List<string> Commands { get; set; }
+        public bool? UserMessageReminders { get; set; }
     }
 }
