@@ -285,7 +285,7 @@ namespace StreamChat.Clients
 
             return await ExecuteRequestAsync<QueryRemindersResponse>("reminders/query",
                 HttpMethod.POST,
-                HttpStatusCode.OK,
+                HttpStatusCode.Created,
                 data);
         }
     }
