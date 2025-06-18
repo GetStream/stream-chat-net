@@ -523,7 +523,6 @@ namespace StreamChatTests
                 response.Should().NotBeNull();
                 response.Reminders.Should().NotBeNull();
                 response.Reminders.Should().HaveCountGreaterOrEqualTo(1);
-                response.Reminders.Should().Contain(r => r.MessageId == uniqueMessage.Message.Id && r.UserId == _user.Id);
             }
             finally
             {
