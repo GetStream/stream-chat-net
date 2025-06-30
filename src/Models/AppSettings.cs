@@ -109,8 +109,8 @@ namespace StreamChat.Models
         public string SnsRoleArn { get; set; }
         public int TimeoutMs { get; set; }
         public CallbackConfig Callback { get; set; }
-        public string CreatedAt { get; set; }
-        public string UpdatedAt { get; set; }
+        public DateTimeOffset? CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
     }
 
     public abstract class AppSettingsBase

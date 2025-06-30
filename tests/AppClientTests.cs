@@ -189,17 +189,14 @@ namespace StreamChatTests
 
             var eventHooks = new List<EventHook> { eventHook, sqsHook, snsHook };
 
-            try
-            {
-                await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest
-                {
-                    EventHooks = eventHooks,
-                });
-            }
-            catch (StreamChatException ex)
-            {
-                ex.Message.Should().Contain("cannot set event hooks in hook v1 system");
-            }
+            await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { EventHooks = eventHooks });
+
+            var getAppResponse = await _appClient.GetAppSettingsAsync();
+            getAppResponse.App.EventHooks.Should().NotBeNull();
+            getAppResponse.App.EventHooks.Should().HaveCount(3);
+            getAppResponse.App.EventHooks.Should().Contain(eventHook);
+            getAppResponse.App.EventHooks.Should().Contain(sqsHook);
+            getAppResponse.App.EventHooks.Should().Contain(snsHook);
         }
     }
 }
