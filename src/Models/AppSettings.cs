@@ -44,15 +44,19 @@ namespace StreamChat.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum HookType
     {
+        /// <summary>Standard HTTP webhook endpoint</summary>
         [EnumMember(Value = "webhook")]
         Webhook,
 
+        /// <summary>Amazon SQS - managed message queuing service</summary>
         [EnumMember(Value = "sqs")]
         SQS,
 
+        /// <summary>Amazon SNS - managed pub/sub messaging service</summary>
         [EnumMember(Value = "sns")]
         SNS,
 
+        /// <summary>Hook for message review/modification before sending</summary>
         [EnumMember(Value = "pending_message")]
         PendingMessage,
     }
@@ -60,12 +64,15 @@ namespace StreamChat.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum AuthType
     {
+        /// <summary>Authentication using access key and secret key pair</summary>
         [EnumMember(Value = "keys")]
         Keys,
 
+        /// <summary>Authentication using IAM role-based access</summary>
         [EnumMember(Value = "role")]
         Role,
 
+        /// <summary>Authentication using resource-based policies</summary>
         [EnumMember(Value = "resource")]
         Resource,
     }
@@ -76,9 +83,11 @@ namespace StreamChat.Models
         [EnumMember(Value = "CALLBACK_MODE_NONE")]
         None,
 
+        /// <summary>Use REST API for callbacks</summary>
         [EnumMember(Value = "CALLBACK_MODE_REST")]
         Rest,
 
+        /// <summary>Use Twirp RPC protocol for callbacks</summary>
         [EnumMember(Value = "CALLBACK_MODE_TWIRP")]
         Twirp,
     }
@@ -90,25 +99,63 @@ namespace StreamChat.Models
 
     public class EventHook
     {
+        /// <summary>Unique identifier for the event hook</summary>
         public string Id { get; set; }
+
+        /// <summary>Type of the hook (Webhook, SQS, SNS, or PendingMessage)</summary>
         public HookType HookType { get; set; }
+
+        /// <summary>Whether this event hook is currently active</summary>
         public bool Enabled { get; set; }
+
+        /// <summary>List of event types this hook will respond to</summary>
         public List<string> EventTypes { get; set; }
+
+        /// <summary>URL endpoint that will receive events</summary>
         public string WebhookUrl { get; set; }
+
+        /// <summary>Amazon SQS queue URL for event delivery</summary>
         public string SqsQueueUrl { get; set; }
+
+        /// <summary>AWS region for SQS queue</summary>
         public string SqsRegion { get; set; }
+
+        /// <summary>Authentication type for SQS access</summary>
         public AuthType SqsAuthType { get; set; }
+
+        /// <summary>AWS access key ID for SQS</summary>
         public string SqsKey { get; set; }
+
+        /// <summary>AWS secret access key for SQS</summary>
         public string SqsSecret { get; set; }
+
+        /// <summary>IAM role ARN for SQS access</summary>
         public string SqsRoleArn { get; set; }
+
+        /// <summary>SNS topic ARN for event publishing</summary>
         public string SnsTopicArn { get; set; }
+
+        /// <summary>AWS region for SNS topic</summary>
         public string SnsRegion { get; set; }
+
+        /// <summary>Authentication type for SNS access</summary>
         public AuthType SnsAuthType { get; set; }
+
+        /// <summary>AWS access key ID for SNS</summary>
         public string SnsKey { get; set; }
+
+        /// <summary>AWS secret access key for SNS</summary>
         public string SnsSecret { get; set; }
+
+        /// <summary>IAM role ARN for SNS access</summary>
         public string SnsRoleArn { get; set; }
+
+        /// <summary>Maximum time in milliseconds to wait for hook processing</summary>
         public int TimeoutMs { get; set; }
+
+        /// <summary>Configuration for callback behavior</summary>
         public CallbackConfig Callback { get; set; }
+
         public DateTimeOffset? CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
     }
