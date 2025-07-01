@@ -159,7 +159,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestEventHooksAsync()
         {
-            var eventHook = new EventHook
+            var webhookHook = new EventHook
             {
                 HookType = HookType.Webhook,
                 Enabled = true,
@@ -187,7 +187,7 @@ namespace StreamChatTests
                 SnsAuthType = AuthType.Resource,
             };
 
-            var eventHooks = new List<EventHook> { eventHook, sqsHook, snsHook };
+            var eventHooks = new List<EventHook> { webhookHook, sqsHook, snsHook };
 
             await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { EventHooks = eventHooks });
 

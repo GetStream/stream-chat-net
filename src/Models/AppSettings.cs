@@ -103,6 +103,7 @@ namespace StreamChat.Models
         public string Id { get; set; }
 
         /// <summary>Type of the hook (Webhook, SQS, SNS, or PendingMessage)</summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public HookType HookType { get; set; }
 
         /// <summary>Whether this event hook is currently active</summary>
@@ -121,6 +122,7 @@ namespace StreamChat.Models
         public string SqsRegion { get; set; }
 
         /// <summary>Authentication type for SQS access</summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public AuthType SqsAuthType { get; set; }
 
         /// <summary>AWS access key ID for SQS</summary>
@@ -139,6 +141,7 @@ namespace StreamChat.Models
         public string SnsRegion { get; set; }
 
         /// <summary>Authentication type for SNS access</summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public AuthType SnsAuthType { get; set; }
 
         /// <summary>AWS access key ID for SNS</summary>
