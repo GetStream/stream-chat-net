@@ -161,6 +161,7 @@ namespace StreamChatTests
         {
             var webhookHook = new EventHook
             {
+                Id = "95fa9371-38d8-4ddb-b099-d9ed86e7c9bc",
                 HookType = HookType.Webhook,
                 Enabled = true,
                 EventTypes = new List<string> { "message.new", "message.updated" },
@@ -169,6 +170,7 @@ namespace StreamChatTests
 
             var sqsHook = new EventHook
             {
+                Id = "4eaa795f-77d2-4b72-8f7e-11de0327121c",
                 HookType = HookType.SQS,
                 Enabled = true,
                 EventTypes = new List<string> { "user.updated" },
@@ -179,6 +181,7 @@ namespace StreamChatTests
 
             var snsHook = new EventHook
             {
+                Id = "7b2c6590-7b61-490a-8987-96c5f8a353ca",
                 HookType = HookType.SNS,
                 Enabled = true,
                 EventTypes = new List<string> { "channel.updated" },
@@ -194,7 +197,7 @@ namespace StreamChatTests
             var getAppResponse = await _appClient.GetAppSettingsAsync();
             getAppResponse.App.EventHooks.Should().NotBeNull();
             getAppResponse.App.EventHooks.Should().HaveCount(3);
-            getAppResponse.App.EventHooks.Should().BeEquivalentTo(eventHooks);
+            getAppResponse.App.EventHooks.Should().BeEquivalentTo(eventHooks, options => options.Excluding(e => e.CreatedAt).Excluding(e => e.UpdatedAt));
         }
     }
 }
