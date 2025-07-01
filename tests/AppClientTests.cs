@@ -194,9 +194,7 @@ namespace StreamChatTests
             var getAppResponse = await _appClient.GetAppSettingsAsync();
             getAppResponse.App.EventHooks.Should().NotBeNull();
             getAppResponse.App.EventHooks.Should().HaveCount(3);
-            getAppResponse.App.EventHooks.Should().Contain(eventHook);
-            getAppResponse.App.EventHooks.Should().Contain(sqsHook);
-            getAppResponse.App.EventHooks.Should().Contain(snsHook);
+            getAppResponse.App.EventHooks.Should().BeEquivalentTo(eventHooks);
         }
     }
 }
