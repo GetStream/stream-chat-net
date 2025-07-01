@@ -41,6 +41,7 @@ namespace StreamChat.Models
         public bool? Shadowed { get; set; }
         public Dictionary<string, List<string>> ImageLabels { get; set; }
         public List<string> RestrictedVisibility { get; set; }
+        public SharedLocationRequest SharedLocation { get; set; }
 
         [JsonProperty("i18n")]
         public Dictionary<string, string> I18n { get; set; }

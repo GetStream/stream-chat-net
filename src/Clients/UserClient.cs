@@ -241,5 +241,16 @@ namespace StreamChat.Clients
                     new KeyValuePair<string, string>("payload", StreamJsonConverter.SerializeObject(payload)),
                 });
         }
+
+        public async Task<ApiResponse> UpdateLocationAsync(SharedLocationRequest location)
+            => await ExecuteRequestAsync<ApiResponse>("users/live_locations",
+                HttpMethod.PUT,
+                HttpStatusCode.OK,
+                location);
+
+        public async Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync()
+            => await ExecuteRequestAsync<ActiveLiveLocationsResponse>("users/live_locations",
+                HttpMethod.GET,
+                HttpStatusCode.OK);
     }
 }
