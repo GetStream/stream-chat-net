@@ -242,7 +242,13 @@ namespace StreamChat.Clients
                 });
         }
 
-        public async Task<SharedLocationResponse> UpdateLocationAsync(string userID, SharedLocationRequest location)
+        /// <summary>
+        /// Updates a user's live location.
+        /// </summary>
+        /// <param name="userID">The user ID</param>
+        /// <param name="location">The location data to update</param>
+        /// <returns>The server response containing the updated live location share, including channel CID, message ID, user ID, latitude, longitude, device ID, end time, creation and update timestamps, and duration.</returns>
+        public async Task<SharedLocationResponse> UpdateUserLiveLocationAsync(string userID, SharedLocationRequest location)
         {
             if (string.IsNullOrEmpty(userID))
                 throw new ArgumentException("User ID cannot be empty", nameof(userID));
@@ -257,7 +263,7 @@ namespace StreamChat.Clients
                 });
         }
 
-        public async Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync(string userID)
+        public async Task<ActiveLiveLocationsResponse> GetUserActiveLiveLocationsAsync(string userID)
         {
             if (string.IsNullOrEmpty(userID))
                 throw new ArgumentException("User ID cannot be empty", nameof(userID));

@@ -405,16 +405,13 @@ namespace StreamChatTests
         public async Task TestLiveLocationAsync()
         {
 
-            // Create a channel for testing
             var channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id });
 
-            // Enable shared locations for the channel
             await EnableSharedLocationsAsync(channel);
 
             var longitude = -122.4194;
             var latitude = 38.999;
 
-            // Create a shared location for the initial message
             var location = new SharedLocationRequest
             {
                 Longitude = longitude,
@@ -423,7 +420,6 @@ namespace StreamChatTests
                 CreatedByDeviceId = "test-device",
             };
 
-            // Send a message with shared location
             var messageRequest = new MessageRequest
             {
                 Text = "Test message for shared location",
@@ -437,10 +433,6 @@ namespace StreamChatTests
 
             var message = messageResp.Message;
 
-            // Wait a moment for the message to be processed
-            await Task.Delay(1000);
-
-            // Update the location with new coordinates
             var newLongitude = -122.4194;
             var newLatitude = 38.999;
 
@@ -453,66 +445,22 @@ namespace StreamChatTests
                 CreatedByDeviceId = "test-device",
             };
 
-            // Update the location
             SharedLocationResponse updateResp;
-            try
-            {
-                updateResp = await _userClient.UpdateLocationAsync(_user1.Id, newLocation);
-            }
-            catch (StreamChatException ex)
-            {
-
-                // Log the detailed error information
-                Console.WriteLine($"StreamChatException: Code={ex.ErrorCode}, Message={ex.Message}, HttpStatusCode={ex.HttpStatusCode}");
-                if (ex.ExceptionFields != null)
-                {
-                    foreach (var field in ex.ExceptionFields)
-                    {
-                        Console.WriteLine($"  {field.Key}: {field.Value}");
-                    }
-                }
-                throw; // Re-throw to fail the test
-            }
+            updateResp = await _userClient.UpdateUserLiveLocationAsync(_user1.Id, newLocation);
 
             updateResp.Should().NotBeNull();
             updateResp.Latitude.Should().Be(newLatitude);
             updateResp.Longitude.Should().Be(newLongitude);
 
-            // Get active live locations
-            var getResp = await _userClient.GetSharedLocationsAsync(_user1.Id);
+            var getResp = await _userClient.GetUserActiveLiveLocationsAsync(_user1.Id);
 
             getResp.Should().NotBeNull();
             getResp.ActiveLiveLocations.Should().NotBeEmpty("Should have active live locations");
 
-            // Verify the location data
-            var found = false;
-            foreach (var loc in getResp.ActiveLiveLocations)
-            {
-                if (loc.MessageId == message.Id)
-                {
-                    found = true;
-                    loc.Latitude.Should().Be(newLatitude); // Should match the updated location
-                    loc.Longitude.Should().Be(newLongitude); // Should match the updated location
-                    break;
-                }
-            }
-
-            found.Should().BeTrue("Should find the updated location");
-
-            // Disable shared locations for cleanup
-            await DisableSharedLocationsAsync(channel);
-        }
-
-        [Test]
-        public async Task TestGetSharedLocationsAsync()
-        {
-
-            // Test just getting shared locations without updating
-            var getResp = await _userClient.GetSharedLocationsAsync(_user1.Id);
-
-            getResp.Should().NotBeNull();
-
-            // This might be empty if no shared locations exist, which is fine
+            var newLocationResp = getResp.ActiveLiveLocations.FirstOrDefault(loc => loc.MessageId == message.Id);
+            newLocationResp.Should().NotBeNull();
+            newLocationResp.Latitude.Should().Be(newLatitude);
+            newLocationResp.Longitude.Should().Be(newLongitude);
         }
 
         /// <summary>
