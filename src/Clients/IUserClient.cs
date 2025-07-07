@@ -279,5 +279,7 @@ namespace StreamChat.Clients
         /// <param name="userID">The user ID</param>
         /// <returns>The server response containing active live locations</returns>
         Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync(string userID);
+
     }
+
 }

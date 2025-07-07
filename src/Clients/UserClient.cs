@@ -270,5 +270,7 @@ namespace StreamChat.Clients
                     new KeyValuePair<string, string>("user_id", userID),
                 });
         }
+
     }
+
 }

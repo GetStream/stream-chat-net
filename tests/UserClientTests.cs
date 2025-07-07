@@ -555,6 +555,6 @@ namespace StreamChatTests
             await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
         }
 
-
     }
+
 }
