@@ -49,6 +49,9 @@ clean: ## Clean build artifacts
 	dotnet clean
 	rm -f $(RUNSETTINGS_FILE).tmp
 
+lint: ## Run linting
+	dotnet build --verbosity quiet
+
 test_with_docker: ## Run tests in Docker (set DOTNET_VERSION to change .NET version)
 	$(call generate_runsettings_content,$(RUNSETTINGS_FILE).tmp)
 	docker run -t -i -w /code -v $(PWD):/code --add-host=host.docker.internal:host-gateway \
