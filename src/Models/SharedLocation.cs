@@ -28,5 +28,4 @@ namespace StreamChat.Models
     {
         public SharedLocationResponse[] ActiveLiveLocations { get; set; }
     }
-
 }
