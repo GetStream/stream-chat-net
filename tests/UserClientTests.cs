@@ -450,7 +450,24 @@ namespace StreamChatTests
             };
 
             // Update the location
-            var updateResp = await _userClient.UpdateLocationAsync(_user1.Id, newLocation);
+            SharedLocationResponse updateResp;
+            try
+            {
+                updateResp = await _userClient.UpdateLocationAsync(_user1.Id, newLocation);
+            }
+            catch (StreamChatException ex)
+            {
+                // Log the detailed error information
+                Console.WriteLine($"StreamChatException: Code={ex.ErrorCode}, Message={ex.Message}, HttpStatusCode={ex.HttpStatusCode}");
+                if (ex.ExceptionFields != null)
+                {
+                    foreach (var field in ex.ExceptionFields)
+                    {
+                        Console.WriteLine($"  {field.Key}: {field.Value}");
+                    }
+                }
+                throw; // Re-throw to fail the test
+            }
 
             updateResp.Should().NotBeNull();
             updateResp.Latitude.Should().Be(newLatitude);
@@ -469,8 +486,8 @@ namespace StreamChatTests
                 if (loc.MessageId == message.Id)
                 {
                     found = true;
-                    loc.Latitude.Should().Be(location.Latitude);
-                    loc.Longitude.Should().Be(location.Longitude);
+                    loc.Latitude.Should().Be(newLatitude); // Should match the updated location
+                    loc.Longitude.Should().Be(newLongitude); // Should match the updated location
                     break;
                 }
             }
@@ -479,6 +496,16 @@ namespace StreamChatTests
 
             // Disable shared locations for cleanup
             await DisableSharedLocationsAsync(channel);
+        }
+
+        [Test]
+        public async Task TestGetSharedLocationsAsync()
+        {
+            // Test just getting shared locations without updating
+            var getResp = await _userClient.GetSharedLocationsAsync(_user1.Id);
+
+            getResp.Should().NotBeNull();
+            // This might be empty if no shared locations exist, which is fine
         }
 
         /// <summary>
