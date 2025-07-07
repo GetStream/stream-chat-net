@@ -242,15 +242,33 @@ namespace StreamChat.Clients
                 });
         }
 
-        public async Task<ApiResponse> UpdateLocationAsync(SharedLocationRequest location)
-            => await ExecuteRequestAsync<ApiResponse>("users/live_locations",
+        public async Task<SharedLocationResponse> UpdateLocationAsync(string userID, SharedLocationRequest location)
+        {
+            if (string.IsNullOrEmpty(userID))
+                throw new ArgumentException("User ID cannot be empty", nameof(userID));
+
+            return await ExecuteRequestAsync<SharedLocationResponse>("users/live_locations",
                 HttpMethod.PUT,
                 HttpStatusCode.OK,
-                location);
+                new { shared_location = location },
+                queryParams: new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("user_id", userID),
+                });
+        }
 
-        public async Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync()
-            => await ExecuteRequestAsync<ActiveLiveLocationsResponse>("users/live_locations",
+        public async Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync(string userID)
+        {
+            if (string.IsNullOrEmpty(userID))
+                throw new ArgumentException("User ID cannot be empty", nameof(userID));
+
+            return await ExecuteRequestAsync<ActiveLiveLocationsResponse>("users/live_locations",
                 HttpMethod.GET,
-                HttpStatusCode.OK);
+                HttpStatusCode.OK,
+                queryParams: new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("user_id", userID),
+                });
+        }
     }
 }

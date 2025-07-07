@@ -268,14 +268,16 @@ namespace StreamChat.Clients
         /// <summary>
         /// Updates a user's live location.
         /// </summary>
+        /// <param name="userID">The user ID</param>
         /// <param name="location">The location data to update</param>
         /// <returns>The server response</returns>
-        Task<ApiResponse> UpdateLocationAsync(SharedLocationRequest location);
+        Task<SharedLocationResponse> UpdateLocationAsync(string userID, SharedLocationRequest location);
 
         /// <summary>
-        /// Gets all active live locations.
+        /// Gets all active live locations for a user.
         /// </summary>
+        /// <param name="userID">The user ID</param>
         /// <returns>The server response containing active live locations</returns>
-        Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync();
+        Task<ActiveLiveLocationsResponse> GetSharedLocationsAsync(string userID);
     }
 }
