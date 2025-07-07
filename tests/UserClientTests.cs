@@ -78,13 +78,16 @@ namespace StreamChatTests
             switch (encodedStr.Length % 4)
             {
                 case 0:
+
                     // No pad chars
                     break;
                 case 2:
+
                     // Two pad chars
                     encodedStr += "==";
                     break;
                 case 3:
+
                     // One pad char
                     encodedStr += "=";
                     break;
@@ -401,6 +404,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestLiveLocationAsync()
         {
+
             // Create a channel for testing
             var channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id });
 
@@ -457,6 +461,7 @@ namespace StreamChatTests
             }
             catch (StreamChatException ex)
             {
+
                 // Log the detailed error information
                 Console.WriteLine($"StreamChatException: Code={ex.ErrorCode}, Message={ex.Message}, HttpStatusCode={ex.HttpStatusCode}");
                 if (ex.ExceptionFields != null)
@@ -501,10 +506,12 @@ namespace StreamChatTests
         [Test]
         public async Task TestGetSharedLocationsAsync()
         {
+
             // Test just getting shared locations without updating
             var getResp = await _userClient.GetSharedLocationsAsync(_user1.Id);
 
             getResp.Should().NotBeNull();
+
             // This might be empty if no shared locations exist, which is fine
         }
 
