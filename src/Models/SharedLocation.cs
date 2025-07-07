@@ -11,7 +11,7 @@ namespace StreamChat.Models
         public string MessageId { get; set; }
     }
 
-    public class SharedLocationResponse
+    public class SharedLocationResponse : ApiResponse
     {
         public string ChannelCid { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
