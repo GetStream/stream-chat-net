@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using StreamChat;
+using StreamChat.Exceptions;
 using StreamChat.Models;
 
 namespace StreamChatTests
@@ -152,6 +154,50 @@ namespace StreamChatTests
 
             List<string> GetUserGrants(Dictionary<string, List<string>> grants)
                 => grants.First(g => g.Key == "user").Value;
+        }
+
+        [Test]
+        public async Task TestEventHooksAsync()
+        {
+            var webhookHook = new EventHook
+            {
+                Id = "95fa9371-38d8-4ddb-b099-d9ed86e7c9bc",
+                HookType = HookType.Webhook,
+                Enabled = true,
+                EventTypes = new List<string> { "message.new", "message.updated" },
+                WebhookUrl = "https://example.com/webhook",
+            };
+
+            var sqsHook = new EventHook
+            {
+                Id = "4eaa795f-77d2-4b72-8f7e-11de0327121c",
+                HookType = HookType.SQS,
+                Enabled = true,
+                EventTypes = new List<string> { "user.updated" },
+                SqsQueueUrl = "https://sqs.region.amazonaws.com/123456789012/queue-name",
+                SqsRegion = "us-east-1",
+                SqsAuthType = AuthType.Resource,
+            };
+
+            var snsHook = new EventHook
+            {
+                Id = "7b2c6590-7b61-490a-8987-96c5f8a353ca",
+                HookType = HookType.SNS,
+                Enabled = true,
+                EventTypes = new List<string> { "channel.updated" },
+                SnsTopicArn = "arn:aws:sns:us-east-1:123456789012:topic-name",
+                SnsRegion = "us-east-1",
+                SnsAuthType = AuthType.Resource,
+            };
+
+            var eventHooks = new List<EventHook> { webhookHook, sqsHook, snsHook };
+
+            await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { EventHooks = eventHooks });
+
+            var getAppResponse = await _appClient.GetAppSettingsAsync();
+            getAppResponse.App.EventHooks.Should().NotBeNull();
+            getAppResponse.App.EventHooks.Should().HaveCount(3);
+            getAppResponse.App.EventHooks.Should().BeEquivalentTo(eventHooks, options => options.Excluding(e => e.CreatedAt).Excluding(e => e.UpdatedAt));
         }
     }
 }

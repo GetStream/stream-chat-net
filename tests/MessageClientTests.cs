@@ -40,6 +40,46 @@ namespace StreamChatTests
             await TryDeleteUsersAsync(_user.Id);
         }
 
+        /// <summary>
+        /// Enables user message reminders for the channel by updating config overrides.
+        /// </summary>
+        private async Task EnableUserMessageRemindersAsync()
+        {
+            var request = new PartialUpdateChannelRequest
+            {
+                Set = new Dictionary<string, object>
+                {
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            { "user_message_reminders", true },
+                        }
+                    },
+                },
+            };
+            await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, request);
+        }
+
+        /// <summary>
+        /// Disables user message reminders for the channel by removing config overrides.
+        /// </summary>
+        private async Task DisableUserMessageRemindersAsync()
+        {
+                        var request = new PartialUpdateChannelRequest
+            {
+                Set = new Dictionary<string, object>
+                {
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            { "user_message_reminders", false },
+                        }
+                    },
+                },
+            };
+            await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, request);
+        }
+
         [Test]
         public async Task TestGetMessageAsync()
         {
@@ -346,6 +386,325 @@ namespace StreamChatTests
             resp.Message.RestrictedVisibility.Should().BeEquivalentTo(restrictedToUsers);
             resp.Message.Text.Should().BeEquivalentTo(messageText);
             resp.Message.User.Id.Should().BeEquivalentTo(_user.Id);
+        }
+
+        [Test]
+        public async Task TestCreateReminderAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+            var remindAt = DateTime.UtcNow.AddDays(1);
+
+            try
+            {
+                // Act
+                var response = await _messageClient.CreateReminderAsync(_message.Id, _user.Id, remindAt);
+
+                // Assert
+                response.Should().NotBeNull();
+                response.Reminder.Should().NotBeNull();
+                response.Reminder.MessageId.Should().Be(_message.Id);
+                response.Reminder.UserId.Should().Be(_user.Id);
+                response.Reminder.RemindAt.Should().NotBeNull();
+                response.Reminder.RemindAt.Value.ToUniversalTime().Should().BeCloseTo(remindAt.ToUniversalTime(), TimeSpan.FromMinutes(1));
+                response.Reminder.CreatedAt.Should().NotBeNull();
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestCreateReminderWithoutRemindAtAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Act
+                var response = await _messageClient.CreateReminderAsync(_message.Id, _user.Id);
+
+                // Assert
+                response.Should().NotBeNull();
+                response.Reminder.Should().NotBeNull();
+                response.Reminder.MessageId.Should().Be(_message.Id);
+                response.Reminder.UserId.Should().Be(_user.Id);
+
+                // When remind_at is not provided, the API might set a default value or leave it null
+                // We just verify the response is valid
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestUpdateReminderAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Arrange - Create a reminder first
+                var initialRemindAt = DateTime.UtcNow.AddDays(1);
+                await _messageClient.CreateReminderAsync(_message.Id, _user.Id, initialRemindAt);
+
+                // Act - Update the reminder
+                var updatedRemindAt = DateTime.UtcNow.AddDays(2);
+                var response = await _messageClient.UpdateReminderAsync(_message.Id, _user.Id, updatedRemindAt);
+
+                // Assert
+                response.Should().NotBeNull();
+                response.Reminder.Should().NotBeNull();
+                response.Reminder.MessageId.Should().Be(_message.Id);
+                response.Reminder.UserId.Should().Be(_user.Id);
+                response.Reminder.RemindAt.Should().NotBeNull();
+                response.Reminder.RemindAt.Value.ToUniversalTime().Should().BeCloseTo(updatedRemindAt.ToUniversalTime(), TimeSpan.FromMinutes(1));
+                response.Reminder.UpdatedAt.Should().NotBeNull();
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestDeleteReminderAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Arrange - Create a reminder first
+                var remindAt = DateTime.UtcNow.AddDays(1);
+                await _messageClient.CreateReminderAsync(_message.Id, _user.Id, remindAt);
+
+                // Act - Delete the reminder
+                var response = await _messageClient.DeleteReminderAsync(_message.Id, _user.Id);
+
+                // Assert
+                response.Should().NotBeNull();
+
+                // The API might return the deleted reminder or just a success response
+                if (response.Reminder != null)
+                {
+                    response.Reminder.MessageId.Should().Be(_message.Id);
+                    response.Reminder.UserId.Should().Be(_user.Id);
+                }
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestQueryRemindersAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Arrange - Create a reminder first and ensure it's unique for this test
+                var uniqueMessage = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, $"Unique message for TestQueryRemindersAsync {Guid.NewGuid()}");
+                var remindAt = DateTime.UtcNow.AddDays(1);
+                await _messageClient.CreateReminderAsync(uniqueMessage.Message.Id, _user.Id, remindAt);
+
+                // Act - Query reminders
+                var response = await _messageClient.QueryRemindersAsync(_user.Id);
+
+                // Assert
+                response.Should().NotBeNull();
+                response.Reminders.Should().NotBeNull();
+                response.Reminders.Should().HaveCountGreaterOrEqualTo(1);
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestQueryRemindersWithFilterAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Arrange - Create a unique reminder for this test
+                var uniqueMessage = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, $"Unique message for TestQueryRemindersWithFilterAsync {Guid.NewGuid()}");
+                var remindAt = DateTime.UtcNow.AddDays(1);
+                await _messageClient.CreateReminderAsync(uniqueMessage.Message.Id, _user.Id, remindAt);
+
+                // Act - Query reminders with filter
+                var filterConditions = new Dictionary<string, object>
+                {
+                    { "message_id", uniqueMessage.Message.Id },
+                };
+                var response = await _messageClient.QueryRemindersAsync(_user.Id, filterConditions);
+
+                // Assert
+                response.Should().NotBeNull();
+                response.Reminders.Should().NotBeNull();
+                response.Reminders.Should().HaveCountGreaterOrEqualTo(1);
+                response.Reminders.Should().Contain(r => r.MessageId == uniqueMessage.Message.Id && r.UserId == _user.Id);
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestQueryRemindersWithSortAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Arrange - Create multiple reminders with different remind_at times
+                var uniqueMessage1 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, $"First unique message for TestQueryRemindersWithSortAsync {Guid.NewGuid()}");
+                var uniqueMessage2 = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, $"Second unique message for TestQueryRemindersWithSortAsync {Guid.NewGuid()}");
+
+                var remindAt1 = DateTime.UtcNow.AddDays(1);
+                var remindAt2 = DateTime.UtcNow.AddDays(2);
+
+                await _messageClient.CreateReminderAsync(uniqueMessage1.Message.Id, _user.Id, remindAt1);
+                await _messageClient.CreateReminderAsync(uniqueMessage2.Message.Id, _user.Id, remindAt2);
+
+                // Act - Query reminders with custom sort (descending by remind_at)
+                var sort = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>
+                    {
+                        { "field", "remind_at" },
+                        { "direction", -1 },
+                    },
+                };
+
+                // Filter to only include our test reminders
+                var filterConditions = new Dictionary<string, object>
+                {
+                    {
+                        "$or", new List<Dictionary<string, object>>
+                        {
+                            new Dictionary<string, object> { { "message_id", uniqueMessage1.Message.Id } },
+                            new Dictionary<string, object> { { "message_id", uniqueMessage2.Message.Id } },
+                        }
+                    },
+                };
+
+                var response = await _messageClient.QueryRemindersAsync(_user.Id, filterConditions, sort);
+
+                // Assert
+                response.Should().NotBeNull();
+                response.Reminders.Should().NotBeNull();
+                response.Reminders.Should().HaveCountGreaterOrEqualTo(2);
+
+                // Find our specific reminders in the response
+                var testReminders = response.Reminders
+                    .Where(r => r.MessageId == uniqueMessage1.Message.Id || r.MessageId == uniqueMessage2.Message.Id)
+                    .OrderByDescending(r => r.RemindAt)
+                    .ToList();
+
+                testReminders.Should().HaveCountGreaterOrEqualTo(2);
+
+                // With descending sort, the first reminder should have a later remind_at time
+                var laterReminder = testReminders.FirstOrDefault();
+                var earlierReminder = testReminders.LastOrDefault();
+
+                laterReminder.Should().NotBeNull();
+                earlierReminder.Should().NotBeNull();
+
+                if (laterReminder != null && earlierReminder != null &&
+                    laterReminder.RemindAt.HasValue && earlierReminder.RemindAt.HasValue)
+                {
+                    laterReminder.RemindAt.Value.Should().BeAfter(earlierReminder.RemindAt.Value);
+                }
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestReminderFullLifecycleAsync()
+        {
+            // Arrange
+            await EnableUserMessageRemindersAsync();
+
+            try
+            {
+                // Arrange - Create a unique message
+                var uniqueMessage = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, $"Unique message for TestReminderFullLifecycleAsync {Guid.NewGuid()}");
+                var initialRemindAt = DateTime.UtcNow.AddDays(1);
+
+                // Act 1 - Create a reminder
+                var createResponse = await _messageClient.CreateReminderAsync(uniqueMessage.Message.Id, _user.Id, initialRemindAt);
+
+                // Assert 1
+                createResponse.Should().NotBeNull();
+                createResponse.Reminder.Should().NotBeNull();
+                createResponse.Reminder.MessageId.Should().Be(uniqueMessage.Message.Id);
+
+                // Act 2 - Update the reminder
+                var updatedRemindAt = DateTime.UtcNow.AddDays(3);
+                var updateResponse = await _messageClient.UpdateReminderAsync(uniqueMessage.Message.Id, _user.Id, updatedRemindAt);
+
+                // Assert 2
+                updateResponse.Should().NotBeNull();
+                updateResponse.Reminder.Should().NotBeNull();
+                updateResponse.Reminder.RemindAt.Should().NotBeNull();
+                updateResponse.Reminder.RemindAt.Value.ToUniversalTime().Should().BeCloseTo(updatedRemindAt.ToUniversalTime(), TimeSpan.FromMinutes(1));
+
+                // Act 3 - Query to verify the update
+                var filterConditions = new Dictionary<string, object>
+                {
+                    { "message_id", uniqueMessage.Message.Id },
+                };
+                var queryResponse = await _messageClient.QueryRemindersAsync(_user.Id, filterConditions);
+
+                // Assert 3
+                queryResponse.Should().NotBeNull();
+                queryResponse.Reminders.Should().NotBeNull();
+                queryResponse.Reminders.Should().HaveCountGreaterOrEqualTo(1);
+                var reminder = queryResponse.Reminders.FirstOrDefault(r => r.MessageId == uniqueMessage.Message.Id);
+                reminder.Should().NotBeNull();
+                if (reminder != null && reminder.RemindAt.HasValue)
+                {
+                    reminder.RemindAt.Value.ToUniversalTime().Should().BeCloseTo(updatedRemindAt.ToUniversalTime(), TimeSpan.FromMinutes(1));
+                }
+
+                // Act 4 - Delete the reminder
+                var deleteResponse = await _messageClient.DeleteReminderAsync(uniqueMessage.Message.Id, _user.Id);
+
+                // Assert 4
+                deleteResponse.Should().NotBeNull();
+
+                // Act 5 - Query to verify deletion
+                await Task.Delay(1000); // Give the API a moment to process the deletion
+                var finalQueryResponse = await _messageClient.QueryRemindersAsync(_user.Id, filterConditions);
+
+                // Assert 5 - The reminder should no longer exist or be empty
+                finalQueryResponse.Should().NotBeNull();
+                if (finalQueryResponse.Reminders != null && finalQueryResponse.Reminders.Any())
+                {
+                    finalQueryResponse.Reminders.Should().NotContain(r => r.MessageId == uniqueMessage.Message.Id);
+                }
+            }
+            finally
+            {
+                await DisableUserMessageRemindersAsync();
+            }
         }
     }
 }

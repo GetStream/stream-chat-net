@@ -12,15 +12,29 @@ Most IDEs automatically prompt you to restore the dependencies but if not, use t
 $ dotnet restore
 ```
 
+Or use the Makefile:
+
+```shell
+$ make restore
+```
+
 Building:
 
 ```shell
 $ dotnet build
 ```
 
+Or use the Makefile:
+
+```shell
+$ make build
+```
+
 ### Run tests
 
 The tests we have are full fledged integration tests, meaning they will actually reach out to a Stream app. Hence the tests require at least two environment variables: `STREAM_KEY` and `STREAM_SECRET`.
+
+#### Using .runsettings file
 
 To have these env vars available for the test running, you need to set up a `.runsettings` file in the root of the project (don't worry, it's gitignored).
 
@@ -40,10 +54,56 @@ It needs to look like this:
 </RunSettings>
 ```
 
+You can generate this file using the Makefile:
+
+```shell
+$ make generate_runsettings STREAM_KEY=api_key_here STREAM_SECRET=secret_key_here
+```
+
+#### Running tests
+
 In CLI:
 ```shell
 $ dotnet test -s .runsettings
 ```
+
+Using the Makefile:
+```shell
+$ make test
+```
+
+To run specific tests:
+```shell
+$ make test_filtered TEST_FILTER="FullyQualifiedName~StreamChatTests.StreamClientFactoryTests"
+```
+
+#### Running tests in Docker
+
+You can also run tests in Docker using the Makefile:
+
+```shell
+$ make test_with_docker
+```
+
+To run specific tests in Docker:
+```shell
+$ make test_filtered_with_docker TEST_FILTER="FullyQualifiedName~StreamChatTests.StreamClientFactoryTests"
+```
+
+#### Running tests with a mock server
+
+If you have a mock server running, you can run tests against it by overriding the STREAM_CHAT_URL:
+
+```shell
+$ make test STREAM_KEY=mock STREAM_SECRET=mock STREAM_CHAT_URL=http://localhost:3030
+```
+
+Or in Docker:
+```shell
+$ make test_with_docker STREAM_KEY=mock STREAM_SECRET=mock STREAM_CHAT_URL=http://host.docker.internal:3030
+```
+
+> **Note:** When running tests in Docker, we use `host.docker.internal:3030` instead of `localhost:3030` because Docker containers cannot access the host machine's localhost directly. The special DNS name `host.docker.internal` is automatically resolved to the internal IP address used by the host, allowing the Docker container to communicate with services running on the host machine. This is why we also add the `--add-host=host.docker.internal:host-gateway` flag to the Docker run command in the Makefile.
 
 Go to the next section to see how to use it in IDEs.
 
