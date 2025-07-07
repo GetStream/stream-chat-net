@@ -250,7 +250,7 @@ namespace StreamChat.Clients
             return await ExecuteRequestAsync<SharedLocationResponse>("users/live_locations",
                 HttpMethod.PUT,
                 HttpStatusCode.OK,
-                new { shared_location = location },
+                location,
                 queryParams: new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("user_id", userID),

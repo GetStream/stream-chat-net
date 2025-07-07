@@ -410,7 +410,7 @@ namespace StreamChatTests
             var longitude = -122.4194;
             var latitude = 38.999;
 
-            // Create a shared location
+            // Create a shared location for the initial message
             var location = new SharedLocationRequest
             {
                 Longitude = longitude,
@@ -432,6 +432,9 @@ namespace StreamChatTests
                 _user1.Id);
 
             var message = messageResp.Message;
+
+            // Wait a moment for the message to be processed
+            await Task.Delay(1000);
 
             // Update the location with new coordinates
             var newLongitude = -122.4194;
