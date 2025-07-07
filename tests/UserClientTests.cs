@@ -420,15 +420,16 @@ namespace StreamChatTests
             };
 
             // Send a message with shared location
+            var messageRequest = new MessageRequest
+            {
+                Text = "Test message for shared location",
+                SharedLocation = location,
+            };
             var messageResp = await _messageClient.SendMessageAsync(
                 channel.Type,
                 channel.Id,
-                _user1.Id,
-                new MessageRequest
-                {
-                    Text = "Test message for shared location",
-                    SharedLocation = location,
-                });
+                messageRequest,
+                _user1.Id);
 
             var message = messageResp.Message;
 
@@ -482,7 +483,7 @@ namespace StreamChatTests
         /// </summary>
         private async Task EnableSharedLocationsAsync(ChannelWithConfig channel)
         {
-            var request = new ChannelPartialUpdateRequest
+            var request = new PartialUpdateChannelRequest
             {
                 Set = new Dictionary<string, object>
                 {
@@ -494,7 +495,7 @@ namespace StreamChatTests
                     },
                 },
             };
-            await _channelClient.UpdatePartialAsync(channel.Type, channel.Id, request);
+            await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
         }
 
         /// <summary>
@@ -502,7 +503,7 @@ namespace StreamChatTests
         /// </summary>
         private async Task DisableSharedLocationsAsync(ChannelWithConfig channel)
         {
-            var request = new ChannelPartialUpdateRequest
+            var request = new PartialUpdateChannelRequest
             {
                 Set = new Dictionary<string, object>
                 {
@@ -514,7 +515,7 @@ namespace StreamChatTests
                     },
                 },
             };
-            await _channelClient.UpdatePartialAsync(channel.Type, channel.Id, request);
+            await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
         }
 
 
