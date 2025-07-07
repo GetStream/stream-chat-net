@@ -249,7 +249,7 @@ namespace StreamChat.Clients
 
             return await ExecuteRequestAsync<SharedLocationResponse>("users/live_locations",
                 HttpMethod.PUT,
-                HttpStatusCode.OK,
+                HttpStatusCode.Created,
                 location,
                 queryParams: new List<KeyValuePair<string, string>>
                 {
