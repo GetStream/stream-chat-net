@@ -78,13 +78,16 @@ namespace StreamChatTests
             switch (encodedStr.Length % 4)
             {
                 case 0:
+
                     // No pad chars
                     break;
                 case 2:
+
                     // Two pad chars
                     encodedStr += "==";
                     break;
                 case 3:
+
                     // One pad char
                     encodedStr += "=";
                     break;
@@ -396,6 +399,108 @@ namespace StreamChatTests
             var exportFile = await response.Content.ReadAsStringAsync();
             exportFile.Should().Contain(_user1.Id);
             exportFile.Should().Contain(_user2.Id);
+        }
+
+        [Test]
+        public async Task TestLiveLocationAsync()
+        {
+
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id });
+
+            await EnableSharedLocationsAsync(channel);
+
+            var longitude = -122.4194;
+            var latitude = 38.999;
+
+            var location = new SharedLocationRequest
+            {
+                Longitude = longitude,
+                Latitude = latitude,
+                EndAt = DateTimeOffset.UtcNow.AddHours(1),
+                CreatedByDeviceId = "test-device",
+            };
+
+            var messageRequest = new MessageRequest
+            {
+                Text = "Test message for shared location",
+                SharedLocation = location,
+            };
+            var messageResp = await _messageClient.SendMessageAsync(
+                channel.Type,
+                channel.Id,
+                messageRequest,
+                _user1.Id);
+
+            var message = messageResp.Message;
+
+            var newLongitude = -122.4194;
+            var newLatitude = 38.999;
+
+            var newLocation = new SharedLocationRequest
+            {
+                MessageId = message.Id,
+                Longitude = newLongitude,
+                Latitude = newLatitude,
+                EndAt = DateTimeOffset.UtcNow.AddHours(10),
+                CreatedByDeviceId = "test-device",
+            };
+
+            SharedLocationResponse updateResp;
+            updateResp = await _userClient.UpdateUserLiveLocationAsync(_user1.Id, newLocation);
+
+            updateResp.Should().NotBeNull();
+            updateResp.Latitude.Should().Be(newLatitude);
+            updateResp.Longitude.Should().Be(newLongitude);
+
+            var getResp = await _userClient.GetUserActiveLiveLocationsAsync(_user1.Id);
+
+            getResp.Should().NotBeNull();
+            getResp.ActiveLiveLocations.Should().NotBeEmpty("Should have active live locations");
+
+            var newLocationResp = getResp.ActiveLiveLocations.FirstOrDefault(loc => loc.MessageId == message.Id);
+            newLocationResp.Should().NotBeNull();
+            newLocationResp.Latitude.Should().Be(newLatitude);
+            newLocationResp.Longitude.Should().Be(newLongitude);
+        }
+
+        /// <summary>
+        /// Enables shared locations for the channel by updating config overrides.
+        /// </summary>
+        private async Task EnableSharedLocationsAsync(ChannelWithConfig channel)
+        {
+            var request = new PartialUpdateChannelRequest
+            {
+                Set = new Dictionary<string, object>
+                {
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            { "shared_locations", true },
+                        }
+                    },
+                },
+            };
+            await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
+        }
+
+        /// <summary>
+        /// Disables shared locations for the channel by updating config overrides.
+        /// </summary>
+        private async Task DisableSharedLocationsAsync(ChannelWithConfig channel)
+        {
+            var request = new PartialUpdateChannelRequest
+            {
+                Set = new Dictionary<string, object>
+                {
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            { "shared_locations", false },
+                        }
+                    },
+                },
+            };
+            await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
         }
     }
 }

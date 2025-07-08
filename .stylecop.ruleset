@@ -24,6 +24,10 @@
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.LayoutRules">
     <Rule Id="SA1503" Action="None" />    <!-- Braces should not be omitted -->
+    <Rule Id="SA1505" Action="None" />    <!-- An opening brace should not be followed by a blank line -->
+    <Rule Id="SA1507" Action="None" />    <!-- Code should not contain multiple blank lines in a row -->
+    <Rule Id="SA1508" Action="None" />    <!-- A closing brace should not be preceded by a blank line -->
+    <Rule Id="SA1513" Action="None" />    <!-- A closing brace should be followed by a blank line -->
     <Rule Id="SA1516" Action="None" />    <!-- Elements should be separated by blank line -->
     <Rule Id="CS1591" Action="None" />    <!--  Missing XML comment for publicly visible type or member -->
   </Rules>

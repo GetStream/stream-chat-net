@@ -241,5 +241,34 @@ namespace StreamChat.Clients
                     new KeyValuePair<string, string>("payload", StreamJsonConverter.SerializeObject(payload)),
                 });
         }
+
+        public async Task<SharedLocationResponse> UpdateUserLiveLocationAsync(string userID, SharedLocationRequest location)
+        {
+            if (string.IsNullOrEmpty(userID))
+                throw new ArgumentException("User ID cannot be empty", nameof(userID));
+
+            return await ExecuteRequestAsync<SharedLocationResponse>("users/live_locations",
+                HttpMethod.PUT,
+                HttpStatusCode.Created,
+                location,
+                queryParams: new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("user_id", userID),
+                });
+        }
+
+        public async Task<ActiveLiveLocationsResponse> GetUserActiveLiveLocationsAsync(string userID)
+        {
+            if (string.IsNullOrEmpty(userID))
+                throw new ArgumentException("User ID cannot be empty", nameof(userID));
+
+            return await ExecuteRequestAsync<ActiveLiveLocationsResponse>("users/live_locations",
+                HttpMethod.GET,
+                HttpStatusCode.OK,
+                queryParams: new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("user_id", userID),
+                });
+        }
     }
 }

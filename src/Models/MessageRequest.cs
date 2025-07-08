@@ -38,6 +38,7 @@ namespace StreamChat.Models
         public UserRequest PinnedBy { get; set; }
         public DateTimeOffset? PinnedAt { get; set; }
         public IEnumerable<string> RestrictedVisibility { get; set; }
+        public SharedLocationRequest SharedLocation { get; set; }
     }
 }
 
