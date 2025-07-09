@@ -40,6 +40,7 @@ namespace StreamChat.Models
         public DateTimeOffset? DeactivatedAt { get; set; }
         public bool? Online { get; set; }
         public string[] BlockedUserIds { get; set; }
+        public float? AvgResponseTime { get; set; }
     }
 
     public class OwnUser
@@ -65,6 +66,7 @@ namespace StreamChat.Models
         public Language? Language { get; set; }
         public List<string> Teams { get; set; }
         public List<string> LatestHiddenChannels { get; set; }
+        public float? AvgResponseTime { get; set; }
     }
 
     public class AddMemberOptions
