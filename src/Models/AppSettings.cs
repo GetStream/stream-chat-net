@@ -195,6 +195,7 @@ namespace StreamChat.Models
         public UniqueUsernameEnforcementPolicy? EnforceUniqueUsernames { get; set; }
         public Dictionary<string, List<string>> Grants { get; set; }
         public List<EventHook> EventHooks { get; set; }
+        public bool? UserResponseTimeEnabled { get; set; }
     }
 
     public class AppSettingsRequest : AppSettingsBase
