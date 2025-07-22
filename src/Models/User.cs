@@ -40,7 +40,7 @@ namespace StreamChat.Models
         public DateTimeOffset? DeactivatedAt { get; set; }
         public bool? Online { get; set; }
         public string[] BlockedUserIds { get; set; }
-        public float? AvgResponseTime { get; set; }
+        public int? AvgResponseTime { get; set; }
     }
 
     public class OwnUser
