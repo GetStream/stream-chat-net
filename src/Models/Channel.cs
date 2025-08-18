@@ -14,6 +14,7 @@ namespace StreamChat.Models
         public User CreatedBy { get; set; }
         public bool Frozen { get; set; }
         public int MemberCount { get; set; }
+        public int? MessageCount { get; set; }
         public List<ChannelMember> Members { get; set; }
         public List<Message> Messages { get; set; }
         public List<ChannelRead> Read { get; set; }
