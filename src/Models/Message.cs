@@ -38,6 +38,7 @@ namespace StreamChat.Models
         public DateTimeOffset? CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }
+        public bool? DeletedForMe { get; set; }
         public bool? Shadowed { get; set; }
         public Dictionary<string, List<string>> ImageLabels { get; set; }
         public List<string> RestrictedVisibility { get; set; }

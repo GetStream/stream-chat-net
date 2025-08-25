@@ -26,6 +26,7 @@ namespace StreamChat.Models
         public ModerationScore AutomoderationScores { get; set; }
         public string ParentId { get; set; }
         public string Team { get; set; }
+        public bool? DeletedForMe { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
     }
 
@@ -53,6 +54,7 @@ namespace StreamChat.Models
         public ModerationScore AutomoderationScores { get; set; }
         public string ParentId { get; set; }
         public string Team { get; set; }
+        public bool? DeletedForMe { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
     }
 
