@@ -21,7 +21,7 @@ namespace StreamChat.Clients
         /// Deletes a message.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
-        Task<GenericMessageResponse> DeleteMessageAsync(string messageId, bool hardDelete = false, bool deletedForMe = false);
+        Task<GenericMessageResponse> DeleteMessageAsync(string messageId, bool hardDelete = false, bool deleteForMe = false);
 
         /// <summary>
         /// Returns a message.
