@@ -75,13 +75,14 @@ namespace StreamChat.Clients
                 HttpStatusCode.Created,
                 partialUpdateRequest);
 
-        public async Task<GenericMessageResponse> DeleteMessageAsync(string messageId, bool hardDelete = false)
+        public async Task<GenericMessageResponse> DeleteMessageAsync(string messageId, bool hardDelete = false, bool deletedForMe = false)
             => await ExecuteRequestAsync<GenericMessageResponse>($"messages/{messageId}",
                 HttpMethod.DELETE,
                 HttpStatusCode.OK,
                 queryParams: new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("hard", hardDelete.ToString().ToLowerInvariant()),
+                    new KeyValuePair<string, string>("deleted_for_me", deletedForMe.ToString().ToLowerInvariant()),
                 });
 
         public async Task<GenericMessageResponse> GetMessageAsync(string messageId)
