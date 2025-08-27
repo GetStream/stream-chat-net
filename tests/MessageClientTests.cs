@@ -195,7 +195,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestDeleteMessageAsync()
         {
-            await _messageClient.DeleteMessageAsync(_message.Id, hardDelete: true);
+            await _messageClient.DeleteMessageAsync(_message.Id, _user.Id, hardDelete: true);
 
             Func<Task> getMessageCall = () => _messageClient.GetMessageAsync(_message.Id);
             await getMessageCall.Should().ThrowAsync<StreamChatException>();
@@ -205,7 +205,7 @@ namespace StreamChatTests
         public async Task TestDeleteMessageForMeAsync()
         {
             // Test with delete_for_me flag
-            await _messageClient.DeleteMessageAsync(_message.Id, hardDelete: false, deleteForMe: true);
+            await _messageClient.DeleteMessageAsync(_message.Id, _user.Id, hardDelete: false, deleteForMe: true);
 
             // The message should still exist for other users but be marked as deleted for this user
             var response = await _messageClient.GetMessageAsync(_message.Id);
