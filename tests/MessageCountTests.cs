@@ -39,28 +39,29 @@ namespace StreamChatTests
         {
             var user = await UpsertNewUserAsync();
 
-            // Arrange – create a channel with count_messages disabled
-            var chanData = new ChannelRequest
+            // Arrange – create channel with defaults first
+            var channel = await CreateChannelAsync(user.Id);
+
+            // Disable counting via partial update
+            var updateRequest = new PartialUpdateChannelRequest
             {
-                CreatedBy = new UserRequest { Id = user.Id },
-                ConfigOverrides = new ConfigOverridesRequest
+                Set = new Dictionary<string, object>
                 {
-                    CountMessages = false,
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            { "count_messages", false },
+                        }
+                    },
                 },
             };
 
-            var chanState = await _channelClient.GetOrCreateAsync("messaging", Guid.NewGuid().ToString(), new ChannelGetRequest
-            {
-                Data = chanData,
-                State = true,
-            });
-
-            var channel = chanState.Channel;
+            await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, updateRequest);
 
             // Act – send a message
             await _messageClient.SendMessageAsync(channel.Type, channel.Id, user.Id, "hello");
 
-            // Assert – message_count should be absent/null even after sending messages
+            // Assert – message_count should remain null/absent
             await WaitForAsync(async () =>
             {
                 var state = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
