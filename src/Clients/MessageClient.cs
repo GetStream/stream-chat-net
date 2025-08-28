@@ -83,7 +83,7 @@ namespace StreamChat.Clients
                 {
                     new KeyValuePair<string, string>("hard", hardDelete.ToString().ToLowerInvariant()),
                     new KeyValuePair<string, string>("delete_for_me", deleteForMe.ToString().ToLowerInvariant()),
-                    new KeyValuePair<string, string>("user_id", userId),
+                    new KeyValuePair<string, string>("deleted_by", userId),
                 });
 
         public async Task<GenericMessageResponse> GetMessageAsync(string messageId)
