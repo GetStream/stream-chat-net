@@ -10,39 +10,39 @@ namespace StreamChatTests
     [TestFixture]
     public class MessageCountTests : TestBase
     {
+        private UserRequest _user;
+        private ChannelWithConfig _channel;
+
+        [SetUp]
+        public async Task SetUp()
+        {
+            _user = await UpsertNewUserAsync();
+            _channel = await CreateChannelAsync(_user.Id, autoDelete: false);
+        }
+
+        [TearDown]
+        public async Task TearDown()
+        {
+            await TryDeleteChannelAsync(_channel.Cid);
+            await TryDeleteUsersAsync(_user.Id);
+        }
+
         [Test]
         public async Task TestMessageCountEnabledAsync()
         {
-            var user = await UpsertNewUserAsync();
-
-            // Arrange – channel created with default settings (count_messages enabled)
-            var channel = await CreateChannelAsync(user.Id);
-
-            // Act – send a single message
-            await _messageClient.SendMessageAsync(channel.Type, channel.Id, user.Id, "hello");
-
-            // Assert – wait until API reflects message_count == 1
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
             await WaitForAsync(async () =>
             {
-                var chanState = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
+                var chanState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
                     new ChannelGetRequest { State = true });
                 return chanState.Channel.MessageCount == 1;
             });
 
-            var finalState = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
-                new ChannelGetRequest { State = true });
-            finalState.Channel.MessageCount.Should().Be(1);
         }
 
         [Test]
         public async Task TestMessageCountDisabledAsync()
         {
-            var user = await UpsertNewUserAsync();
-
-            // Arrange – create channel with defaults first
-            var channel = await CreateChannelAsync(user.Id);
-
-            // Disable counting via partial update
             var updateRequest = new PartialUpdateChannelRequest
             {
                 Set = new Dictionary<string, object>
@@ -56,22 +56,14 @@ namespace StreamChatTests
                 },
             };
 
-            await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, updateRequest);
-
-            // Act – send a message
-            await _messageClient.SendMessageAsync(channel.Type, channel.Id, user.Id, "hello");
-
-            // Assert – message_count should remain null/absent
+            await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, updateRequest);
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
             await WaitForAsync(async () =>
             {
-                var state = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
+                var state = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
                     new ChannelGetRequest { State = true });
                 return state.Channel.MessageCount == null;
             });
-
-            var finalState = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
-                new ChannelGetRequest { State = true });
-            finalState.Channel.MessageCount.Should().BeNull();
         }
     }
 }
