@@ -1,0 +1,68 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using NUnit.Framework;
+using StreamChat.Models;
+
+namespace StreamChatTests
+{
+    [TestFixture]
+    public class MessageCountTests : TestBase
+    {
+        private UserRequest _user;
+        private ChannelWithConfig _channel;
+
+        [SetUp]
+        public async Task SetUp()
+        {
+            _user = await UpsertNewUserAsync();
+            _channel = await CreateChannelAsync(_user.Id, autoDelete: false);
+        }
+
+        [TearDown]
+        public async Task TearDown()
+        {
+            await TryDeleteChannelAsync(_channel.Cid);
+            await TryDeleteUsersAsync(_user.Id);
+        }
+
+        [Test]
+        public async Task TestMessageCountEnabledAsync()
+        {
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
+            await WaitForAsync(async () =>
+            {
+                var chanState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                    new ChannelGetRequest { State = true });
+                return chanState.Channel.MessageCount == 1;
+            });
+        }
+
+        [Test]
+        public async Task TestMessageCountDisabledAsync()
+        {
+            var updateRequest = new PartialUpdateChannelRequest
+            {
+                Set = new Dictionary<string, object>
+                {
+                    {
+                        "config_overrides", new Dictionary<string, object>
+                        {
+                            { "count_messages", false },
+                        }
+                    },
+                },
+            };
+
+            await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, updateRequest);
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
+            await WaitForAsync(async () =>
+            {
+                var state = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                    new ChannelGetRequest { State = true });
+                return state.Channel.MessageCount == null;
+            });
+        }
+    }
+}
