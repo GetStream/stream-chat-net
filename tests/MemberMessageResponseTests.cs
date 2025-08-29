@@ -65,3 +65,4 @@ internal class MemberMessageResponseTests : TestBase
         fetchedUser2Msg.Member.ChannelRole.Should().Be("custom_role");
     }
 }
+
