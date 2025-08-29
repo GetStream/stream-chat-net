@@ -33,6 +33,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestMessageCountEnabledAsync()
         {
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
             await WaitForAsync(async () =>
             {
                 var chanState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
