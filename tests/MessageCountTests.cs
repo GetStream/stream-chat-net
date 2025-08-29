@@ -37,10 +37,6 @@ namespace StreamChatTests
                     new ChannelGetRequest { State = true });
                 return chanState.Channel.MessageCount == 1;
             });
-
-            var finalState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
-                new ChannelGetRequest { State = true });
-            finalState.Channel.MessageCount.Should().Be(1);
         }
 
         [Test]
@@ -67,10 +63,6 @@ namespace StreamChatTests
                     new ChannelGetRequest { State = true });
                 return state.Channel.MessageCount == null;
             });
-
-            var finalState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
-                new ChannelGetRequest { State = true });
-            finalState.Channel.MessageCount.Should().BeNull();
         }
     }
 }
