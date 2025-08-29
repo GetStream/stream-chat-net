@@ -18,7 +18,24 @@ internal class MemberMessageResponseTests : TestBase
     public async Task SetupAsync()
     {
         (_user1, _user2) = (await UpsertNewUserAsync(), await UpsertNewUserAsync());
-        _channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id, _user2.Id } );
+
+        var channelResponse = await _channelClient.GetOrCreateAsync(
+            "messaging",
+            Guid.NewGuid().ToString(),
+            new ChannelGetRequest
+            {
+                Data = new ChannelRequest
+                {
+                    Members = new[]
+                    {
+                        new ChannelMember { UserId = _user1.Id },
+                        new ChannelMember { UserId = _user2.Id, ChannelRole = "custom_role" },
+                    },
+                    CreatedBy = new UserRequest { Id = _user1.Id },
+                },
+            });
+
+        _channel = channelResponse.Channel;
     }
 
     [TearDown]
@@ -41,7 +58,7 @@ internal class MemberMessageResponseTests : TestBase
         var user1MessageResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "Hello from user1");
         user1MessageResp.Message.Member.Should().NotBeNull();
         user1MessageResp.Message.Member.UserId.Should().Be(_user1.Id);
-        user1MessageResp.Message.Member.ChannelRole.Should().NotBeNullOrEmpty();
+        user1MessageResp.Message.Member.ChannelRole.Should().Be("channel_member");
 
         var user2MessageResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user2.Id, "Hello from user2");
         user2MessageResp.Message.Member.Should().NotBeNull();
