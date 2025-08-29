@@ -12,7 +12,7 @@ namespace StreamChatTests
     {
         private UserRequest _user;
         private ChannelWithConfig _channel;
-        private ChannelWithConfig _channel_2
+        private ChannelWithConfig _channel_2;
 
         [SetUp]
         public async Task SetUp()
