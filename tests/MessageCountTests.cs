@@ -17,6 +17,7 @@ namespace StreamChatTests
         public async Task SetUp()
         {
             _user = await UpsertNewUserAsync();
+
             _channel = await CreateChannelAsync(_user.Id, autoDelete: false);
         }
 
@@ -30,6 +31,20 @@ namespace StreamChatTests
         [Test]
         public async Task TestMessageCountEnabledAsync()
         {
+            var updateRequest = new PartialUpdateChannelRequest
+                    {
+                        Set = new Dictionary<string, object>
+                        {
+                            {
+                                "config_overrides", new Dictionary<string, object>
+                                {
+                                    { "count_messages", true },
+                                }
+                            },
+                        },
+                    };
+
+            await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, updateRequest);
             await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
             await WaitForAsync(async () =>
             {
@@ -38,6 +53,9 @@ namespace StreamChatTests
                 return chanState.Channel.MessageCount == 1;
             });
 
+            var finalState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                new ChannelGetRequest { State = true });
+            finalState.Channel.MessageCount.Should().Be(1);
         }
 
         [Test]
@@ -64,6 +82,10 @@ namespace StreamChatTests
                     new ChannelGetRequest { State = true });
                 return state.Channel.MessageCount == null;
             });
+
+            var finalState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
+                new ChannelGetRequest { State = true });
+            finalState.Channel.MessageCount.Should().BeNull();
         }
     }
 }
