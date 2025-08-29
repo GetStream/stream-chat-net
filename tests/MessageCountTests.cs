@@ -12,21 +12,18 @@ namespace StreamChatTests
     {
         private UserRequest _user;
         private ChannelWithConfig _channel;
-        private ChannelWithConfig _channel_2;
 
         [SetUp]
         public async Task SetUp()
         {
             _user = await UpsertNewUserAsync();
             _channel = await CreateChannelAsync(_user.Id, autoDelete: false);
-            _channel_2 = await CreateChannelAsync(_user.Id, autoDelete: false);
         }
 
         [TearDown]
         public async Task TearDown()
         {
             await TryDeleteChannelAsync(_channel.Cid);
-            await TryDeleteChannelAsync(_channel_2.Cid);
             await TryDeleteUsersAsync(_user.Id);
         }
 
@@ -62,16 +59,16 @@ namespace StreamChatTests
                 },
             };
 
-            await _channelClient.PartialUpdateAsync(_channel_2.Type, _channel_2.Id, updateRequest);
-            await _messageClient.SendMessageAsync(_channel_2.Type, _channel_2.Id, _user.Id, "hello");
+            await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, updateRequest);
+            await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user.Id, "hello");
             await WaitForAsync(async () =>
             {
-                var state = await _channelClient.GetOrCreateAsync(_channel_2.Type, _channel_2.Id,
+                var state = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
                     new ChannelGetRequest { State = true });
                 return state.Channel.MessageCount == null;
             });
 
-            var finalState = await _channelClient.GetOrCreateAsync(_channel_2.Type, _channel_2.Id,
+            var finalState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id,
                 new ChannelGetRequest { State = true });
             finalState.Channel.MessageCount.Should().BeNull();
         }
