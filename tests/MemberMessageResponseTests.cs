@@ -47,14 +47,6 @@ internal class MemberMessageResponseTests : TestBase
     [Test]
     public async Task WhenSendingMessagesExpectChannelRoleIncludedAsync()
     {
-        await _channelClient.AssignRolesAsync(_channel.Type, _channel.Id, new AssignRoleRequest
-        {
-            AssignRoles = new List<RoleAssignment>
-            {
-                new RoleAssignment { UserId = _user2.Id, ChannelRole = "custom_role" },
-            },
-        });
-
         var user1MessageResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "Hello from user1");
         user1MessageResp.Message.Member.Should().NotBeNull();
         user1MessageResp.Message.Member.ChannelRole.Should().Be("channel_member");
