@@ -81,9 +81,6 @@ namespace StreamChat.Clients
         public async Task<GenericMessageResponse> DeleteMessageAsync(string messageId, bool hardDelete)
             => await DeleteMessageAsync(messageId, null, hardDelete, false);
 
-        public async Task<GenericMessageResponse> DeleteMessageAsync(string messageId, string deletedBy, bool hardDelete = false)
-            => await DeleteMessageAsync(messageId, deletedBy, hardDelete, false);
-
         public async Task<GenericMessageResponse> DeleteMessageAsync(string messageId, string deletedBy, bool hardDelete = false, bool deleteForMe = false)
             => await ExecuteRequestAsync<GenericMessageResponse>($"messages/{messageId}",
                 HttpMethod.DELETE,
