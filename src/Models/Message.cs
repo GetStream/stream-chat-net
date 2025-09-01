@@ -42,7 +42,7 @@ namespace StreamChat.Models
         public Dictionary<string, List<string>> ImageLabels { get; set; }
         public List<string> RestrictedVisibility { get; set; }
         public SharedLocationRequest SharedLocation { get; set; }
-        public ChannelMember? Member { get; set; }
+        public ChannelMember Member { get; set; }
 
         [JsonProperty("i18n")]
         public Dictionary<string, string> I18n { get; set; }
