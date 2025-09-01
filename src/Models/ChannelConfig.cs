@@ -15,6 +15,7 @@ namespace StreamChat.Models
         public bool Reactions { get; set; }
         public bool Replies { get; set; }
         public bool Mutes { get; set; }
+        public bool CountMessages { get; set; }
         public string MessageRetention { get; set; }
         public int MaxMessageLength { get; set; }
         public string Automod { get; set; }
@@ -44,5 +45,6 @@ namespace StreamChat.Models
         public List<string> Commands { get; set; }
         public bool? UserMessageReminders { get; set; }
         public bool? SharedLocations { get; set; }
+        public bool? CountMessages { get; set; }
     }
 }
