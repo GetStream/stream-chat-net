@@ -42,6 +42,7 @@ internal class MemberMessageResponseTests : TestBase
     public async Task TearDownAsync()
     {
         await TryDeleteUsersAsync(_user1.Id, _user2.Id);
+        await TryDeleteChannelAsync(_channel.Cid);
     }
 
     [Test]
