@@ -20,25 +20,25 @@ namespace StreamChat.Clients
         /// <summary>
         /// Deletes a message.
         /// </summary>
-        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp#delete-a-message.</remarks>
         Task<GenericMessageResponse> DeleteMessageAsync(string messageId);
 
         /// <summary>
         /// Deletes a message.
         /// </summary>
-        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp#delete-a-message.</remarks>
         Task<GenericMessageResponse> DeleteMessageAsync(string messageId, bool hardDelete);
 
         /// <summary>
         /// Deletes a message.
         /// </summary>
-        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp#delete-a-message.</remarks>
         Task<GenericMessageResponse> DeleteMessageAsync(string messageId, string deletedBy, bool hardDelete = false);
 
         /// <summary>
         /// Deletes a message.
         /// </summary>
-        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp</remarks>
+        /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/send_message/?language=csharp#delete-a-message.</remarks>
         Task<GenericMessageResponse> DeleteMessageAsync(string messageId, string deletedBy, bool hardDelete = false, bool deleteForMe = false);
 
         /// <summary>
