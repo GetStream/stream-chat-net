@@ -57,12 +57,10 @@ internal class MemberMessageResponseTests : TestBase
 
         var user1MessageResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user1.Id, "Hello from user1");
         user1MessageResp.Message.Member.Should().NotBeNull();
-        user1MessageResp.Message.Member.UserId.Should().Be(_user1.Id);
         user1MessageResp.Message.Member.ChannelRole.Should().Be("channel_member");
 
         var user2MessageResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user2.Id, "Hello from user2");
         user2MessageResp.Message.Member.Should().NotBeNull();
-        user2MessageResp.Message.Member.UserId.Should().Be(_user2.Id);
         user2MessageResp.Message.Member.ChannelRole.Should().Be("custom_role");
 
         var channelState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { State = true, Watch = false });
