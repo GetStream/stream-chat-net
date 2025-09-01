@@ -195,7 +195,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestDeleteMessageAsync()
         {
-            await _messageClient.DeleteMessageAsync(_message.Id, _user.Id, hardDelete: true);
+            await _messageClient.DeleteMessageAsync(_message.Id, hardDelete: true);
 
             Func<Task> getMessageCall = () => _messageClient.GetMessageAsync(_message.Id);
             await getMessageCall.Should().ThrowAsync<StreamChatException>();
