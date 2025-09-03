@@ -270,5 +270,30 @@ namespace StreamChat.Clients
                     new KeyValuePair<string, string>("user_id", userID),
                 });
         }
+
+        public async Task<EventResponse> MarkDeliveredAsync(string userID, MarkDeliveredOptions data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            if (string.IsNullOrEmpty(userID))
+                throw new ArgumentException("User ID cannot be empty", nameof(userID));
+
+            // Check if delivery receipts are enabled for this user
+            var user = GetClient().User;
+            if (user?.PrivacySettings?.DeliveryReceipts?.Enabled == false)
+            {
+                return null;
+            }
+
+            return await ExecuteRequestAsync<EventResponse>("channels/delivered",
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                data,
+                queryParams: new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("user_id", userID),
+                });
+        }
     }
 }

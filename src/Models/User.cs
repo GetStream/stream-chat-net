@@ -65,6 +65,7 @@ namespace StreamChat.Models
         public Language? Language { get; set; }
         public List<string> Teams { get; set; }
         public List<string> LatestHiddenChannels { get; set; }
+        public PrivacySettings PrivacySettings { get; set; }
     }
 
     public class AddMemberOptions

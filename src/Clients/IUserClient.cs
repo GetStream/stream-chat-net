@@ -279,5 +279,14 @@ namespace StreamChat.Clients
         /// <param name="userID">The user ID</param>
         /// <returns>The server response containing an array of active live location shares with details including channel CID, message ID, coordinates, device ID, and timestamps</returns>
         Task<ActiveLiveLocationsResponse> GetUserActiveLiveLocationsAsync(string userID);
+
+        /// <summary>
+        /// Marks messages as delivered for a user.
+        /// Only works if the delivery_receipts setting is enabled for the user.
+        /// </summary>
+        /// <param name="userID">The user ID</param>
+        /// <param name="data">The mark delivered options containing channel and message IDs we want to mark as delivered</param>
+        /// <returns>Event response or null if delivery receipts are disabled</returns>
+        Task<EventResponse> MarkDeliveredAsync(string userID, MarkDeliveredOptions data);
     }
 }
