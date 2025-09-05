@@ -168,6 +168,16 @@ namespace StreamChatTests
                 WebhookUrl = "https://example.com/webhook",
             };
 
+            var chatWebhookHook = new EventHook
+            {
+                Id = "c3eff852-1194-47c2-8e1c-42a0b1dc1151",
+                HookType = HookType.Webhook,
+                Enabled = true,
+                EventTypes = new List<string> { "message.new", "message.updated" },
+                WebhookUrl = "https://example.com/webhook-chat",
+                Product = Product.Chat,
+            };
+
             var sqsHook = new EventHook
             {
                 Id = "4eaa795f-77d2-4b72-8f7e-11de0327121c",
@@ -190,13 +200,13 @@ namespace StreamChatTests
                 SnsAuthType = AuthType.Resource,
             };
 
-            var eventHooks = new List<EventHook> { webhookHook, sqsHook, snsHook };
+            var eventHooks = new List<EventHook> { webhookHook, chatWebhookHook, sqsHook, snsHook };
 
             await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { EventHooks = eventHooks });
 
             var getAppResponse = await _appClient.GetAppSettingsAsync();
             getAppResponse.App.EventHooks.Should().NotBeNull();
-            getAppResponse.App.EventHooks.Should().HaveCount(3);
+            getAppResponse.App.EventHooks.Should().HaveCount(4);
             getAppResponse.App.EventHooks.Should().BeEquivalentTo(eventHooks, options => options.Excluding(e => e.CreatedAt).Excluding(e => e.UpdatedAt));
         }
     }
