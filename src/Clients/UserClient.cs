@@ -271,29 +271,59 @@ namespace StreamChat.Clients
                 });
         }
 
-        public async Task<EventResponse> MarkDeliveredAsync(string userID, MarkDeliveredOptions data)
+        public async Task<EventResponse> MarkDeliveredAsync(MarkDeliveredOptions options)
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
 
-            if (string.IsNullOrEmpty(userID))
-                throw new ArgumentException("User ID cannot be empty", nameof(userID));
+            if (options.LatestDeliveredMessages == null || options.LatestDeliveredMessages.Count == 0)
+                throw new ArgumentException("LatestDeliveredMessages must not be empty", nameof(options));
 
-            // Check if delivery receipts are enabled for this user
-            var user = GetClient().User;
-            if (user?.PrivacySettings?.DeliveryReceipts?.Enabled == false)
+            if (options.User == null && string.IsNullOrEmpty(options.UserID))
+                throw new ArgumentException("Either User or UserID must be provided", nameof(options));
+
+            var queryParams = new List<KeyValuePair<string, string>>();
+            if (options.User == null)
             {
-                return null;
+                queryParams.Add(new KeyValuePair<string, string>("user_id", options.UserID));
+            }
+            else
+            {
+                queryParams.Add(new KeyValuePair<string, string>("user_id", options.User.ID));
             }
 
             return await ExecuteRequestAsync<EventResponse>("channels/delivered",
                 HttpMethod.POST,
                 HttpStatusCode.Created,
-                data,
-                queryParams: new List<KeyValuePair<string, string>>
+                options,
+                queryParams: queryParams);
+        }
+
+        public async Task<EventResponse> MarkDeliveredSimpleAsync(string userID, string messageID, string channelCID)
+        {
+            if (string.IsNullOrEmpty(userID))
+                throw new ArgumentException("User ID must not be empty", nameof(userID));
+
+            if (string.IsNullOrEmpty(messageID))
+                throw new ArgumentException("Message ID must not be empty", nameof(messageID));
+
+            if (string.IsNullOrEmpty(channelCID))
+                throw new ArgumentException("Channel CID must not be empty", nameof(channelCID));
+
+            var options = new MarkDeliveredOptions
+            {
+                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>
                 {
-                    new KeyValuePair<string, string>("user_id", userID),
-                });
+                    new DeliveredMessageConfirmation
+                    {
+                        ChannelCID = channelCID,
+                        MessageID = messageID
+                    }
+                },
+                UserID = userID
+            };
+
+            return await MarkDeliveredAsync(options);
         }
     }
 }

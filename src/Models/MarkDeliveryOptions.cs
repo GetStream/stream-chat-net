@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
@@ -8,28 +9,21 @@ namespace StreamChat.Models
     public class MarkDeliveredOptions
     {
         /// <summary>
-        /// Mapping of channel IDs to message IDs that have been delivered
+        /// List of delivered message confirmations containing channel CID and message ID
         /// </summary>
-        public Dictionary<string, string> ChannelDeliveredMessage { get; set; }
-
-        /// <summary>
-        /// Optional client ID
-        /// </summary>
-        public string ClientId { get; set; }
-
-        /// <summary>
-        /// Optional connection ID
-        /// </summary>
-        public string ConnectionId { get; set; }
+        [JsonProperty("latest_delivered_messages")]
+        public List<DeliveredMessageConfirmation> LatestDeliveredMessages { get; set; }
 
         /// <summary>
         /// Optional user object
         /// </summary>
+        [JsonProperty("user")]
         public User User { get; set; }
 
         /// <summary>
         /// Optional user ID
         /// </summary>
-        public string UserId { get; set; }
+        [JsonProperty("user_id")]
+        public string UserID { get; set; }
     }
 }
