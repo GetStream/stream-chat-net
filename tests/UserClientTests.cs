@@ -518,7 +518,7 @@ namespace StreamChatTests
                     new DeliveredMessageConfirmation
                     {
                         ChannelCID = "channel2",
-                        MessageID = "message2"
+                        MessageID = "message2",
                     }
                 },
                 UserID = _user1.Id
@@ -540,7 +540,7 @@ namespace StreamChatTests
                     new DeliveredMessageConfirmation
                     {
                         ChannelCID = "channel1",
-                        MessageID = "message1"
+                        MessageID = "message1",
                     }
                 },
                 User = _user1
@@ -561,7 +561,7 @@ namespace StreamChatTests
                     new DeliveredMessageConfirmation
                     {
                         ChannelCID = "channel1",
-                        MessageID = "message1"
+                        MessageID = "message1",
                     }
                 },
                 UserID = _user1.Id
@@ -604,7 +604,7 @@ namespace StreamChatTests
                     new DeliveredMessageConfirmation
                     {
                         ChannelCID = "channel1",
-                        MessageID = "message1"
+                        MessageID = "message1",
                     }
                 }
             };
