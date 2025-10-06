@@ -289,7 +289,7 @@ namespace StreamChat.Clients
             }
             else
             {
-                queryParams.Add(new KeyValuePair<string, string>("user_id", options.User.ID));
+                queryParams.Add(new KeyValuePair<string, string>("user_id", options.User.Id));
             }
 
             return await ExecuteRequestAsync<ApiResponse>("channels/delivered",
