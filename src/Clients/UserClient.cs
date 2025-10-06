@@ -298,32 +298,5 @@ namespace StreamChat.Clients
                 options,
                 queryParams: queryParams);
         }
-
-        public async Task<EventResponse> MarkDeliveredSimpleAsync(string userID, string messageID, string channelCID)
-        {
-            if (string.IsNullOrEmpty(userID))
-                throw new ArgumentException("User ID must not be empty", nameof(userID));
-
-            if (string.IsNullOrEmpty(messageID))
-                throw new ArgumentException("Message ID must not be empty", nameof(messageID));
-
-            if (string.IsNullOrEmpty(channelCID))
-                throw new ArgumentException("Channel CID must not be empty", nameof(channelCID));
-
-            var options = new MarkDeliveredOptions
-            {
-                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>
-                {
-                    new DeliveredMessageConfirmation
-                    {
-                        ChannelCID = channelCID,
-                        MessageID = messageID
-                    }
-                },
-                UserID = userID
-            };
-
-            return await MarkDeliveredAsync(options);
-        }
     }
 }

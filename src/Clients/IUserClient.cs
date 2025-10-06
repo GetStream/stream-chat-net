@@ -289,14 +289,5 @@ namespace StreamChat.Clients
         /// <param name="options">The mark delivered options containing channel and message IDs we want to mark as delivered</param>
         /// <returns>Event response or null if delivery receipts are disabled</returns>
         Task<EventResponse> MarkDeliveredAsync(MarkDeliveredOptions options);
-
-        /// <summary>
-        /// Convenience method to mark a message as delivered for a specific user.
-        /// </summary>
-        /// <param name="userID">The user ID</param>
-        /// <param name="messageID">The message ID</param>
-        /// <param name="channelCID">The channel CID (channel type:channel id)</param>
-        /// <returns>Event response or null if delivery receipts are disabled</returns>
-        Task<EventResponse> MarkDeliveredSimpleAsync(string userID, string messageID, string channelCID);
     }
 }

@@ -613,37 +613,5 @@ namespace StreamChatTests
 
             markDeliveredCall.Should().ThrowAsync<ArgumentException>();
         }
-
-        [Test]
-        public async Task TestMarkDeliveredSimpleAsync()
-        {
-            var response = await _userClient.MarkDeliveredSimpleAsync(_user1.Id, "message1", "channel1");
-
-            response.Should().NotBeNull();
-        }
-
-        [Test]
-        public void TestMarkDeliveredSimpleAsync_EmptyUserId_ThrowsArgumentException()
-        {
-            Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredSimpleAsync("", "message1", "channel1");
-
-            markDeliveredCall.Should().ThrowAsync<ArgumentException>();
-        }
-
-        [Test]
-        public void TestMarkDeliveredSimpleAsync_EmptyMessageId_ThrowsArgumentException()
-        {
-            Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredSimpleAsync(_user1.Id, "", "channel1");
-
-            markDeliveredCall.Should().ThrowAsync<ArgumentException>();
-        }
-
-        [Test]
-        public void TestMarkDeliveredSimpleAsync_EmptyChannelCid_ThrowsArgumentException()
-        {
-            Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredSimpleAsync(_user1.Id, "message1", "");
-
-            markDeliveredCall.Should().ThrowAsync<ArgumentException>();
-        }
     }
 }
