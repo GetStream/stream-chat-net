@@ -18,7 +18,7 @@ namespace StreamChat.Models
         /// Optional user object
         /// </summary>
         [JsonProperty("user")]
-        public User User { get; set; }
+        public UserRequest User { get; set; }
 
         /// <summary>
         /// Optional user ID
