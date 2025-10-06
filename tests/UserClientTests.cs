@@ -513,7 +513,7 @@ namespace StreamChatTests
                     new DeliveredMessageConfirmation
                     {
                         ChannelCID = "channel1",
-                        MessageID = "message1"
+                        MessageID = "message1",
                     },
                     new DeliveredMessageConfirmation
                     {
@@ -521,7 +521,7 @@ namespace StreamChatTests
                         MessageID = "message2",
                     }
                 },
-                UserID = _user1.Id
+                UserID = _user1.Id,
             };
 
             var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
@@ -543,7 +543,7 @@ namespace StreamChatTests
                         MessageID = "message1",
                     }
                 },
-                User = _user1
+                User = _user1,
             };
 
             var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
@@ -564,7 +564,7 @@ namespace StreamChatTests
                         MessageID = "message1",
                     }
                 },
-                UserID = _user1.Id
+                UserID = _user1.Id,
             };
 
             var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
@@ -586,7 +586,7 @@ namespace StreamChatTests
             var markDeliveredOptions = new MarkDeliveredOptions
             {
                 LatestDeliveredMessages = new List<DeliveredMessageConfirmation>(),
-                UserID = _user1.Id
+                UserID = _user1.Id,
             };
 
             Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredAsync(markDeliveredOptions);
