@@ -271,7 +271,7 @@ namespace StreamChat.Clients
                 });
         }
 
-        public async Task<EventResponse> MarkDeliveredAsync(MarkDeliveredOptions options)
+        public async Task<ApiResponse> MarkDeliveredAsync(MarkDeliveredOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -292,7 +292,7 @@ namespace StreamChat.Clients
                 queryParams.Add(new KeyValuePair<string, string>("user_id", options.User.ID));
             }
 
-            return await ExecuteRequestAsync<EventResponse>("channels/delivered",
+            return await ExecuteRequestAsync<ApiResponse>("channels/delivered",
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 options,

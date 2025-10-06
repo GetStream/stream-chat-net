@@ -282,12 +282,9 @@ namespace StreamChat.Clients
 
         /// <summary>
         /// Marks messages as delivered for a user.
-        /// Only works if the delivery_receipts setting is enabled for the user.
-        /// Note: Unlike the JavaScript SDK, this method doesn't automatically check delivery receipts settings
-        /// as the .NET SDK doesn't maintain user state. You should check this manually if needed.
         /// </summary>
         /// <param name="options">The mark delivered options containing channel and message IDs we want to mark as delivered</param>
-        /// <returns>Event response or null if delivery receipts are disabled</returns>
-        Task<EventResponse> MarkDeliveredAsync(MarkDeliveredOptions options);
+        /// <returns>Api response or null if delivery receipts are disabled</returns>
+        Task<ApiResponse> MarkDeliveredAsync(MarkDeliveredOptions options);
     }
 }
