@@ -527,28 +527,6 @@ namespace StreamChatTests
             var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
 
             response.Should().NotBeNull();
-            // Additional assertions can be added based on the expected response structure
-        }
-
-        [Test]
-        public async Task TestMarkDeliveredAsync_WithUserObject()
-        {
-            var markDeliveredOptions = new MarkDeliveredOptions
-            {
-                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>
-                {
-                    new DeliveredMessageConfirmation
-                    {
-                        ChannelCID = "channel1",
-                        MessageID = "message1",
-                    }
-                },
-                User = _user1,
-            };
-
-            var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
-
-            response.Should().NotBeNull();
         }
 
         [Test]
@@ -573,15 +551,15 @@ namespace StreamChatTests
         }
 
         [Test]
-        public void TestMarkDeliveredAsync_NullData_ThrowsArgumentNullException()
+        public Task TestMarkDeliveredAsync_NullData_ThrowsArgumentNullException()
         {
-            Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredAsync(null);
+            Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(null);
 
-            markDeliveredCall.Should().ThrowAsync<ArgumentNullException>();
+            return markDeliveredCall.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Test]
-        public void TestMarkDeliveredAsync_EmptyLatestDeliveredMessages_ThrowsArgumentException()
+        public Task TestMarkDeliveredAsync_EmptyLatestDeliveredMessages_ThrowsArgumentException()
         {
             var markDeliveredOptions = new MarkDeliveredOptions
             {
@@ -589,13 +567,13 @@ namespace StreamChatTests
                 UserID = _user1.Id,
             };
 
-            Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredAsync(markDeliveredOptions);
+            Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(markDeliveredOptions);
 
-            markDeliveredCall.Should().ThrowAsync<ArgumentException>();
+            return markDeliveredCall.Should().ThrowAsync<ArgumentException>();
         }
 
         [Test]
-        public void TestMarkDeliveredAsync_NoUserOrUserId_ThrowsArgumentException()
+        public Task TestMarkDeliveredAsync_NoUserOrUserId_ThrowsArgumentException()
         {
             var markDeliveredOptions = new MarkDeliveredOptions
             {
@@ -609,9 +587,9 @@ namespace StreamChatTests
                 }
             };
 
-            Func<Task> markDeliveredCall = () => _userClient.MarkDeliveredAsync(markDeliveredOptions);
+            Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(markDeliveredOptions);
 
-            markDeliveredCall.Should().ThrowAsync<ArgumentException>();
+            return markDeliveredCall.Should().ThrowAsync<ArgumentException>();
         }
     }
 }

@@ -277,20 +277,15 @@ namespace StreamChat.Clients
                 throw new ArgumentNullException(nameof(options));
 
             if (options.LatestDeliveredMessages == null || options.LatestDeliveredMessages.Count == 0)
-                throw new ArgumentException("LatestDeliveredMessages must not be empty", nameof(options));
+                throw new ArgumentException($"{nameof(options.LatestDeliveredMessages)} must not be empty", nameof(options));
 
             if (options.User == null && string.IsNullOrEmpty(options.UserID))
-                throw new ArgumentException("Either User or UserID must be provided", nameof(options));
+                throw new ArgumentException($"Either {nameof(options.User)} or {nameof(options.UserID)} must be provided", nameof(options));
 
-            var queryParams = new List<KeyValuePair<string, string>>();
-            if (options.User == null)
+            var queryParams = new List<KeyValuePair<string, string>>
             {
-                queryParams.Add(new KeyValuePair<string, string>("user_id", options.UserID));
-            }
-            else
-            {
-                queryParams.Add(new KeyValuePair<string, string>("user_id", options.User.Id));
-            }
+                new KeyValuePair<string, string>("user_id", options.User?.Id ?? options.UserID),
+            };
 
             return await ExecuteRequestAsync<ApiResponse>("channels/delivered",
                 HttpMethod.POST,
