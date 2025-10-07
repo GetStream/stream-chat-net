@@ -502,5 +502,94 @@ namespace StreamChatTests
             };
             await _channelClient.PartialUpdateAsync(channel.Type, channel.Id, request);
         }
+
+        [Test]
+        public async Task TestMarkDeliveredAsync()
+        {
+            var markDeliveredOptions = new MarkDeliveredOptions
+            {
+                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>
+                {
+                    new DeliveredMessageConfirmation
+                    {
+                        ChannelCID = "channel1",
+                        MessageID = "message1",
+                    },
+                    new DeliveredMessageConfirmation
+                    {
+                        ChannelCID = "channel2",
+                        MessageID = "message2",
+                    }
+                },
+                UserID = _user1.Id,
+            };
+
+            var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
+
+            response.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task TestMarkDelivered_WithUserIdAsync()
+        {
+            var markDeliveredOptions = new MarkDeliveredOptions
+            {
+                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>
+                {
+                    new DeliveredMessageConfirmation
+                    {
+                        ChannelCID = "channel1",
+                        MessageID = "message1",
+                    }
+                },
+                UserID = _user1.Id,
+            };
+
+            var response = await _userClient.MarkDeliveredAsync(markDeliveredOptions);
+
+            response.Should().NotBeNull();
+        }
+
+        [Test]
+        public Task TestMarkDelivered_NullData_ThrowsArgumentNullExceptionAsync()
+        {
+            Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(null);
+
+            return markDeliveredCall.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Test]
+        public Task TestMarkDelivered_EmptyLatestDeliveredMessages_ThrowsArgumentExceptionAsync()
+        {
+            var markDeliveredOptions = new MarkDeliveredOptions
+            {
+                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>(),
+                UserID = _user1.Id,
+            };
+
+            Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(markDeliveredOptions);
+
+            return markDeliveredCall.Should().ThrowAsync<ArgumentException>();
+        }
+
+        [Test]
+        public Task TestMarkDelivered_NoUserOrUserId_ThrowsArgumentExceptionAsync()
+        {
+            var markDeliveredOptions = new MarkDeliveredOptions
+            {
+                LatestDeliveredMessages = new List<DeliveredMessageConfirmation>
+                {
+                    new DeliveredMessageConfirmation
+                    {
+                        ChannelCID = "channel1",
+                        MessageID = "message1",
+                    }
+                }
+            };
+
+            Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(markDeliveredOptions);
+
+            return markDeliveredCall.Should().ThrowAsync<ArgumentException>();
+        }
     }
 }

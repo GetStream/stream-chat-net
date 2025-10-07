@@ -270,5 +270,28 @@ namespace StreamChat.Clients
                     new KeyValuePair<string, string>("user_id", userID),
                 });
         }
+
+        public async Task<ApiResponse> MarkDeliveredAsync(MarkDeliveredOptions options)
+        {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            if (options.LatestDeliveredMessages == null || options.LatestDeliveredMessages.Count == 0)
+                throw new ArgumentException($"{nameof(options.LatestDeliveredMessages)} must not be empty", nameof(options));
+
+            if (options.User == null && string.IsNullOrEmpty(options.UserID))
+                throw new ArgumentException($"Either {nameof(options.User)} or {nameof(options.UserID)} must be provided", nameof(options));
+
+            var queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("user_id", options.User?.Id ?? options.UserID),
+            };
+
+            return await ExecuteRequestAsync<ApiResponse>("channels/delivered",
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                options,
+                queryParams: queryParams);
+        }
     }
 }
