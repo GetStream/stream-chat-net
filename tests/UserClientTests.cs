@@ -530,7 +530,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestMarkDeliveredAsync_WithUserId()
+        public async Task TestMarkDelivered_WithUserIdAsync()
         {
             var markDeliveredOptions = new MarkDeliveredOptions
             {
@@ -551,7 +551,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public Task TestMarkDeliveredAsync_NullData_ThrowsArgumentNullException()
+        public Task TestMarkDelivered_NullData_ThrowsArgumentNullExceptionAsync()
         {
             Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(null);
 
@@ -559,7 +559,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public Task TestMarkDeliveredAsync_EmptyLatestDeliveredMessages_ThrowsArgumentException()
+        public Task TestMarkDelivered_EmptyLatestDeliveredMessages_ThrowsArgumentExceptionAsync()
         {
             var markDeliveredOptions = new MarkDeliveredOptions
             {
@@ -573,7 +573,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public Task TestMarkDeliveredAsync_NoUserOrUserId_ThrowsArgumentException()
+        public Task TestMarkDelivered_NoUserOrUserId_ThrowsArgumentExceptionAsync()
         {
             var markDeliveredOptions = new MarkDeliveredOptions
             {
