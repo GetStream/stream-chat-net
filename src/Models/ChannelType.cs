@@ -58,6 +58,7 @@ namespace StreamChat.Models
         public bool? PushNotifications { get; set; }
         public string Blocklist { get; set; }
         public ModerationBehaviour? BlocklistBehavior { get; set; }
+        public bool? CountMessages { get; set; }
 
         [Obsolete("Use V2 Permissions APIs instead. " +
             "See https://getstream.io/chat/docs/dotnet-csharp/migrating_from_legacy/?language=csharp")]
@@ -103,6 +104,7 @@ namespace StreamChat.Models
         public bool? PushNotifications { get; set; }
         public string Blocklist { get; set; }
         public ModerationBehaviour? BlocklistBehavior { get; set; }
+        public bool? CountMessages { get; set; }
 
         [Obsolete("Use V2 Permissions APIs instead. " +
             "See https://getstream.io/chat/docs/dotnet-csharp/migrating_from_legacy/?language=csharp")]
