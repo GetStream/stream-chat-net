@@ -71,6 +71,7 @@ namespace StreamChat.Models
     public class AddMemberOptions
     {
         public bool? HideHistory { get; set; }
+        public DateTimeOffset? HideHistoryBefore { get; set; }
     }
 
     public class UserPartialRequest : CustomDataBase
