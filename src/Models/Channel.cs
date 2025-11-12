@@ -93,6 +93,7 @@ namespace StreamChat.Models
         public Language? AutoTranslationLanguage { get; set; }
         public bool? Frozen { get; set; }
         public IEnumerable<ChannelMember> Members { get; set; }
+        public IEnumerable<string> FilterTags { get; set; }
         public ConfigOverridesRequest ConfigOverrides { get; set; }
     }
 
@@ -117,6 +118,8 @@ namespace StreamChat.Models
         public IEnumerable<string> RemoveMembers { get; set; }
         public IEnumerable<string> AddModerators { get; set; }
         public IEnumerable<string> DemoteModerators { get; set; }
+        public IEnumerable<string> AddFilterTags { get; set; }
+        public IEnumerable<string> RemoveFilterTags { get; set; }
         public IEnumerable<string> Invites { get; set; }
         public int? Cooldown { get; set; }
         public bool? AcceptInvite { get; set; }

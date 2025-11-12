@@ -591,6 +591,36 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestAddFilterTagsAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+
+            await _channelClient.AddFilterTagsAsync(channel.Type, channel.Id, "alpha", "beta");
+
+            var channelState = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
+                ChannelGetRequest.WithoutWatching());
+
+            channelState.Channel.GetData<string[]>("filter_tags").Should().Contain(new[] { "alpha", "beta" });
+        }
+
+        [Test]
+        public async Task TestRemoveFilterTagsAsync()
+        {
+            var channel = await CreateChannelAsync(createdByUserId: _user1.Id);
+
+            await _channelClient.AddFilterTagsAsync(channel.Type, channel.Id, "gamma", "delta");
+
+            await _channelClient.RemoveFilterTagsAsync(channel.Type, channel.Id, new[] { "gamma" });
+
+            var channelState = await _channelClient.GetOrCreateAsync(channel.Type, channel.Id,
+                ChannelGetRequest.WithoutWatching());
+
+            var tags = channelState.Channel.GetData<string[]>("filter_tags");
+            tags.Should().NotContain("gamma");
+            tags.Should().Contain("delta");
+        }
+
+        [Test]
         public async Task TestAddModeratorsAsync()
         {
             await _channelClient.AddModeratorsAsync(_channel.Type, _channel.Id, new[] { _user2.Id });

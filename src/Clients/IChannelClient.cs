@@ -171,6 +171,20 @@ namespace StreamChat.Clients
             MessageRequest msg = null);
 
         /// <summary>
+        /// Adds filter tags to a channel.
+        /// </summary>
+        Task<UpdateChannelResponse> AddFilterTagsAsync(string channelType, string channelId, IEnumerable<string> filterTags, MessageRequest msg = null);
+
+        Task<UpdateChannelResponse> AddFilterTagsAsync(string channelType, string channelId, params string[] filterTags);
+
+        /// <summary>
+        /// Removes filter tags from a channel.
+        /// </summary>
+        Task<ApiResponse> RemoveFilterTagsAsync(string channelType, string channelId, IEnumerable<string> filterTags, MessageRequest msg = null);
+
+        Task<ApiResponse> RemoveFilterTagsAsync(string channelType, string channelId, params string[] filterTags);
+
+        /// <summary>
         /// Update channel member partially.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_member/#update-channel-members</remarks>

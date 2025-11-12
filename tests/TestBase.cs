@@ -106,9 +106,9 @@ namespace StreamChatTests
             return user;
         }
 
-        protected async Task<ChannelWithConfig> CreateChannelAsync(string createdByUserId, IEnumerable<string> members = null, bool autoDelete = true)
+        protected async Task<ChannelWithConfig> CreateChannelAsync(string createdByUserId, IEnumerable<string> members = null, bool autoDelete = true, string channelType = "messaging")
         {
-            var channelResp = await _channelClient.GetOrCreateAsync("messaging", Guid.NewGuid().ToString(), new ChannelGetRequest
+            var channelResp = await _channelClient.GetOrCreateAsync(channelType, Guid.NewGuid().ToString(), new ChannelGetRequest
             {
                 Data = new ChannelRequest
                 {
