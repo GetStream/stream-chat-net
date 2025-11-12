@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.19.0](https://github.com/GetStream/stream-chat-net/compare/2.18.0...2.19.0) (2025-11-12)
+
+
+### Features
+
+* [CHA-1300] add count messages on channel type ([#184](https://github.com/GetStream/stream-chat-net/issues/184)) ([748e283](https://github.com/GetStream/stream-chat-net/commit/748e283d2215fe17b8b05c8cccb48e71e339d1c7))
+* add hide_history_before option for adding members ([#185](https://github.com/GetStream/stream-chat-net/issues/185)) ([013b2f5](https://github.com/GetStream/stream-chat-net/commit/013b2f5d24df19cb048786440a47a3fe63af15bf))
+
 ## [2.18.0](https://github.com/GetStream/stream-chat-net/compare/2.17.0...2.18.0) (2025-09-01)
 
 ## [2.17.0](https://github.com/GetStream/stream-chat-net/compare/2.16.0...2.17.0) (2025-07-08)
