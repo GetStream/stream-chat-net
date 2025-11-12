@@ -25,18 +25,19 @@ namespace StreamChatTests
         private ChannelWithConfig _channel;
         private UserRequest _user1;
         private UserRequest _user2;
+        private UserRequest _user3;
 
         [SetUp]
         public async Task SetupAsync()
         {
-            (_user1, _user2) = (await UpsertNewUserAsync(), await UpsertNewUserAsync());
+            (_user1, _user2, _user3) = (await UpsertNewUserAsync(), await UpsertNewUserAsync(), await UpsertNewUserAsync());
             _channel = await CreateChannelAsync(createdByUserId: _user1.Id, members: new[] { _user1.Id, _user2.Id });
         }
 
         [TearDown]
         public async Task TeardownAsync()
         {
-            await TryDeleteUsersAsync(_user1.Id, _user2.Id);
+            await TryDeleteUsersAsync(_user1.Id, _user2.Id, _user3.Id);
         }
 
         [Test]
@@ -178,6 +179,45 @@ namespace StreamChatTests
             }));
 
             resp.Users.Should().NotBeEmpty();
+        }
+
+        [Test]
+        public async Task TestQueryUsersWithIncludeDeactivatedUsersAsync()
+        {
+            // Deactivate user3
+            await _userClient.DeactivateAsync(_user3.Id);
+
+            // Query without including deactivated users
+            var respWithoutDeactivated = await _userClient.QueryAsync(QueryUserOptions.Default.WithFilter(new Dictionary<string, object>
+            {
+                { "id", new Dictionary<string, object> { { "$in", new[] { _user1.Id, _user3.Id } } } },
+            }));
+
+            // Should only find user1 (user3 is deactivated)
+            respWithoutDeactivated.Users.Should().NotBeEmpty();
+            respWithoutDeactivated.Users.Should().HaveCount(1);
+            respWithoutDeactivated.Users[0].Id.Should().Be(_user1.Id);
+
+            // Query with including deactivated users
+            var respWithDeactivated = await _userClient.QueryAsync(QueryUserOptions.Default
+                .WithIncludeDeactivatedUsers()
+                .WithFilter(new Dictionary<string, object>
+                {
+                    { "id", new Dictionary<string, object> { { "$in", new[] { _user1.Id, _user3.Id } } } },
+                }));
+
+            // Should find both users
+            respWithDeactivated.Users.Should().NotBeEmpty();
+            respWithDeactivated.Users.Should().HaveCount(2);
+            respWithDeactivated.Users.Should().Contain(u => u.Id == _user1.Id);
+            respWithDeactivated.Users.Should().Contain(u => u.Id == _user3.Id);
+
+            // Verify user3 is deactivated
+            var user3 = respWithDeactivated.Users.First(u => u.Id == _user3.Id);
+            user3.DeactivatedAt.Should().NotBeNull();
+
+            // Reactivate user3 for cleanup
+            await _userClient.ReactivateAsync(_user3.Id);
         }
 
         [Test]

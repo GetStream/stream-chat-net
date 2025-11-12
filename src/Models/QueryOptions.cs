@@ -26,6 +26,7 @@ namespace StreamChat.Models
         public int Offset { get; set; } = DefaultOffset;
         public int Limit { get; set; } = DefaultLimit;
         public bool Presence { get; set; } = false;
+        public bool IncludeDeactivatedUsers { get; set; } = false;
         public List<SortParameter> Sort { get; set; } = new List<SortParameter>();
         public Dictionary<string, object> Filter { get; set; } = new Dictionary<string, object>();
 
@@ -44,6 +45,12 @@ namespace StreamChat.Models
         public QueryUserOptions WithPresence()
         {
             Presence = true;
+            return this;
+        }
+
+        public QueryUserOptions WithIncludeDeactivatedUsers()
+        {
+            IncludeDeactivatedUsers = true;
             return this;
         }
 
