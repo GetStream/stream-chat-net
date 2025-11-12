@@ -19,6 +19,7 @@ namespace StreamChat.Clients
                 {
                     AddMembers = userIds,
                     HideHistory = options?.HideHistory,
+                    HideHistoryBefore = options?.HideHistoryBefore,
                     Message = msg,
                 });
 

@@ -127,6 +127,7 @@ namespace StreamChat.Models
         public MessageRequest Message { get; set; }
         public bool? SkipPush { get; set; }
         public bool? HideHistory { get; set; }
+        public DateTimeOffset? HideHistoryBefore { get; set; }
         public ChannelRequest Data { get; set; }
         public string UserId { get; set; }
         public UserRequest User { get; set; }
