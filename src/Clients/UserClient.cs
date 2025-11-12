@@ -229,6 +229,7 @@ namespace StreamChat.Clients
                 offset = opts.Offset,
                 limit = opts.Limit,
                 presence = opts.Presence,
+                include_deactivated_users = opts.IncludeDeactivatedUsers,
                 filter_conditions = opts.Filter,
                 sort = opts.Sort,
             };
