@@ -17,7 +17,7 @@ namespace StreamChatTests
         public async Task SetUp()
         {
             _user = await UpsertNewUserAsync();
-            _channel = await CreateChannelAsync(_user.Id, autoDelete: false);
+            _channel = await CreateChannelAsync(_user.Id, autoDelete: false, channelType: "team");
         }
 
         [TearDown]
