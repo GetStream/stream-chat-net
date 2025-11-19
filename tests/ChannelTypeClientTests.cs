@@ -89,5 +89,88 @@ namespace StreamChatTests
                 }
             });
         }
+
+        [Test]
+        public async Task TestEnableUserMessageRemindersOnChannelTypeAsync()
+        {
+            var channelTypeName = Guid.NewGuid().ToString();
+            ChannelTypeWithStringCommandsResponse createdChannelType = null;
+
+            try
+            {
+                // Create channel type with user_message_reminders enabled
+                createdChannelType = await _channelTypeClient.CreateChannelTypeAsync(
+                    new ChannelTypeWithStringCommandsRequest
+                    {
+                        Name = channelTypeName,
+                        UserMessageReminders = true,
+                    });
+
+                createdChannelType.UserMessageReminders.Should().BeTrue();
+
+                // Retrieve and verify
+                await WaitForAsync(async () =>
+                {
+                    try
+                    {
+                        var retrieved = await _channelTypeClient.GetChannelTypeAsync(channelTypeName);
+                        return retrieved.UserMessageReminders == true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
+
+                // Update to disable
+                var updated = await _channelTypeClient.UpdateChannelTypeAsync(channelTypeName,
+                    new ChannelTypeWithStringCommandsRequest
+                    {
+                        UserMessageReminders = false,
+                    });
+
+                updated.UserMessageReminders.Should().BeFalse();
+
+                // Verify the update persisted
+                await WaitForAsync(async () =>
+                {
+                    try
+                    {
+                        var retrieved = await _channelTypeClient.GetChannelTypeAsync(channelTypeName);
+                        return retrieved.UserMessageReminders == false;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
+            }
+            finally
+            {
+                // Cleanup
+                if (createdChannelType != null)
+                {
+                    try
+                    {
+                        await WaitForAsync(async () =>
+                        {
+                            try
+                            {
+                                await _channelTypeClient.DeleteChannelTypeAsync(channelTypeName);
+                                return true;
+                            }
+                            catch
+                            {
+                                return false;
+                            }
+                        });
+                    }
+                    catch (TimeoutException)
+                    {
+                        // Ignore cleanup failures
+                    }
+                }
+            }
+        }
     }
 }
