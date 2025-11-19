@@ -137,6 +137,7 @@ namespace StreamChatTests
                     try
                     {
                         var retrieved = await _channelTypeClient.GetChannelTypeAsync(channelTypeName);
+
                         // The field should be present in the response
                         return retrieved.UserMessageReminders != null;
                     }
