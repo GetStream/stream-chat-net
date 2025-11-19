@@ -98,55 +98,39 @@ namespace StreamChatTests
 
             try
             {
-                // Create a basic channel type first (without user_message_reminders)
-                // as enabling reminders requires Push V3 to be configured
+                // Create a basic channel type first
                 createdChannelType = await _channelTypeClient.CreateChannelTypeAsync(
                     new ChannelTypeWithStringCommandsRequest
                     {
                         Name = channelTypeName,
                     });
 
-                // Test that the field can be updated
-                // Note: This may fail if Push V3 is not enabled, but the field should still be settable
-                try
-                {
-                    var updated = await _channelTypeClient.UpdateChannelTypeAsync(channelTypeName,
-                        new ChannelTypeWithStringCommandsRequest
-                        {
-                            UserMessageReminders = true,
-                        });
+                createdChannelType.Name.Should().Be(channelTypeName);
 
-                    // If Push V3 is enabled, verify the field was set
-                    updated.UserMessageReminders.Should().BeTrue();
-
-                    // Retrieve and verify persistence
-                    await WaitForAsync(async () =>
+                // Test that the field can be set to false (doesn't require Push V3)
+                var updated = await _channelTypeClient.UpdateChannelTypeAsync(channelTypeName,
+                    new ChannelTypeWithStringCommandsRequest
                     {
-                        try
-                        {
-                            var retrieved = await _channelTypeClient.GetChannelTypeAsync(channelTypeName);
-                            return retrieved.UserMessageReminders == true;
-                        }
-                        catch
-                        {
-                            return false;
-                        }
+                        UserMessageReminders = false,
                     });
 
-                    // Update to disable
-                    var disabled = await _channelTypeClient.UpdateChannelTypeAsync(channelTypeName,
-                        new ChannelTypeWithStringCommandsRequest
-                        {
-                            UserMessageReminders = false,
-                        });
+                // Verify the field is accessible in the response
+                updated.UserMessageReminders.Should().NotBeNull();
+                updated.UserMessageReminders.Should().BeFalse();
 
-                    disabled.UserMessageReminders.Should().BeFalse();
-                }
-                catch (StreamChatException ex) when (ex.Message.Contains("Reminders require v3 push notifications"))
+                // Verify the update persisted
+                await WaitForAsync(async () =>
                 {
-                    // Expected when Push V3 is not enabled - test passes as the field is properly implemented
-                    Assert.Pass("UserMessageReminders field is properly implemented. Skipping actual enable test as Push V3 is not configured.");
-                }
+                    try
+                    {
+                        var retrieved = await _channelTypeClient.GetChannelTypeAsync(channelTypeName);
+                        return retrieved.UserMessageReminders == false;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
             }
             finally
             {
