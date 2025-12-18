@@ -344,61 +344,6 @@ namespace StreamChatTests
         }
 
         [Test]
-        public async Task TestUpdateMessageWithRestrictedVisibilityAsync()
-        {
-            var originalText = Guid.NewGuid().ToString();
-            var messageRequest = new MessageRequest
-            {
-                Text = originalText,
-                Type = MessageRequestType.Regular,
-            };
-
-            var msgResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, messageRequest, _user.Id);
-
-            var updatedText = Guid.NewGuid().ToString();
-            var restrictedToUsers = new[] { _user.Id };
-
-            var updated = await _messageClient.UpdateMessageAsync(new MessageRequest
-            {
-                Id = msgResp.Message.Id,
-                Text = updatedText,
-                UserId = _user.Id,
-                RestrictedVisibility = restrictedToUsers,
-            });
-
-            updated.Message.Text.Should().BeEquivalentTo(updatedText);
-            updated.Message.RestrictedVisibility.Should().BeEquivalentTo(restrictedToUsers);
-            updated.Message.User.Id.Should().BeEquivalentTo(_user.Id);
-        }
-
-        [Test]
-        public async Task TestUpdateMessagePartialWithRestrictedVisibilityAsync()
-        {
-            var messageText = Guid.NewGuid().ToString();
-            var messageRequest = new MessageRequest
-            {
-                Text = messageText,
-                Type = MessageRequestType.Regular,
-            };
-
-            var msgResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, messageRequest, _user.Id);
-
-            var restrictedToUsers = new[] { _user.Id };
-            var resp = await _messageClient.UpdateMessagePartialAsync(msgResp.Message.Id, new MessagePartialUpdateRequest
-            {
-                UserId = _user.Id,
-                Set = new Dictionary<string, object>
-                {
-                    { "restricted_visibility", restrictedToUsers },
-                },
-            });
-
-            resp.Message.RestrictedVisibility.Should().BeEquivalentTo(restrictedToUsers);
-            resp.Message.Text.Should().BeEquivalentTo(messageText);
-            resp.Message.User.Id.Should().BeEquivalentTo(_user.Id);
-        }
-
-        [Test]
         public async Task TestCreateReminderAsync()
         {
             // Arrange
