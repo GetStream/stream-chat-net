@@ -270,5 +270,18 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/channel_update/#archiving-a-channel</remarks>
         Task<ChannelMemberResponse> UnarchiveAsync(string channelType, string channelId, string userId);
+
+        /// <summary>
+        /// Update channels in batch.
+        /// </summary>
+        /// <param name="payload">Payload containing operation, filter, and optional members/data/filter_tags_update</param>
+        /// <returns>The server response</returns>
+        Task<UpdateChannelsBatchResponse> UpdateChannelsBatchAsync(UpdateChannelsBatchOptions payload);
+
+        /// <summary>
+        /// Returns a ChannelBatchUpdater instance for batch channel operations.
+        /// </summary>
+        /// <returns>A ChannelBatchUpdater instance</returns>
+        ChannelBatchUpdater ChannelBatchUpdater();
     }
 }

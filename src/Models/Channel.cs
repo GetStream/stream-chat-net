@@ -155,4 +155,31 @@ namespace StreamChat.Models
     public class ChannelUnmuteResponse : ChannelMuteResponse
     {
     }
+
+    public class UpdateChannelsBatchOptions
+    {
+        [JsonProperty("operation")]
+        public string Operation { get; set; }
+
+        [JsonProperty("filter")]
+        public Dictionary<string, object> Filter { get; set; }
+
+        [JsonProperty("members")]
+        public object Members { get; set; }
+
+        [JsonProperty("data")]
+        public Dictionary<string, object> Data { get; set; }
+
+        [JsonProperty("filter_tags_update")]
+        public List<string> FilterTagsUpdate { get; set; }
+    }
+
+    public class UpdateChannelsBatchResponse : ApiResponse
+    {
+        [JsonProperty("result")]
+        public Dictionary<string, string> Result { get; set; }
+
+        [JsonProperty("task_id")]
+        public string TaskId { get; set; }
+    }
 }

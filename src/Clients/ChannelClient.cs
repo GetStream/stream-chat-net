@@ -53,5 +53,23 @@ namespace StreamChat.Clients
                 HttpMethod.POST,
                 HttpStatusCode.Created,
                 new { user_id = userId });
+
+        /// <summary>
+        /// Update channels in batch.
+        /// </summary>
+        /// <param name="payload">Payload containing operation, filter, and optional members/data/filter_tags_update</param>
+        /// <returns>The server response</returns>
+        public async Task<UpdateChannelsBatchResponse> UpdateChannelsBatchAsync(UpdateChannelsBatchOptions payload)
+            => await ExecuteRequestAsync<UpdateChannelsBatchResponse>("channels/batch",
+                HttpMethod.PUT,
+                HttpStatusCode.OK,
+                payload);
+
+        /// <summary>
+        /// Returns a ChannelBatchUpdater instance for batch channel operations.
+        /// </summary>
+        /// <returns>A ChannelBatchUpdater instance</returns>
+        public ChannelBatchUpdater ChannelBatchUpdater()
+            => new ChannelBatchUpdater(this);
     }
 }
