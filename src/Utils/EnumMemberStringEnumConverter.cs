@@ -1,7 +1,8 @@
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
-using StreamChat.Utils;
 
 namespace StreamChat.Utils
 {
@@ -18,8 +19,15 @@ namespace StreamChat.Utils
                 return;
             }
 
-            var enumValue = (Enum)value;
-            writer.WriteValue(enumValue.ToEnumMemberString());
+            var enumType = value.GetType();
+            var enumValue = value.ToString();
+            var memberInfo = enumType.GetTypeInfo().DeclaredMembers
+                .SingleOrDefault(x => x.Name == enumValue);
+            
+            var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>(false);
+            var stringValue = enumMemberAttribute?.Value ?? enumValue;
+            
+            writer.WriteValue(stringValue);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -33,10 +41,17 @@ namespace StreamChat.Utils
             {
                 var stringValue = reader.Value.ToString();
                 var enumValues = Enum.GetValues(objectType);
+                var enumTypeInfo = objectType.GetTypeInfo();
                 
                 foreach (Enum enumValue in enumValues)
                 {
-                    var enumMemberString = enumValue.ToEnumMemberString();
+                    var enumValueString = enumValue.ToString();
+                    var memberInfo = enumTypeInfo.DeclaredMembers
+                        .SingleOrDefault(x => x.Name == enumValueString);
+                    
+                    var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>(false);
+                    var enumMemberString = enumMemberAttribute?.Value ?? enumValueString;
+                    
                     if (string.Equals(enumMemberString, stringValue, StringComparison.OrdinalIgnoreCase))
                     {
                         return enumValue;
