@@ -23,10 +23,10 @@ namespace StreamChat.Utils
             var enumValue = value.ToString();
             var memberInfo = enumType.GetTypeInfo().DeclaredMembers
                 .SingleOrDefault(x => x.Name == enumValue);
-            
+
             var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>(false);
             var stringValue = enumMemberAttribute?.Value ?? enumValue;
-            
+
             writer.WriteValue(stringValue);
         }
 
@@ -42,22 +42,22 @@ namespace StreamChat.Utils
                 var stringValue = reader.Value.ToString();
                 var enumValues = Enum.GetValues(objectType);
                 var enumTypeInfo = objectType.GetTypeInfo();
-                
+
                 foreach (Enum enumValue in enumValues)
                 {
                     var enumValueString = enumValue.ToString();
                     var memberInfo = enumTypeInfo.DeclaredMembers
                         .SingleOrDefault(x => x.Name == enumValueString);
-                    
+
                     var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>(false);
                     var enumMemberString = enumMemberAttribute?.Value ?? enumValueString;
-                    
+
                     if (string.Equals(enumMemberString, stringValue, StringComparison.OrdinalIgnoreCase))
                     {
                         return enumValue;
                     }
                 }
-                
+
                 // Fallback to standard enum parsing
                 return Enum.Parse(objectType, stringValue, true);
             }
