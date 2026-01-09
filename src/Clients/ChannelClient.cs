@@ -38,6 +38,14 @@ namespace StreamChat.Clients
                 HttpStatusCode.Created,
                 new { cids = cids, hard_delete = hardDelete });
 
+        public async Task<AsyncOperationResponse> UpdateChannelsBatchAsync(ChannelsBatchOptions options)
+            => await ExecuteRequestAsync<AsyncOperationResponse>("channels/batch",
+                HttpMethod.PUT,
+                HttpStatusCode.OK,
+                options);
+
+        public ChannelBatchUpdater BatchUpdater() => new ChannelBatchUpdater(this);
+
         public async Task<ApiResponse> HideAsync(string channelType, string channelId, string userId, bool clearHistory = false)
             => await ExecuteRequestAsync<ApiResponse>($"channels/{channelType}/{channelId}/hide",
                 HttpMethod.POST,
