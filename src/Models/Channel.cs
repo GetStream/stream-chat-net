@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using StreamChat.Utils;
 
 namespace StreamChat.Models
 {
@@ -159,6 +158,7 @@ namespace StreamChat.Models
     {
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ChannelBatchOperation
     {
         [EnumMember(Value = "addMembers")]
@@ -248,8 +248,7 @@ namespace StreamChat.Models
 
     public class ChannelsBatchOptions
     {
-        [JsonProperty("operation")]
-        [JsonConverter(typeof(Utils.EnumMemberStringEnumConverter))]
+        [JsonProperty("operation", DefaultValueHandling = DefaultValueHandling.Include)]
         public ChannelBatchOperation Operation { get; set; }
 
         [JsonProperty("filter")]
