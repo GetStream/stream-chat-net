@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace StreamChat.Models
 {
@@ -154,5 +156,111 @@ namespace StreamChat.Models
 
     public class ChannelUnmuteResponse : ChannelMuteResponse
     {
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ChannelBatchOperation
+    {
+        [EnumMember(Value = "addMembers")]
+        AddMembers,
+
+        [EnumMember(Value = "removeMembers")]
+        RemoveMembers,
+
+        [EnumMember(Value = "inviteMembers")]
+        InviteMembers,
+
+        [EnumMember(Value = "assignRoles")]
+        AssignRoles,
+
+        [EnumMember(Value = "addModerators")]
+        AddModerators,
+
+        [EnumMember(Value = "demoteModerators")]
+        DemoteModerators,
+
+        [EnumMember(Value = "hide")]
+        Hide,
+
+        [EnumMember(Value = "show")]
+        Show,
+
+        [EnumMember(Value = "archive")]
+        Archive,
+
+        [EnumMember(Value = "unarchive")]
+        Unarchive,
+
+        [EnumMember(Value = "updateData")]
+        UpdateData,
+
+        [EnumMember(Value = "addFilterTags")]
+        AddFilterTags,
+
+        [EnumMember(Value = "removeFilterTags")]
+        RemoveFilterTags,
+    }
+
+    public class ChannelBatchMemberRequest
+    {
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("channel_role")]
+        public string ChannelRole { get; set; }
+    }
+
+    public class ChannelDataUpdate
+    {
+        [JsonProperty("frozen")]
+        public bool? Frozen { get; set; }
+
+        [JsonProperty("disabled")]
+        public bool? Disabled { get; set; }
+
+        [JsonProperty("custom")]
+        public Dictionary<string, object> Custom { get; set; }
+
+        [JsonProperty("team")]
+        public string Team { get; set; }
+
+        [JsonProperty("config_overrides")]
+        public Dictionary<string, object> ConfigOverrides { get; set; }
+
+        [JsonProperty("auto_translation_enabled")]
+        public bool? AutoTranslationEnabled { get; set; }
+
+        [JsonProperty("auto_translation_language")]
+        public string AutoTranslationLanguage { get; set; }
+    }
+
+    public class ChannelsBatchFilters
+    {
+        [JsonProperty("cids")]
+        public object Cids { get; set; }
+
+        [JsonProperty("types")]
+        public object Types { get; set; }
+
+        [JsonProperty("filter_tags")]
+        public object FilterTags { get; set; }
+    }
+
+    public class ChannelsBatchOptions
+    {
+        [JsonProperty("operation")]
+        public ChannelBatchOperation Operation { get; set; }
+
+        [JsonProperty("filter")]
+        public ChannelsBatchFilters Filter { get; set; }
+
+        [JsonProperty("members")]
+        public IEnumerable<ChannelBatchMemberRequest> Members { get; set; }
+
+        [JsonProperty("data")]
+        public ChannelDataUpdate Data { get; set; }
+
+        [JsonProperty("filter_tags_update")]
+        public IEnumerable<string> FilterTagsUpdate { get; set; }
     }
 }
