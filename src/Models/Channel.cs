@@ -248,7 +248,7 @@ namespace StreamChat.Models
 
     public class ChannelsBatchOptions
     {
-        [JsonProperty("operation", DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonProperty("operation")]
         public ChannelBatchOperation Operation { get; set; }
 
         [JsonProperty("filter")]

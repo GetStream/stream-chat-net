@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using StreamChat.Models;
 
@@ -25,7 +26,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.AddMembers,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -39,7 +40,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.RemoveMembers,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -53,7 +54,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.InviteMembers,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -67,7 +68,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.AssignRoles,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -81,7 +82,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.AddModerators,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -95,7 +96,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.DemoteModerators,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -109,7 +110,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.Hide,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -123,7 +124,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.Show,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -137,7 +138,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.Archive,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -151,7 +152,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.Unarchive,
                 Filter = filter,
-                Members = members,
+                Members = members?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -179,7 +180,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.AddFilterTags,
                 Filter = filter,
-                FilterTagsUpdate = tags,
+                FilterTagsUpdate = tags?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
@@ -193,7 +194,7 @@ namespace StreamChat.Clients
             {
                 Operation = ChannelBatchOperation.RemoveFilterTags,
                 Filter = filter,
-                FilterTagsUpdate = tags,
+                FilterTagsUpdate = tags?.ToList(),
             };
             return await _client.UpdateChannelsBatchAsync(options);
         }
