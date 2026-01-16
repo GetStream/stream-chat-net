@@ -123,22 +123,25 @@ namespace StreamChatTests
             response.TaskId.Should().NotBeNullOrEmpty();
             await WaitUntilTaskSucceedsAsync(response.TaskId);
 
-            var ch1Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            await WaitForAsync(async () =>
             {
-                Type = ch1.Type,
-                Id = ch1.Id,
-                FilterConditions = new Dictionary<string, object>(),
-            });
+                var ch1Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+                {
+                    Type = ch1.Type,
+                    Id = ch1.Id,
+                    FilterConditions = new Dictionary<string, object>(),
+                });
 
-            var ch2Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
-            {
-                Type = ch2.Type,
-                Id = ch2.Id,
-                FilterConditions = new Dictionary<string, object>(),
-            });
+                var ch2Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+                {
+                    Type = ch2.Type,
+                    Id = ch2.Id,
+                    FilterConditions = new Dictionary<string, object>(),
+                });
 
-            ch1Members.Members.Should().NotContain(m => m.UserId == user2.Id);
-            ch2Members.Members.Should().NotContain(m => m.UserId == user2.Id);
+                return ch1Members.Members.All(m => m.UserId != user2.Id)
+                       && ch2Members.Members.All(m => m.UserId != user2.Id);
+            }, timeout: 20000, delay: 1000);
         }
 
         [Test]

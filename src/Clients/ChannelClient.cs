@@ -41,7 +41,7 @@ namespace StreamChat.Clients
         public async Task<AsyncOperationResponse> UpdateChannelsBatchAsync(ChannelsBatchOptions options)
             => await ExecuteRequestAsync<AsyncOperationResponse>("channels/batch",
                 HttpMethod.PUT,
-                HttpStatusCode.OK,
+                HttpStatusCode.Created,
                 options);
 
         public ChannelBatchUpdater BatchUpdater() => new ChannelBatchUpdater(this);
