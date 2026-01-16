@@ -212,7 +212,7 @@ namespace StreamChatTests
             }
         }
 
-        private async Task WaitUntilTaskSucceedsAsync(string taskId)
+        protected async Task WaitUntilTaskSucceedsAsync(string taskId)
         {
             try
             {
