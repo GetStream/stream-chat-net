@@ -130,18 +130,32 @@ namespace StreamChat.Clients
                 HttpStatusCode.Created,
                 banRequest);
 
-        public async Task<ApiResponse> UnbanAsync(BanRequest banRequest)
-            => await ExecuteRequestAsync<ApiResponse>("moderation/ban",
+        public async Task<ApiResponse> UnbanAsync(BanRequest banRequest, bool removeFutureChannelsBan = false)
+        {
+            var queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("target_user_id", banRequest.TargetUserId),
+                new KeyValuePair<string, string>("type", banRequest.Type),
+                new KeyValuePair<string, string>("id", banRequest.Id),
+            };
+            if (removeFutureChannelsBan)
+            {
+                queryParams.Add(new KeyValuePair<string, string>("remove_future_channels_ban", "true"));
+            }
+            return await ExecuteRequestAsync<ApiResponse>("moderation/ban",
                 HttpMethod.DELETE,
                 HttpStatusCode.OK,
-                queryParams: new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("target_user_id", banRequest.TargetUserId),
-                    new KeyValuePair<string, string>("type", banRequest.Type),
-                    new KeyValuePair<string, string>("id", banRequest.Id),
-                });
+                queryParams: queryParams);
+        }
+
         public async Task<QueryBannedUsersResponse> QueryBannedUsersAsync(QueryBannedUsersRequest request)
             => await ExecuteRequestAsync<QueryBannedUsersResponse>("query_banned_users",
+                HttpMethod.GET,
+                HttpStatusCode.OK,
+                queryParams: request.ToQueryParameters());
+
+        public async Task<QueryFutureChannelBansResponse> QueryFutureChannelBansAsync(QueryFutureChannelBansRequest request)
+            => await ExecuteRequestAsync<QueryFutureChannelBansResponse>("query_future_channel_bans",
                 HttpMethod.GET,
                 HttpStatusCode.OK,
                 queryParams: request.ToQueryParameters());

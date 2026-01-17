@@ -32,6 +32,9 @@ namespace StreamChat.Models
 
         /// <summary>Channel ID to ban user in</summary>
         public string Id { get; set; }
+
+        /// <summary>When true, the user will be automatically banned from all future channels created by the user who issued the ban</summary>
+        public bool? BanFromFutureChannels { get; set; }
     }
 
     public class ShadowBanRequest : BanRequest
@@ -51,6 +54,36 @@ namespace StreamChat.Models
         public DateTimeOffset? Expires { get; set; }
         public bool Shadow { get; set; }
         public User BannedBy { get; set; }
+    }
+
+    public class FutureChannelBan
+    {
+        public User User { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? Expires { get; set; }
+        public string Reason { get; set; }
+        public bool Shadow { get; set; }
+    }
+
+    public class QueryFutureChannelBansRequest : IQueryParameterConvertible
+    {
+        public string UserId { get; set; }
+        public bool? ExcludeExpiredBans { get; set; }
+        public int? Limit { get; set; }
+        public int? Offset { get; set; }
+
+        public List<KeyValuePair<string, string>> ToQueryParameters()
+        {
+            return new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("payload", StreamJsonConverter.SerializeObject(this)),
+            };
+        }
+    }
+
+    public class QueryFutureChannelBansResponse : ApiResponse
+    {
+        public List<FutureChannelBan> Bans { get; set; }
     }
 
     public class QueryBannedUsersRequest : IQueryParameterConvertible
