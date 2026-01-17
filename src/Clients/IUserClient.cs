@@ -201,7 +201,7 @@ namespace StreamChat.Clients
         /// To ban a user, use <see cref="BanAsync"/> method.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp#ban</remarks>
-        Task<ApiResponse> UnbanAsync(BanRequest banRequest);
+        Task<ApiResponse> UnbanAsync(BanRequest banRequest, bool removeFutureChannelsBan = false);
 
         /// <summary>
         /// <para>Queries banned users.</para>
@@ -213,6 +213,13 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp#query-banned-users</remarks>
         Task<QueryBannedUsersResponse> QueryBannedUsersAsync(QueryBannedUsersRequest request);
+
+        /// <summary>
+        /// <para>Queries future channel bans.</para>
+        /// Future channel bans are automatically applied when a user creates a new channel
+        /// or adds a member to an existing channel.
+        /// </summary>
+        Task<QueryFutureChannelBansResponse> QueryFutureChannelBansAsync(QueryFutureChannelBansRequest request);
 
         /// <summary>
         /// <para>Mutes a user.</para>
