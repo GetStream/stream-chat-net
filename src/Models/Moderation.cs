@@ -68,6 +68,7 @@ namespace StreamChat.Models
     public class QueryFutureChannelBansRequest : IQueryParameterConvertible
     {
         public string UserId { get; set; }
+        public string TargetUserId { get; set; }
         public bool? ExcludeExpiredBans { get; set; }
         public int? Limit { get; set; }
         public int? Offset { get; set; }
