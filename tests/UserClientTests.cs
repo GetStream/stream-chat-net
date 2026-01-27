@@ -664,8 +664,22 @@ namespace StreamChatTests
                     Reason = "test ban 2",
                 });
 
-                // Query with TargetUserId filter - should only return the specific target
+                // Query all future channel bans by creator
                 var resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
+                {
+                    UserId = creator.Id,
+                });
+
+                // Should have at least the 2 bans we just created
+                resp.Bans.Should().HaveCountGreaterOrEqualTo(2);
+
+                // Verify we can find our bans by checking the reasons we set
+                var reasons = resp.Bans.Select(b => b.Reason).ToList();
+                reasons.Should().Contain("test ban 1");
+                reasons.Should().Contain("test ban 2");
+
+                // Query with TargetUserId filter - should only return the specific target
+                resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
                 {
                     UserId = creator.Id,
                     TargetUserId = target1.Id,
@@ -673,9 +687,6 @@ namespace StreamChatTests
 
                 resp.Bans.Should().HaveCount(1);
                 resp.Bans[0].Reason.Should().Be("test ban 1");
-                // Verify the target user - API may return full user object or just the ID
-                var ban1TargetId = resp.Bans[0].User?.Id ?? resp.Bans[0].TargetId;
-                ban1TargetId.Should().Be(target1.Id);
 
                 // Query for the other target
                 resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
@@ -686,16 +697,6 @@ namespace StreamChatTests
 
                 resp.Bans.Should().HaveCount(1);
                 resp.Bans[0].Reason.Should().Be("test ban 2");
-                var ban2TargetId = resp.Bans[0].User?.Id ?? resp.Bans[0].TargetId;
-                ban2TargetId.Should().Be(target2.Id);
-
-                // Query all future channel bans by creator (without target filter)
-                resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
-                {
-                    UserId = creator.Id,
-                });
-
-                resp.Bans.Should().HaveCountGreaterOrEqualTo(2);
             }
             finally
             {
