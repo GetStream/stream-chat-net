@@ -559,7 +559,7 @@ namespace StreamChatTests
                     {
                         ChannelCID = "channel2",
                         MessageID = "message2",
-                    }
+                    },
                 },
                 UserID = _user1.Id,
             };
@@ -580,7 +580,7 @@ namespace StreamChatTests
                     {
                         ChannelCID = "channel1",
                         MessageID = "message1",
-                    }
+                    },
                 },
                 UserID = _user1.Id,
             };
@@ -623,8 +623,8 @@ namespace StreamChatTests
                     {
                         ChannelCID = "channel1",
                         MessageID = "message1",
-                    }
-                }
+                    },
+                },
             };
 
             Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(markDeliveredOptions);
@@ -638,14 +638,18 @@ namespace StreamChatTests
             var creator = await UpsertNewUserAsync();
             var target1 = await UpsertNewUserAsync();
             var target2 = await UpsertNewUserAsync();
+            var channel = await CreateChannelAsync(createdByUserId: creator.Id);
 
             try
             {
                 // Ban both targets from future channels created by creator
+                // Note: ban_from_future_channels requires a channel_cid to be set
                 await _userClient.BanAsync(new BanRequest
                 {
                     TargetUserId = target1.Id,
                     UserId = creator.Id,
+                    Type = channel.Type,
+                    Id = channel.Id,
                     BanFromFutureChannels = true,
                     Reason = "test ban 1",
                 });
@@ -654,6 +658,8 @@ namespace StreamChatTests
                 {
                     TargetUserId = target2.Id,
                     UserId = creator.Id,
+                    Type = channel.Type,
+                    Id = channel.Id,
                     BanFromFutureChannels = true,
                     Reason = "test ban 2",
                 });
