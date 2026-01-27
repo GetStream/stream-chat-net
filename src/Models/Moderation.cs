@@ -58,7 +58,7 @@ namespace StreamChat.Models
 
     public class FutureChannelBan
     {
-        /// <summary>Gets or sets the banned user (alias for Target for API compatibility).</summary>
+        /// <summary>Gets or sets the banned user (checks multiple possible API response fields).</summary>
         [Newtonsoft.Json.JsonProperty("user")]
         public User User
         {
@@ -71,6 +71,18 @@ namespace StreamChat.Models
         /// <summary>Gets or sets the banned user (target of the ban).</summary>
         [Newtonsoft.Json.JsonProperty("target")]
         public User Target { get; set; }
+
+        /// <summary>Gets or sets the ID of the banned user.</summary>
+        [Newtonsoft.Json.JsonProperty("target_id")]
+        public string TargetId { get; set; }
+
+        /// <summary>Gets or sets the ID of the user who created the ban.</summary>
+        [Newtonsoft.Json.JsonProperty("created_by_id")]
+        public string CreatedById { get; set; }
+
+        /// <summary>Gets or sets the user who created the ban.</summary>
+        [Newtonsoft.Json.JsonProperty("created_by")]
+        public User CreatedBy { get; set; }
 
         [Newtonsoft.Json.JsonProperty("created_at")]
         public DateTimeOffset CreatedAt { get; set; }

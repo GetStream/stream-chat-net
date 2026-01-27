@@ -672,7 +672,10 @@ namespace StreamChatTests
                 });
 
                 resp.Bans.Should().HaveCount(1);
-                resp.Bans[0].User.Id.Should().Be(target1.Id);
+                resp.Bans[0].Reason.Should().Be("test ban 1");
+                // Verify the target user - API may return full user object or just the ID
+                var ban1TargetId = resp.Bans[0].User?.Id ?? resp.Bans[0].TargetId;
+                ban1TargetId.Should().Be(target1.Id);
 
                 // Query for the other target
                 resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
@@ -682,7 +685,9 @@ namespace StreamChatTests
                 });
 
                 resp.Bans.Should().HaveCount(1);
-                resp.Bans[0].User.Id.Should().Be(target2.Id);
+                resp.Bans[0].Reason.Should().Be("test ban 2");
+                var ban2TargetId = resp.Bans[0].User?.Id ?? resp.Bans[0].TargetId;
+                ban2TargetId.Should().Be(target2.Id);
 
                 // Query all future channel bans by creator (without target filter)
                 resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
