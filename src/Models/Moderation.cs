@@ -58,10 +58,30 @@ namespace StreamChat.Models
 
     public class FutureChannelBan
     {
-        public User User { get; set; }
+        /// <summary>Gets or sets the banned user (alias for Target for API compatibility).</summary>
+        [Newtonsoft.Json.JsonProperty("user")]
+        public User User
+        {
+            get => _user ?? Target;
+            set => _user = value;
+        }
+
+        private User _user;
+
+        /// <summary>Gets or sets the banned user (target of the ban).</summary>
+        [Newtonsoft.Json.JsonProperty("target")]
+        public User Target { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("created_at")]
         public DateTimeOffset CreatedAt { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("expires")]
         public DateTimeOffset? Expires { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("reason")]
         public string Reason { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("shadow")]
         public bool Shadow { get; set; }
     }
 
