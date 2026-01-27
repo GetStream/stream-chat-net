@@ -559,7 +559,7 @@ namespace StreamChatTests
                     {
                         ChannelCID = "channel2",
                         MessageID = "message2",
-                    }
+                    },
                 },
                 UserID = _user1.Id,
             };
@@ -580,7 +580,7 @@ namespace StreamChatTests
                     {
                         ChannelCID = "channel1",
                         MessageID = "message1",
-                    }
+                    },
                 },
                 UserID = _user1.Id,
             };
@@ -623,13 +623,96 @@ namespace StreamChatTests
                     {
                         ChannelCID = "channel1",
                         MessageID = "message1",
-                    }
-                }
+                    },
+                },
             };
 
             Func<Task> markDeliveredCall = async () => await _userClient.MarkDeliveredAsync(markDeliveredOptions);
 
             return markDeliveredCall.Should().ThrowAsync<ArgumentException>();
+        }
+
+        [Test]
+        public async Task TestQueryFutureChannelBansWithTargetUserIdAsync()
+        {
+            var creator = await UpsertNewUserAsync();
+            var target1 = await UpsertNewUserAsync();
+            var target2 = await UpsertNewUserAsync();
+            var channel = await CreateChannelAsync(createdByUserId: creator.Id);
+
+            try
+            {
+                // Ban both targets from future channels created by creator
+                // Note: ban_from_future_channels requires a channel_cid to be set
+                await _userClient.BanAsync(new BanRequest
+                {
+                    TargetUserId = target1.Id,
+                    UserId = creator.Id,
+                    Type = channel.Type,
+                    Id = channel.Id,
+                    BanFromFutureChannels = true,
+                    Reason = "test ban 1",
+                });
+
+                await _userClient.BanAsync(new BanRequest
+                {
+                    TargetUserId = target2.Id,
+                    UserId = creator.Id,
+                    Type = channel.Type,
+                    Id = channel.Id,
+                    BanFromFutureChannels = true,
+                    Reason = "test ban 2",
+                });
+
+                // Query all future channel bans by creator
+                var resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
+                {
+                    UserId = creator.Id,
+                });
+
+                // Should have at least the 2 bans we just created
+                resp.Bans.Should().HaveCountGreaterOrEqualTo(2);
+
+                // Verify we can find our bans by checking the reasons we set
+                var reasons = resp.Bans.Select(b => b.Reason).ToList();
+                reasons.Should().Contain("test ban 1");
+                reasons.Should().Contain("test ban 2");
+
+                // Query with TargetUserId filter - should only return the specific target
+                resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
+                {
+                    UserId = creator.Id,
+                    TargetUserId = target1.Id,
+                });
+
+                resp.Bans.Should().HaveCount(1);
+                resp.Bans[0].Reason.Should().Be("test ban 1");
+
+                // Query for the other target
+                resp = await _userClient.QueryFutureChannelBansAsync(new QueryFutureChannelBansRequest
+                {
+                    UserId = creator.Id,
+                    TargetUserId = target2.Id,
+                });
+
+                resp.Bans.Should().HaveCount(1);
+                resp.Bans[0].Reason.Should().Be("test ban 2");
+            }
+            finally
+            {
+                // Cleanup - unban both users
+                await _userClient.UnbanAsync(new BanRequest
+                {
+                    TargetUserId = target1.Id,
+                    UserId = creator.Id,
+                });
+                await _userClient.UnbanAsync(new BanRequest
+                {
+                    TargetUserId = target2.Id,
+                    UserId = creator.Id,
+                });
+                await TryDeleteUsersAsync(creator.Id, target1.Id, target2.Id);
+            }
         }
     }
 }

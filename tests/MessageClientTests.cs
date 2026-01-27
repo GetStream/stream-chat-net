@@ -65,7 +65,7 @@ namespace StreamChatTests
         /// </summary>
         private async Task DisableUserMessageRemindersAsync()
         {
-                        var request = new PartialUpdateChannelRequest
+            var request = new PartialUpdateChannelRequest
             {
                 Set = new Dictionary<string, object>
                 {

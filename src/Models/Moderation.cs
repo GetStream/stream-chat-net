@@ -32,6 +32,9 @@ namespace StreamChat.Models
 
         /// <summary>Channel ID to ban user in</summary>
         public string Id { get; set; }
+
+        /// <summary>When true, the user will be automatically banned from all future channels created by the user who issued the ban</summary>
+        public bool? BanFromFutureChannels { get; set; }
     }
 
     public class ShadowBanRequest : BanRequest
@@ -51,6 +54,69 @@ namespace StreamChat.Models
         public DateTimeOffset? Expires { get; set; }
         public bool Shadow { get; set; }
         public User BannedBy { get; set; }
+    }
+
+    public class FutureChannelBan
+    {
+        /// <summary>Gets or sets the banned user (checks multiple possible API response fields).</summary>
+        [Newtonsoft.Json.JsonProperty("user")]
+        public User User
+        {
+            get => _user ?? Target;
+            set => _user = value;
+        }
+
+        private User _user;
+
+        /// <summary>Gets or sets the banned user (target of the ban).</summary>
+        [Newtonsoft.Json.JsonProperty("target")]
+        public User Target { get; set; }
+
+        /// <summary>Gets or sets the ID of the banned user.</summary>
+        [Newtonsoft.Json.JsonProperty("target_id")]
+        public string TargetId { get; set; }
+
+        /// <summary>Gets or sets the ID of the user who created the ban.</summary>
+        [Newtonsoft.Json.JsonProperty("created_by_id")]
+        public string CreatedById { get; set; }
+
+        /// <summary>Gets or sets the user who created the ban.</summary>
+        [Newtonsoft.Json.JsonProperty("created_by")]
+        public User CreatedBy { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("created_at")]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("expires")]
+        public DateTimeOffset? Expires { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("reason")]
+        public string Reason { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("shadow")]
+        public bool Shadow { get; set; }
+    }
+
+    public class QueryFutureChannelBansRequest : IQueryParameterConvertible
+    {
+        public string UserId { get; set; }
+        public string TargetUserId { get; set; }
+        public bool? ExcludeExpiredBans { get; set; }
+        public int? Limit { get; set; }
+        public int? Offset { get; set; }
+
+        public List<KeyValuePair<string, string>> ToQueryParameters()
+        {
+            return new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("payload", StreamJsonConverter.SerializeObject(this)),
+            };
+        }
+    }
+
+    public class QueryFutureChannelBansResponse : ApiResponse
+    {
+        public List<FutureChannelBan> Bans { get; set; }
     }
 
     public class QueryBannedUsersRequest : IQueryParameterConvertible
