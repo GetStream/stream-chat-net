@@ -51,6 +51,18 @@ namespace StreamChat.Clients
         Task<AsyncOperationResponse> DeleteChannelsAsync(IEnumerable<string> cids, bool hardDelete = false);
 
         /// <summary>
+        /// <para>Updates channels in batch based on the provided options.</para>
+        /// This is an asynchronous operation and the returned value is a task Id.
+        /// You can use <see cref="ITaskClient.GetTaskStatusAsync"/> to check the status of the task.
+        /// </summary>
+        Task<AsyncOperationResponse> UpdateChannelsBatchAsync(ChannelsBatchOptions options);
+
+        /// <summary>
+        /// Returns a <see cref="ChannelBatchUpdater"/> instance for convenient batch channel operations.
+        /// </summary>
+        ChannelBatchUpdater BatchUpdater();
+
+        /// <summary>
         /// Takes away moderators status from given user ids.
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/moderation/?language=csharp</remarks>
