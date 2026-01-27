@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.20.0](https://github.com/GetStream/stream-chat-net/compare/2.19.1...2.20.0) (2026-01-27)
+
+
+### Features
+
+* add channel batch updates support ([#192](https://github.com/GetStream/stream-chat-net/issues/192)) ([b6fe937](https://github.com/GetStream/stream-chat-net/commit/b6fe937afa3a7a294bad4dad1a654a070dc6083e))
+
 ### [2.19.1](https://github.com/GetStream/stream-chat-net/compare/2.18.0...2.19.1) (2025-11-12)
 
 
