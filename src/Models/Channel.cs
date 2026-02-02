@@ -99,9 +99,24 @@ namespace StreamChat.Models
         public ConfigOverridesRequest ConfigOverrides { get; set; }
     }
 
+    public class ParsedPredefinedFilterResponse
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("filter")]
+        public Dictionary<string, object> Filter { get; set; }
+
+        [JsonProperty("sort", NullValueHandling = NullValueHandling.Ignore)]
+        public List<SortParameter> Sort { get; set; }
+    }
+
     public class QueryChannelResponse : ApiResponse
     {
         public List<ChannelGetResponse> Channels { get; set; }
+
+        [JsonProperty("predefined_filter", NullValueHandling = NullValueHandling.Ignore)]
+        public ParsedPredefinedFilterResponse PredefinedFilter { get; set; }
     }
 
     public class QueryMembersResponse : ApiResponse
