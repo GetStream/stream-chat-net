@@ -83,7 +83,7 @@ namespace StreamChatTests
             var response = await _statsClient.QueryTeamUsageStatsAsync(new QueryTeamUsageStatsOptions
             {
                 StartDate = startDate.ToString("yyyy-MM-dd"),
-                EndDate = endDate.ToString("yyyy-MM-dd")
+                EndDate = endDate.ToString("yyyy-MM-dd"),
             });
 
             response.Teams.Should().NotBeNull();
