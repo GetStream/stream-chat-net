@@ -208,12 +208,6 @@ namespace StreamChat.Models
 
         [EnumMember(Value = "updateData")]
         UpdateData,
-
-        [EnumMember(Value = "addFilterTags")]
-        AddFilterTags,
-
-        [EnumMember(Value = "removeFilterTags")]
-        RemoveFilterTags,
     }
 
     public class ChannelBatchMemberRequest
@@ -256,9 +250,6 @@ namespace StreamChat.Models
 
         [JsonProperty("types")]
         public object Types { get; set; }
-
-        [JsonProperty("filter_tags")]
-        public object FilterTags { get; set; }
     }
 
     public class ChannelsBatchOptions
@@ -274,8 +265,5 @@ namespace StreamChat.Models
 
         [JsonProperty("data")]
         public ChannelDataUpdate Data { get; set; }
-
-        [JsonProperty("filter_tags_update")]
-        public IEnumerable<string> FilterTagsUpdate { get; set; }
     }
 }

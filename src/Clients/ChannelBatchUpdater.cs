@@ -171,32 +171,5 @@ namespace StreamChat.Clients
             return await _client.UpdateChannelsBatchAsync(options);
         }
 
-        /// <summary>
-        /// Adds filter tags to channels matching the filter.
-        /// </summary>
-        public async Task<AsyncOperationResponse> AddFilterTagsAsync(ChannelsBatchFilters filter, IEnumerable<string> tags)
-        {
-            var options = new ChannelsBatchOptions
-            {
-                Operation = ChannelBatchOperation.AddFilterTags,
-                Filter = filter,
-                FilterTagsUpdate = tags?.ToList(),
-            };
-            return await _client.UpdateChannelsBatchAsync(options);
-        }
-
-        /// <summary>
-        /// Removes filter tags from channels matching the filter.
-        /// </summary>
-        public async Task<AsyncOperationResponse> RemoveFilterTagsAsync(ChannelsBatchFilters filter, IEnumerable<string> tags)
-        {
-            var options = new ChannelsBatchOptions
-            {
-                Operation = ChannelBatchOperation.RemoveFilterTags,
-                Filter = filter,
-                FilterTagsUpdate = tags?.ToList(),
-            };
-            return await _client.UpdateChannelsBatchAsync(options);
-        }
     }
 }
