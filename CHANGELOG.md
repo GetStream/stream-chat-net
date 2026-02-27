@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.20.0](https://github.com/GetStream/stream-chat-net/compare/2.19.1...2.20.0) (2026-02-27)
+
+
+### Features
+
+* add channel batch updates support ([#192](https://github.com/GetStream/stream-chat-net/issues/192)) ([b6fe937](https://github.com/GetStream/stream-chat-net/commit/b6fe937afa3a7a294bad4dad1a654a070dc6083e))
+* add QueryTeamUsageStatsAsync API for multi-tenant metrics ([#198](https://github.com/GetStream/stream-chat-net/issues/198)) ([47006b9](https://github.com/GetStream/stream-chat-net/commit/47006b9bda72ff96fae01df2028e81a8574e7cfd))
+* remove filterTags from channel batch update API ([#200](https://github.com/GetStream/stream-chat-net/issues/200)) ([9a930e4](https://github.com/GetStream/stream-chat-net/commit/9a930e40115a571e0010804d70e6a2e07e73c43b))
+
 ## [2.20.0](https://github.com/GetStream/stream-chat-net/compare/2.19.1...2.20.0) (2026-02-16)
 
 
