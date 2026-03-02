@@ -29,7 +29,7 @@ internal class MemberMessageResponseTests : TestBase
                     Members = new[]
                     {
                         new ChannelMember { UserId = _user1.Id },
-                        new ChannelMember { UserId = _user2.Id, ChannelRole = "custom_role" },
+                        new ChannelMember { UserId = _user2.Id, ChannelRole = Role.ChannelModerator },
                     },
                     CreatedBy = new UserRequest { Id = _user1.Id },
                 },
@@ -54,7 +54,7 @@ internal class MemberMessageResponseTests : TestBase
 
         var user2MessageResp = await _messageClient.SendMessageAsync(_channel.Type, _channel.Id, _user2.Id, "Hello from user2");
         user2MessageResp.Message.Member.Should().NotBeNull();
-        user2MessageResp.Message.Member.ChannelRole.Should().Be("custom_role");
+        user2MessageResp.Message.Member.ChannelRole.Should().Be(Role.ChannelModerator);
 
         var channelState = await _channelClient.GetOrCreateAsync(_channel.Type, _channel.Id, new ChannelGetRequest { State = true, Watch = false });
 
@@ -64,6 +64,6 @@ internal class MemberMessageResponseTests : TestBase
 
         var fetchedUser2Msg = channelState.Messages.First(m => m.Id == user2MessageResp.Message.Id);
         fetchedUser2Msg.Member.Should().NotBeNull();
-        fetchedUser2Msg.Member.ChannelRole.Should().Be("custom_role");
+        fetchedUser2Msg.Member.ChannelRole.Should().Be(Role.ChannelModerator);
     }
 }
