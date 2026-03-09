@@ -99,9 +99,24 @@ namespace StreamChat.Models
         public ConfigOverridesRequest ConfigOverrides { get; set; }
     }
 
+    public class ParsedPredefinedFilterResponse
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("filter")]
+        public Dictionary<string, object> Filter { get; set; }
+
+        [JsonProperty("sort", NullValueHandling = NullValueHandling.Ignore)]
+        public List<SortParameter> Sort { get; set; }
+    }
+
     public class QueryChannelResponse : ApiResponse
     {
         public List<ChannelGetResponse> Channels { get; set; }
+
+        [JsonProperty("predefined_filter", NullValueHandling = NullValueHandling.Ignore)]
+        public ParsedPredefinedFilterResponse PredefinedFilter { get; set; }
     }
 
     public class QueryMembersResponse : ApiResponse
@@ -193,12 +208,6 @@ namespace StreamChat.Models
 
         [EnumMember(Value = "updateData")]
         UpdateData,
-
-        [EnumMember(Value = "addFilterTags")]
-        AddFilterTags,
-
-        [EnumMember(Value = "removeFilterTags")]
-        RemoveFilterTags,
     }
 
     public class ChannelBatchMemberRequest
@@ -241,9 +250,6 @@ namespace StreamChat.Models
 
         [JsonProperty("types")]
         public object Types { get; set; }
-
-        [JsonProperty("filter_tags")]
-        public object FilterTags { get; set; }
     }
 
     public class ChannelsBatchOptions
@@ -259,8 +265,5 @@ namespace StreamChat.Models
 
         [JsonProperty("data")]
         public ChannelDataUpdate Data { get; set; }
-
-        [JsonProperty("filter_tags_update")]
-        public IEnumerable<string> FilterTagsUpdate { get; set; }
     }
 }

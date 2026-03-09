@@ -101,5 +101,10 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/threads/?language=csharp#filtering-and-sorting-threads</remarks>
         IThreadClient GetThreadClient();
+
+        /// <summary>
+        /// Returns an <see cref="IStatsClient"/> instance. The returned client can be used as a singleton in your application.
+        /// </summary>
+        IStatsClient GetStatsClient();
     }
 }

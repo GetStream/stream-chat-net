@@ -25,6 +25,9 @@ namespace StreamChat.Models
     {
         None,
 
+        [EnumMember(Value = "queued")]
+        Queued,
+
         [EnumMember(Value = "uploaded")]
         Uploaded,
 
