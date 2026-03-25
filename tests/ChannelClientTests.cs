@@ -229,7 +229,7 @@ namespace StreamChatTests
             await _channelClient.AddMembersAsync(channel.Type, channel.Id, userIds);
 
             // Invite members
-            await _channelClient.InviteAsync(channel.Type, channel.Id, userIdsToInvite);
+            await _channelClient.InviteAsync(channel.Type, channel.Id, userIdsToInvite, cancellationToken: default);
 
             // Ban members
             foreach (var userToBanId in usersToBan)
@@ -407,6 +407,7 @@ namespace StreamChatTests
 
             var actualChannel = await _channelClient.UpdateAsync(_channel.Type, _channel.Id, expectedChannel);
 
+            actualChannel.Channel.GetKeys().Should().BeEquivalentTo(new[] { "plain", "complex" });
             actualChannel.Channel.GetData<string>("plain").Should()
                 .BeEquivalentTo(expectedChannel.Data.GetData<string>("plain"));
             actualChannel.Channel.GetData<string[]>("complex").Should()
@@ -423,6 +424,7 @@ namespace StreamChatTests
 
             var actualChannel = await _channelClient.PartialUpdateAsync(_channel.Type, _channel.Id, channelUpdates);
 
+            actualChannel.Channel.GetKeys().Should().BeEquivalentTo(new[] { "color", "age" });
             actualChannel.Channel.GetData<string>("color").Should().BeEquivalentTo((string)channelUpdates.Set["color"]);
             actualChannel.Channel.GetData<int>("age").Should().Be((int)channelUpdates.Set["age"]);
         }
@@ -557,7 +559,7 @@ namespace StreamChatTests
         public async Task TestGetExportChannelAsync()
         {
             var resp = await _channelClient.ExportChannelAsync(new ExportChannelItem
-                { Id = _channel.Id, Type = _channel.Type });
+            { Id = _channel.Id, Type = _channel.Type });
 
             await WaitForAsync(async () =>
             {
