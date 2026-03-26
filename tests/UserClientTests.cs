@@ -281,6 +281,32 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestBanUserWithDeleteReactionsAsync()
+        {
+            // Send a message as user1 first
+            var msgResp = await _messageClient.SendMessageAsync(
+                _channel.Type, _channel.Id, _user1.Id, "message for reaction");
+
+            // User2 reacts to the message
+            await _reactionClient.SendReactionAsync(msgResp.Message.Id, "like", _user2.Id);
+
+            // Ban user2 with delete_reactions enabled
+            await _userClient.BanAsync(new BanRequest
+            {
+                Type = _channel.Type,
+                Id = _channel.Id,
+                Reason = "reason",
+                TargetUserId = _user2.Id,
+                UserId = _user1.Id,
+                DeleteReactions = true,
+            });
+
+            // Verify the reaction was deleted
+            var reactions = await _reactionClient.GetReactionsAsync(msgResp.Message.Id);
+            reactions.Reactions.Should().BeEmpty();
+        }
+
+        [Test]
         public async Task TestUnbanUserAsync()
         {
             await _userClient.BanAsync(new BanRequest
