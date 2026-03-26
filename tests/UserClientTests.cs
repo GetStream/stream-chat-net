@@ -281,6 +281,22 @@ namespace StreamChatTests
         }
 
         [Test]
+        public async Task TestBanUserWithDeleteReactionsAsync()
+        {
+            // Reaction deletion happens asynchronously, so we only verify the API accepts the parameter
+            Func<Task> banCall = () => _userClient.BanAsync(new BanRequest
+            {
+                Type = _channel.Type,
+                Id = _channel.Id,
+                Reason = "reason",
+                TargetUserId = _user2.Id,
+                UserId = _user1.Id,
+                DeleteReactions = true,
+            });
+            await banCall.Should().NotThrowAsync();
+        }
+
+        [Test]
         public async Task TestUnbanUserAsync()
         {
             await _userClient.BanAsync(new BanRequest

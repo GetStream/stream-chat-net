@@ -35,6 +35,9 @@ namespace StreamChat.Models
 
         /// <summary>When true, the user will be automatically banned from all future channels created by the user who issued the ban</summary>
         public bool? BanFromFutureChannels { get; set; }
+
+        /// <summary>When true, all reactions by the banned user on other users' messages will be deleted</summary>
+        public bool? DeleteReactions { get; set; }
     }
 
     public class ShadowBanRequest : BanRequest
