@@ -264,7 +264,7 @@ namespace StreamChat.Clients
 
             if (filterConditions != null)
             {
-                data["filter_conditions"] = filterConditions;
+                data["filter"] = filterConditions;
             }
 
             if (sort != null)
