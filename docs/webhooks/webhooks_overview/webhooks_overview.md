@@ -96,6 +96,77 @@ All webhook requests contain these headers:
 | X-Api-Key         | Your application’s API key. Should be used to validate request signature                                             | a1b23cdefgh4                                                     |
 | X-Signature       | HMAC signature of the request body. See Signature section                                                            | ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb |
 
+## Compressed webhook bodies
+
+GZIP compression can be enabled for hooks payloads from the Dashboard. Enabling compression reduces the payload size significantly (often 70–90% smaller) reducing your bandwidth usage on Stream. The computation overhead introduced by the decompression step is usually negligible and offset by the much smaller payload.
+
+When payload compression is enabled, webhook HTTP requests will include the `Content-Encoding: gzip` header and the request body will be compressed with GZIP. Some HTTP servers and middleware (Rails, Django, Laravel, Spring Boot, ASP.NET) handle this transparently and strip the header before your handler runs — in that case the body you see is already raw JSON.
+
+Before enabling compression, make sure that:
+
+- Your backend integration is using a recent version of our official SDKs with compression support
+- If you don't use an official SDK, make sure that your code supports receiving compressed payloads
+- The payload signature check is done on the **uncompressed** payload
+
+The .NET SDK exposes two helpers on `IAppClient` for this. `VerifyAndDecodeWebhook` decompresses (when needed) and verifies the HMAC signature in one call, returning the uncompressed JSON bytes. `DecompressWebhookBody` is the same minus the signature check, when you want to verify the signature yourself. Both methods are no-ops when both `contentEncoding` and `payloadEncoding` are left `null`, so existing plain-HTTP handlers do not need to change.
+
+### ASP.NET Core handler
+
+```csharp
+[ApiController]
+[Route("webhooks/stream")]
+public class StreamWebhookController : ControllerBase
+{
+    private readonly IAppClient _appClient;
+
+    public StreamWebhookController(IAppClient appClient) => _appClient = appClient;
+
+    [HttpPost]
+    public async Task<IActionResult> ReceiveAsync()
+    {
+        // Read the raw bytes off the wire — do NOT bind to a model, you need the
+        // exact byte stream the server signed.
+        using var ms = new MemoryStream();
+        await HttpContext.Request.Body.CopyToAsync(ms);
+        var rawBody = ms.ToArray();
+
+        var signature = HttpContext.Request.Headers["X-Signature"].ToString();
+
+        // ASP.NET Core will normally strip Content-Encoding and decompress for
+        // you. If you have wired up automatic decompression, leave the second
+        // argument null. Otherwise pass the header through:
+        var contentEncoding = HttpContext.Request.Headers["Content-Encoding"].ToString();
+        if (string.IsNullOrEmpty(contentEncoding)) contentEncoding = null;
+
+        try
+        {
+            var json = _appClient.VerifyAndDecodeWebhook(rawBody, signature, contentEncoding);
+            // ...handle JSON...
+            return Ok();
+        }
+        catch (StreamWebhookSignatureException)
+        {
+            return Unauthorized();
+        }
+    }
+}
+```
+
+### SQS / SNS firehose
+
+When events are delivered through SQS or SNS the (possibly gzipped) payload is wrapped in base64 so it stays valid UTF-8 over the queue. Pass `payloadEncoding: "base64"` (and `contentEncoding: "gzip"` when compression is on) and the SDK will unwrap both layers in the right order before checking the signature.
+
+```csharp
+// Inside your SQS / SNS message handler:
+//   sqsBody     = the message body bytes (Encoding.UTF8.GetBytes(message.Body))
+//   xSignature  = the value of the "x-signature" message attribute
+var json = _appClient.VerifyAndDecodeWebhook(
+    sqsBody,
+    xSignature,
+    contentEncoding: "gzip",     // omit / pass null when compression is off
+    payloadEncoding: "base64");
+```
+
 ## Webhook types
 
 In addition to the above there are 3 special webhooks.

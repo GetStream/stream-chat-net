@@ -85,5 +85,11 @@ namespace StreamChat.Clients
                 return sig == xSignature;
             }
         }
+
+        public byte[] DecompressWebhookBody(byte[] body, string contentEncoding = null, string payloadEncoding = null)
+            => WebhookHelpers.DecompressWebhookBody(body, contentEncoding, payloadEncoding);
+
+        public byte[] VerifyAndDecodeWebhook(byte[] body, string signature, string contentEncoding = null, string payloadEncoding = null)
+            => WebhookHelpers.VerifyAndDecodeWebhook(_apiSecret, body, signature, contentEncoding, payloadEncoding);
     }
 }

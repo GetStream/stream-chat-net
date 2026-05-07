@@ -73,5 +73,75 @@ namespace StreamChat.Clients
         /// <param name="requestBody">The request body to validate.</param>
         /// <param name="xSignature">The signature provided in X-Signature header.</param>
         bool VerifyWebhook(string requestBody, string xSignature);
+
+        /// <summary>
+        /// Reverses the encoding wrappers Stream applies to outbound webhook /
+        /// SQS / SNS payloads, returning the raw JSON bytes the server signed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When <paramref name="payloadEncoding"/> is set the wrapper layer is
+        /// removed first (SQS / SNS firehose envelopes wrap the bytes in base64
+        /// so they remain valid UTF-8 over the queue). Then, when
+        /// <paramref name="contentEncoding"/> is set, the resulting bytes are
+        /// gzip-decompressed. Passing <c>null</c> (or the empty string) for
+        /// either parameter is a no-op so plain HTTP webhooks behave the same
+        /// as before.
+        /// </para>
+        /// <para>
+        /// The signature Stream emits is always computed over the innermost
+        /// (uncompressed, base64-decoded) JSON, so this is also the canonical
+        /// representation to feed into <see cref="VerifyWebhook(string, string)"/>.
+        /// </para>
+        /// </remarks>
+        /// <param name="body">Raw transport bytes (HTTP body, SQS <c>Body</c>, SNS <c>Message</c>).</param>
+        /// <param name="contentEncoding"><c>"gzip"</c> when compression is enabled, otherwise <c>null</c>.</param>
+        /// <param name="payloadEncoding"><c>"base64"</c> for SQS / SNS firehose, otherwise <c>null</c>.</param>
+        /// <exception cref="System.InvalidOperationException">
+        /// Thrown when <paramref name="contentEncoding"/> or <paramref name="payloadEncoding"/>
+        /// is set to a value the SDK does not support.
+        /// </exception>
+        /// <exception cref="StreamChat.Exceptions.StreamWebhookSignatureException">
+        /// Thrown when the body fails to decode (invalid base64, invalid gzip).
+        /// </exception>
+        byte[] DecompressWebhookBody(byte[] body, string contentEncoding = null, string payloadEncoding = null);
+
+        /// <summary>
+        /// Decompresses (when needed) and verifies the HMAC signature, returning
+        /// the uncompressed JSON bytes. The signature is always computed over
+        /// the innermost (uncompressed, base64-decoded) JSON, so the verification
+        /// rule is invariant across HTTP webhooks and SQS / SNS.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// For HTTP webhooks: pass the raw body and the <c>X-Signature</c>
+        /// header. If your app config has <c>webhook_compression_algorithm</c>
+        /// set to <c>"gzip"</c> the request will arrive with
+        /// <c>Content-Encoding: gzip</c> — pass that header value as
+        /// <paramref name="contentEncoding"/>. (Some HTTP servers and middleware
+        /// — Rails, Django, Laravel, Spring Boot, ASP.NET — strip
+        /// <c>Content-Encoding</c> and decompress for you, in which case the
+        /// body is already raw JSON and <paramref name="contentEncoding"/>
+        /// must be left <c>null</c>.)
+        /// </para>
+        /// <para>
+        /// For SQS / SNS firehose: pass the message body, the
+        /// <c>x-signature</c> message attribute, <c>"base64"</c> for
+        /// <paramref name="payloadEncoding"/>, and <c>"gzip"</c> for
+        /// <paramref name="contentEncoding"/> when compression is on.
+        /// </para>
+        /// </remarks>
+        /// <param name="body">Raw transport bytes (HTTP body, SQS <c>Body</c>, SNS <c>Message</c>).</param>
+        /// <param name="signature">Lowercase hex HMAC-SHA256 signature from <c>X-Signature</c> / <c>x-signature</c>.</param>
+        /// <param name="contentEncoding"><c>"gzip"</c> when compression is enabled, otherwise <c>null</c>.</param>
+        /// <param name="payloadEncoding"><c>"base64"</c> for SQS / SNS firehose, otherwise <c>null</c>.</param>
+        /// <exception cref="StreamChat.Exceptions.StreamWebhookSignatureException">
+        /// Thrown when the signature does not match, or when the body fails to decode.
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">
+        /// Thrown when <paramref name="contentEncoding"/> or <paramref name="payloadEncoding"/>
+        /// is set to a value the SDK does not support.
+        /// </exception>
+        byte[] VerifyAndDecodeWebhook(byte[] body, string signature, string contentEncoding = null, string payloadEncoding = null);
     }
 }
