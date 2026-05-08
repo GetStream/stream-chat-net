@@ -21,7 +21,7 @@ namespace StreamChat.Clients
     /// </remarks>
     public static class WebhookHelpers
     {
-        private static readonly byte[] GzipMagic = new byte[] { 0x1f, 0x8b, 0x08 };
+        private static readonly byte[] GzipMagic = new byte[] { 0x1f, 0x8b };
 
         public static byte[] UngzipPayload(byte[] body)
         {
@@ -30,7 +30,7 @@ namespace StreamChat.Clients
                 throw new ArgumentNullException(nameof(body));
             }
 
-            if (body.Length < 3 || body[0] != GzipMagic[0] || body[1] != GzipMagic[1] || body[2] != GzipMagic[2])
+            if (body.Length < 2 || body[0] != GzipMagic[0] || body[1] != GzipMagic[1])
             {
                 return body;
             }
