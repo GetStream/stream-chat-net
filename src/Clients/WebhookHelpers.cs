@@ -3,92 +3,81 @@ using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json;
 using StreamChat.Exceptions;
+using StreamChat.Models;
 
 namespace StreamChat.Clients
 {
     /// <summary>
-    /// Reverses the encoding wrappers Stream applies to outbound webhook /
-    /// SQS / SNS payloads and verifies the HMAC signature server-side
-    /// signs over the inner JSON.
+    /// Stateless helpers implementing the cross-SDK webhook contract documented at
+    /// https://getstream.io/chat/docs/node/webhooks_overview/.
     /// </summary>
     /// <remarks>
-    /// Decode order is fixed by the cross-SDK contract: payload encoding
-    /// (base64 wrapping) is unwrapped first because SQS / SNS firehose
-    /// envelopes wrap the (possibly already gzipped) bytes in base64 to
-    /// keep them transport-safe; only after that does <c>Content-Encoding</c>
-    /// (gzip) get reversed.
+    /// The composite functions (<see cref="VerifyAndParseWebhook"/>,
+    /// <see cref="VerifyAndParseSqs"/>, <see cref="VerifyAndParseSns"/>) are the
+    /// recommended entry points; the primitives they compose are exposed so callers
+    /// can build custom flows or run individual steps in isolation.
     /// </remarks>
-    internal static class WebhookHelpers
+    public static class WebhookHelpers
     {
-        public static byte[] DecompressWebhookBody(byte[] body, string contentEncoding, string payloadEncoding)
+        private static readonly byte[] GzipMagic = new byte[] { 0x1f, 0x8b, 0x08 };
+
+        public static byte[] UngzipPayload(byte[] body)
         {
             if (body == null)
             {
                 throw new ArgumentNullException(nameof(body));
             }
 
-            var working = body;
-
-            if (!string.IsNullOrWhiteSpace(payloadEncoding))
+            if (body.Length < 3 || body[0] != GzipMagic[0] || body[1] != GzipMagic[1] || body[2] != GzipMagic[2])
             {
-                var pe = payloadEncoding.Trim().ToLowerInvariant();
-                if (pe == "base64" || pe == "b64")
-                {
-                    try
-                    {
-                        var b64Text = Encoding.ASCII.GetString(working);
-                        working = Convert.FromBase64String(b64Text);
-                    }
-                    catch (FormatException ex)
-                    {
-                        throw new StreamWebhookSignatureException(
-                            $"failed to decode webhook payload_encoding=\"{payloadEncoding}\": invalid base64 input",
-                            ex);
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException(
-                        $"unsupported webhook payload_encoding: {payloadEncoding}. This SDK only supports base64.");
-                }
+                return body;
             }
 
-            if (!string.IsNullOrWhiteSpace(contentEncoding))
+            try
             {
-                var ce = contentEncoding.Trim().ToLowerInvariant();
-                if (ce == "gzip")
+                using (var input = new MemoryStream(body))
+                using (var gzip = new GZipStream(input, CompressionMode.Decompress))
+                using (var output = new MemoryStream())
                 {
-                    try
-                    {
-                        using (var input = new MemoryStream(working))
-                        using (var gzip = new GZipStream(input, CompressionMode.Decompress))
-                        using (var output = new MemoryStream())
-                        {
-                            gzip.CopyTo(output);
-                            working = output.ToArray();
-                        }
-                    }
-                    catch (InvalidDataException ex)
-                    {
-                        throw new StreamWebhookSignatureException("failed to decompress webhook body", ex);
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException(
-                        $"unsupported webhook Content-Encoding: {contentEncoding}. This SDK only supports gzip; set webhook_compression_algorithm to \"gzip\" on the app config.");
+                    gzip.CopyTo(output);
+                    return output.ToArray();
                 }
             }
-
-            return working;
+            catch (InvalidDataException ex)
+            {
+                throw new StreamWebhookSignatureException("failed to decompress gzip payload", ex);
+            }
         }
 
-        public static byte[] VerifyAndDecodeWebhook(string apiSecret, byte[] body, string signature, string contentEncoding, string payloadEncoding)
+        public static byte[] DecodeSqsPayload(string body)
         {
-            if (apiSecret == null)
+            if (body == null)
             {
-                throw new ArgumentNullException(nameof(apiSecret));
+                throw new ArgumentNullException(nameof(body));
+            }
+
+            byte[] decoded;
+            try
+            {
+                decoded = Convert.FromBase64String(body);
+            }
+            catch (FormatException ex)
+            {
+                throw new StreamWebhookSignatureException("failed to base64-decode payload", ex);
+            }
+
+            return UngzipPayload(decoded);
+        }
+
+        public static byte[] DecodeSnsPayload(string message) => DecodeSqsPayload(message);
+
+        public static bool VerifySignature(byte[] body, string signature, string secret)
+        {
+            if (body == null)
+            {
+                throw new ArgumentNullException(nameof(body));
             }
 
             if (signature == null)
@@ -96,20 +85,57 @@ namespace StreamChat.Clients
                 throw new ArgumentNullException(nameof(signature));
             }
 
-            var decoded = DecompressWebhookBody(body, contentEncoding, payloadEncoding);
-
-            byte[] computed;
-            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(apiSecret)))
+            if (secret == null)
             {
-                computed = hmac.ComputeHash(decoded);
+                throw new ArgumentNullException(nameof(secret));
             }
 
-            if (!TryHexToBytes(signature, out var provided) || provided.Length != computed.Length || !FixedTimeEquals(computed, provided))
+            byte[] computed;
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret)))
+            {
+                computed = hmac.ComputeHash(body);
+            }
+
+            return TryHexToBytes(signature, out var provided)
+                && provided.Length == computed.Length
+                && FixedTimeEquals(computed, provided);
+        }
+
+        public static EventResponse ParseEvent(byte[] payload)
+        {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
+            var json = Encoding.UTF8.GetString(payload);
+            try
+            {
+                return JsonConvert.DeserializeObject<EventResponse>(json);
+            }
+            catch (JsonException ex)
+            {
+                throw new StreamWebhookSignatureException($"failed to parse webhook event: {ex.Message}", ex);
+            }
+        }
+
+        public static EventResponse VerifyAndParseWebhook(byte[] body, string signature, string secret)
+            => VerifyAndParseInternal(UngzipPayload(body), signature, secret);
+
+        public static EventResponse VerifyAndParseSqs(string messageBody, string signature, string secret)
+            => VerifyAndParseInternal(DecodeSqsPayload(messageBody), signature, secret);
+
+        public static EventResponse VerifyAndParseSns(string message, string signature, string secret)
+            => VerifyAndParseInternal(DecodeSnsPayload(message), signature, secret);
+
+        private static EventResponse VerifyAndParseInternal(byte[] payload, string signature, string secret)
+        {
+            if (!VerifySignature(payload, signature, secret))
             {
                 throw new StreamWebhookSignatureException("invalid webhook signature");
             }
 
-            return decoded;
+            return ParseEvent(payload);
         }
 
         private static bool TryHexToBytes(string hex, out byte[] result)

@@ -13,14 +13,14 @@ using StreamChat.Exceptions;
 namespace StreamChatTests
 {
     /// <summary>
-    /// Unit tests for the webhook decode + signature-verification helpers
-    /// added in <see cref="StreamChat.Clients.IAppClient"/>.
+    /// Unit tests for the webhook verification + parsing helpers added in
+    /// <see cref="StreamChat.Clients.IAppClient"/>.
     /// </summary>
     /// <remarks>
-    /// These tests do not extend <see cref="TestBase"/> on purpose — they
-    /// must run fully offline because they cover SDK-only behavior that does
-    /// not touch the Stream API. Tests follow the arrange-act-assert pattern
-    /// divided by empty lines.
+    /// These tests do not extend <see cref="TestBase"/> on purpose - they
+    /// must run fully offline because they cover SDK-only behaviour that
+    /// does not touch the Stream API. Tests follow the arrange-act-assert
+    /// pattern divided by empty lines.
     /// </remarks>
     [TestFixture]
     public class WebhookCompressionTests
@@ -45,8 +45,7 @@ namespace StreamChatTests
             }
         }
 
-        private static byte[] Base64Wrap(byte[] input)
-            => Encoding.ASCII.GetBytes(Convert.ToBase64String(input));
+        private static string Base64Wrap(byte[] input) => Convert.ToBase64String(input);
 
         private static string HmacHex(string secret, byte[] data)
         {
@@ -58,7 +57,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public void VerifyWebhook_ExistingMethod_StillWorks()
+        public void VerifyWebhook_BackwardCompatibility_StillWorks()
         {
             var appClient = BuildAppClient();
             var signature = HmacHex(API_SECRET, Encoding.UTF8.GetBytes(JSON_BODY));
@@ -70,204 +69,258 @@ namespace StreamChatTests
             bad.Should().BeFalse();
         }
 
-        [TestCase(null, null)]
-        [TestCase("", "")]
-        [TestCase("   ", "   ")]
-        [TestCase(null, "")]
-        [TestCase("", null)]
-        public void DecompressWebhookBody_PassthroughWhenNoEncoding(string contentEncoding, string payloadEncoding)
-        {
-            var appClient = BuildAppClient();
-            var body = Encoding.UTF8.GetBytes(JSON_BODY);
-
-            var decoded = appClient.DecompressWebhookBody(body, contentEncoding, payloadEncoding);
-
-            decoded.Should().Equal(body);
-        }
-
         [Test]
-        public void DecompressWebhookBody_GzipRoundTrip()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var gzipped = Gzip(raw);
-
-            var decoded = appClient.DecompressWebhookBody(gzipped, contentEncoding: "gzip");
-
-            decoded.Should().Equal(raw);
-            Encoding.UTF8.GetString(decoded).Should().Be(JSON_BODY);
-        }
-
-        [Test]
-        public void DecompressWebhookBody_Base64RoundTrip()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(raw);
-
-            var decoded = appClient.DecompressWebhookBody(wrapped, payloadEncoding: "base64");
-
-            decoded.Should().Equal(raw);
-        }
-
-        [Test]
-        public void DecompressWebhookBody_Base64GzipRoundTrip_SqsSnsShape()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-
-            var decoded = appClient.DecompressWebhookBody(wrapped, contentEncoding: "gzip", payloadEncoding: "base64");
-
-            decoded.Should().Equal(raw);
-        }
-
-        [TestCase("GZIP", "BASE64")]
-        [TestCase("GzIp", "Base64")]
-        [TestCase(" gzip ", " b64 ")]
-        public void DecompressWebhookBody_CaseInsensitive(string contentEncoding, string payloadEncoding)
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-
-            var decoded = appClient.DecompressWebhookBody(wrapped, contentEncoding, payloadEncoding);
-
-            decoded.Should().Equal(raw);
-        }
-
-        [TestCase("br")]
-        [TestCase("brotli")]
-        [TestCase("zstd")]
-        [TestCase("deflate")]
-        [TestCase("compress")]
-        [TestCase("lz4")]
-        public void DecompressWebhookBody_RejectsUnsupportedContentEncoding(string contentEncoding)
-        {
-            var appClient = BuildAppClient();
-            var body = Encoding.UTF8.GetBytes(JSON_BODY);
-
-            Action call = () => appClient.DecompressWebhookBody(body, contentEncoding);
-
-            call.Should().Throw<InvalidOperationException>()
-                .WithMessage("*unsupported webhook Content-Encoding*gzip*");
-        }
-
-        [TestCase("hex")]
-        [TestCase("url")]
-        [TestCase("binary")]
-        public void DecompressWebhookBody_RejectsUnsupportedPayloadEncoding(string payloadEncoding)
-        {
-            var appClient = BuildAppClient();
-            var body = Encoding.UTF8.GetBytes(JSON_BODY);
-
-            Action call = () => appClient.DecompressWebhookBody(body, payloadEncoding: payloadEncoding);
-
-            call.Should().Throw<InvalidOperationException>()
-                .WithMessage("*unsupported webhook payload_encoding*base64*");
-        }
-
-        [Test]
-        public void DecompressWebhookBody_ThrowsOnInvalidGzipBytes()
-        {
-            var appClient = BuildAppClient();
-            var notGzip = Encoding.UTF8.GetBytes(JSON_BODY);
-
-            Action call = () => appClient.DecompressWebhookBody(notGzip, contentEncoding: "gzip");
-
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("*failed to decompress webhook body*");
-        }
-
-        [Test]
-        public void DecompressWebhookBody_ThrowsOnInvalidBase64Input()
-        {
-            var appClient = BuildAppClient();
-            var notBase64 = Encoding.UTF8.GetBytes("@@@-not-base64-@@@");
-
-            Action call = () => appClient.DecompressWebhookBody(notBase64, payloadEncoding: "base64");
-
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("*payload_encoding*");
-        }
-
-        [Test]
-        public void VerifyAndDecodeWebhook_HappyPathPlain()
+        public void VerifyAndParseWebhook_PlainBody()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var signature = HmacHex(API_SECRET, raw);
 
-            var decoded = appClient.VerifyAndDecodeWebhook(raw, signature);
+            var ev = appClient.VerifyAndParseWebhook(raw, signature);
 
-            Encoding.UTF8.GetString(decoded).Should().Be(JSON_BODY);
+            ev.Type.Should().Be("message.new");
+            ev.Message.Should().NotBeNull();
+            ev.Message.Text.Should().Be("the quick brown fox");
         }
 
         [Test]
-        public void VerifyAndDecodeWebhook_HappyPathGzip()
+        public void VerifyAndParseWebhook_GzipBody()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var signature = HmacHex(API_SECRET, raw);
             var gzipped = Gzip(raw);
 
-            var decoded = appClient.VerifyAndDecodeWebhook(gzipped, signature, contentEncoding: "gzip");
+            var ev = appClient.VerifyAndParseWebhook(gzipped, signature);
 
-            Encoding.UTF8.GetString(decoded).Should().Be(JSON_BODY);
+            ev.Type.Should().Be("message.new");
         }
 
         [Test]
-        public void VerifyAndDecodeWebhook_HappyPathBase64Gzip()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var signature = HmacHex(API_SECRET, raw);
-            var wrapped = Base64Wrap(Gzip(raw));
-
-            var decoded = appClient.VerifyAndDecodeWebhook(wrapped, signature, contentEncoding: "gzip", payloadEncoding: "base64");
-
-            Encoding.UTF8.GetString(decoded).Should().Be(JSON_BODY);
-        }
-
-        [Test]
-        public void VerifyAndDecodeWebhook_ThrowsOnSignatureMismatch()
+        public void VerifyAndParseWebhook_ThrowsOnSignatureMismatch()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var bogus = HmacHex("a-different-secret", raw);
 
-            Action call = () => appClient.VerifyAndDecodeWebhook(raw, bogus);
+            Action call = () => appClient.VerifyAndParseWebhook(raw, bogus);
 
             call.Should().Throw<StreamWebhookSignatureException>()
                 .WithMessage("invalid webhook signature");
         }
 
         [Test]
-        public void VerifyAndDecodeWebhook_RejectsGzipWhenSignatureIsOverCompressedBytes()
+        public void VerifyAndParseWebhook_RejectsSignatureOverCompressedBytes()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var gzipped = Gzip(raw);
-            var signatureOverCompressed = HmacHex(API_SECRET, gzipped);
+            var sigOverCompressed = HmacHex(API_SECRET, gzipped);
 
-            Action call = () => appClient.VerifyAndDecodeWebhook(gzipped, signatureOverCompressed, contentEncoding: "gzip");
+            Action call = () => appClient.VerifyAndParseWebhook(gzipped, sigOverCompressed);
 
             call.Should().Throw<StreamWebhookSignatureException>()
                 .WithMessage("invalid webhook signature");
         }
 
         [Test]
-        public void VerifyAndDecodeWebhook_RejectsBase64GzipWhenSignatureIsOverWrappedBytes()
+        public void VerifyAndParseSqs_Base64Only()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var signature = HmacHex(API_SECRET, raw);
+            var wrapped = Base64Wrap(raw);
+
+            var ev = appClient.VerifyAndParseSqs(wrapped, signature);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_Base64PlusGzip()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var signature = HmacHex(API_SECRET, raw);
+            var wrapped = Base64Wrap(Gzip(raw));
+
+            var ev = appClient.VerifyAndParseSqs(wrapped, signature);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_RejectsSignatureOverWrappedBytes()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var wrapped = Base64Wrap(Gzip(raw));
-            var signatureOverWrapped = HmacHex(API_SECRET, wrapped);
+            var sigOverWrapped = HmacHex(API_SECRET, Encoding.ASCII.GetBytes(wrapped));
 
-            Action call = () => appClient.VerifyAndDecodeWebhook(wrapped, signatureOverWrapped, contentEncoding: "gzip", payloadEncoding: "base64");
+            Action call = () => appClient.VerifyAndParseSqs(wrapped, sigOverWrapped);
 
             call.Should().Throw<StreamWebhookSignatureException>()
                 .WithMessage("invalid webhook signature");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_ThrowsOnInvalidBase64()
+        {
+            var appClient = BuildAppClient();
+
+            Action call = () => appClient.VerifyAndParseSqs("@@@-not-base64-@@@", "ignored");
+
+            call.Should().Throw<StreamWebhookSignatureException>()
+                .WithMessage("*base64-decode*");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_Base64PlusGzip()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var signature = HmacHex(API_SECRET, raw);
+            var wrapped = Base64Wrap(Gzip(raw));
+
+            var ev = appClient.VerifyAndParseSns(wrapped, signature);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_MatchesSqs()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var signature = HmacHex(API_SECRET, raw);
+            var wrapped = Base64Wrap(Gzip(raw));
+
+            var sns = appClient.VerifyAndParseSns(wrapped, signature);
+            var sqs = appClient.VerifyAndParseSqs(wrapped, signature);
+
+            sns.Type.Should().Be(sqs.Type);
+            sns.Message.Text.Should().Be(sqs.Message.Text);
+        }
+
+        [Test]
+        public void UngzipPayload_PassthroughPlainBytes()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+
+            var output = WebhookHelpers.UngzipPayload(raw);
+
+            output.Should().Equal(raw);
+        }
+
+        [Test]
+        public void UngzipPayload_InflatesGzipBytes()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var gzipped = Gzip(raw);
+
+            var output = WebhookHelpers.UngzipPayload(gzipped);
+
+            output.Should().Equal(raw);
+        }
+
+        [Test]
+        public void UngzipPayload_ThrowsOnInvalidGzipBody()
+        {
+            // Valid gzip header + deflate flags + bogus payload, so the magic
+            // check passes but inflation fails with InvalidDataException.
+            var bad = new byte[]
+            {
+                0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            };
+
+            Action call = () => WebhookHelpers.UngzipPayload(bad);
+
+            call.Should().Throw<StreamWebhookSignatureException>()
+                .WithMessage("*decompress gzip*");
+        }
+
+        [Test]
+        public void DecodeSqsPayload_Base64Only()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Convert.ToBase64String(raw);
+
+            var output = WebhookHelpers.DecodeSqsPayload(wrapped);
+
+            output.Should().Equal(raw);
+        }
+
+        [Test]
+        public void DecodeSqsPayload_Base64PlusGzip()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Convert.ToBase64String(Gzip(raw));
+
+            var output = WebhookHelpers.DecodeSqsPayload(wrapped);
+
+            output.Should().Equal(raw);
+        }
+
+        [Test]
+        public void DecodeSnsPayload_AliasesDecodeSqsPayload()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Convert.ToBase64String(Gzip(raw));
+
+            var sns = WebhookHelpers.DecodeSnsPayload(wrapped);
+            var sqs = WebhookHelpers.DecodeSqsPayload(wrapped);
+
+            sns.Should().Equal(sqs);
+        }
+
+        [Test]
+        public void VerifySignature_Matching()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var sig = HmacHex(API_SECRET, raw);
+
+            WebhookHelpers.VerifySignature(raw, sig, API_SECRET).Should().BeTrue();
+        }
+
+        [Test]
+        public void VerifySignature_Mismatched()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+
+            WebhookHelpers.VerifySignature(raw, new string('0', 64), API_SECRET).Should().BeFalse();
+        }
+
+        [Test]
+        public void ParseEvent_KnownType()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+
+            var ev = WebhookHelpers.ParseEvent(raw);
+
+            ev.Type.Should().Be("message.new");
+            ev.Message.Text.Should().Be("the quick brown fox");
+        }
+
+        [Test]
+        public void ParseEvent_UnknownTypeStillParses()
+        {
+            var raw = Encoding.UTF8.GetBytes("{\"type\":\"a.future.event\"}");
+
+            var ev = WebhookHelpers.ParseEvent(raw);
+
+            ev.Type.Should().Be("a.future.event");
+        }
+
+        [Test]
+        public void ParseEvent_ThrowsOnMalformedJson()
+        {
+            var raw = Encoding.UTF8.GetBytes("not json");
+
+            Action call = () => WebhookHelpers.ParseEvent(raw);
+
+            call.Should().Throw<StreamWebhookSignatureException>()
+                .WithMessage("*parse webhook event*");
         }
     }
 }

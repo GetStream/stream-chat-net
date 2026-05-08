@@ -86,10 +86,13 @@ namespace StreamChat.Clients
             }
         }
 
-        public byte[] DecompressWebhookBody(byte[] body, string contentEncoding = null, string payloadEncoding = null)
-            => WebhookHelpers.DecompressWebhookBody(body, contentEncoding, payloadEncoding);
+        public EventResponse VerifyAndParseWebhook(byte[] body, string signature)
+            => WebhookHelpers.VerifyAndParseWebhook(body, signature, _apiSecret);
 
-        public byte[] VerifyAndDecodeWebhook(byte[] body, string signature, string contentEncoding = null, string payloadEncoding = null)
-            => WebhookHelpers.VerifyAndDecodeWebhook(_apiSecret, body, signature, contentEncoding, payloadEncoding);
+        public EventResponse VerifyAndParseSqs(string messageBody, string signature)
+            => WebhookHelpers.VerifyAndParseSqs(messageBody, signature, _apiSecret);
+
+        public EventResponse VerifyAndParseSns(string message, string signature)
+            => WebhookHelpers.VerifyAndParseSns(message, signature, _apiSecret);
     }
 }
