@@ -93,10 +93,54 @@ namespace StreamChat.Clients
         }
 
         /// <summary>
-        /// Alias for <see cref="DecodeSqsPayload"/> kept distinct so SNS-specific
-        /// call sites read naturally; the wire format is identical to SQS.
+        /// Reverses an SNS HTTP notification envelope. When
+        /// <paramref name="notificationBody"/> is a JSON envelope
+        /// (<c>{"Type":"Notification","Message":"..."}</c>), the inner
+        /// <c>Message</c> field is extracted and run through the SQS pipeline
+        /// (base64-decode, then gzip-if-magic). When the input is not a JSON
+        /// envelope it is treated as the already-extracted <c>Message</c>
+        /// string, so call sites that pre-unwrap continue to work.
         /// </summary>
-        public static byte[] DecodeSnsPayload(string message) => DecodeSqsPayload(message);
+        /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted Message string.</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="notificationBody"/> is <c>null</c>.</exception>
+        /// <exception cref="StreamWebhookSignatureException">
+        /// When the extracted Message is not valid base64 or the inner payload is malformed gzip.
+        /// </exception>
+        public static byte[] DecodeSnsPayload(string notificationBody)
+        {
+            if (notificationBody == null)
+            {
+                throw new ArgumentNullException(nameof(notificationBody));
+            }
+
+            var inner = ExtractSnsMessage(notificationBody);
+            return DecodeSqsPayload(inner ?? notificationBody);
+        }
+
+        private static string ExtractSnsMessage(string notificationBody)
+        {
+            var trimmed = notificationBody.TrimStart();
+            if (trimmed.Length == 0 || trimmed[0] != '{')
+            {
+                return null;
+            }
+
+            try
+            {
+                var envelope = JsonConvert.DeserializeObject<SnsEnvelope>(trimmed);
+                return envelope?.Message;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
+        }
+
+        private sealed class SnsEnvelope
+        {
+            [JsonProperty("Message")]
+            public string Message { get; set; }
+        }
 
         /// <summary>
         /// Returns <c>true</c> when the hex-encoded HMAC-SHA256 of <paramref name="body"/>

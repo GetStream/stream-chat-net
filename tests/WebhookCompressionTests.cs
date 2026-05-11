@@ -175,7 +175,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public void VerifyAndParseSns_Base64PlusGzip()
+        public void VerifyAndParseSns_PreExtractedMessage_Base64PlusGzip()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
@@ -188,7 +188,7 @@ namespace StreamChatTests
         }
 
         [Test]
-        public void VerifyAndParseSns_MatchesSqs()
+        public void VerifyAndParseSns_PreExtractedMessage_MatchesSqs()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
@@ -201,6 +201,70 @@ namespace StreamChatTests
             sns.Type.Should().Be(sqs.Type);
             sns.Message.Text.Should().Be(sqs.Message.Text);
         }
+
+        [Test]
+        public void VerifyAndParseSns_FullEnvelope()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var signature = HmacHex(API_SECRET, raw);
+            var wrapped = Base64Wrap(Gzip(raw));
+            var envelope = SnsEnvelope(wrapped);
+
+            var ev = appClient.VerifyAndParseSns(envelope, signature);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_RejectsSignatureOverEnvelope()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+            var envelope = SnsEnvelope(wrapped);
+            var sigOverEnvelope = HmacHex(API_SECRET, Encoding.UTF8.GetBytes(envelope));
+
+            Action call = () => appClient.VerifyAndParseSns(envelope, sigOverEnvelope);
+
+            call.Should().Throw<StreamWebhookSignatureException>()
+                .WithMessage("invalid webhook signature");
+        }
+
+        [Test]
+        public void DecodeSnsPayload_UnwrapsFullEnvelope()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+            var envelope = SnsEnvelope(wrapped);
+
+            var output = WebhookHelpers.DecodeSnsPayload(envelope);
+
+            output.Should().Equal(raw);
+        }
+
+        [Test]
+        public void DecodeSnsPayload_EnvelopeWithLeadingWhitespace()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+            var envelope = "\n  " + SnsEnvelope(wrapped);
+
+            var output = WebhookHelpers.DecodeSnsPayload(envelope);
+
+            output.Should().Equal(raw);
+        }
+
+        private static string SnsEnvelope(string innerMessage)
+            => "{"
+                + "\"Type\":\"Notification\","
+                + "\"MessageId\":\"22b80b92-fdea-4c2c-8f9d-bdfb0c7bf324\","
+                + "\"TopicArn\":\"arn:aws:sns:us-east-1:123456789012:stream-webhooks\","
+                + "\"Message\":\"" + innerMessage + "\","
+                + "\"Timestamp\":\"2026-05-11T10:00:00.000Z\","
+                + "\"SignatureVersion\":\"1\","
+                + "\"MessageAttributes\":{\"X-Signature\":{\"Type\":\"String\",\"Value\":\"placeholder\"}}"
+                + "}";
 
         [Test]
         public void UngzipPayload_PassthroughPlainBytes()
