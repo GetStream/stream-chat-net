@@ -108,7 +108,15 @@ Before enabling compression, make sure that:
 - If you don't use an official SDK, make sure that your code supports receiving compressed payloads
 - The payload signature check is done on the **uncompressed** payload
 
-The .NET SDK exposes two helpers on `IAppClient` for this. `VerifyAndDecodeWebhook` decompresses (when needed) and verifies the HMAC signature in one call, returning the uncompressed JSON bytes. `DecompressWebhookBody` is the same minus the signature check, when you want to verify the signature yourself. Both methods are no-ops when both `contentEncoding` and `payloadEncoding` are left `null`, so existing plain-HTTP handlers do not need to change.
+The .NET SDK exposes three composite helpers — `VerifyAndParseWebhook`, `VerifyAndParseSqs`, `VerifyAndParseSns` — for the HTTP, SQS, and SNS delivery channels. Each one inflates the payload when it is gzipped (detected from the body bytes per RFC 1952, independent of `Content-Encoding`), verifies the `X-Signature` HMAC against the **uncompressed** JSON using a constant-time comparison, and returns the parsed `EventResponse`. They throw `StreamWebhookSignatureException` if the signature does not match or the envelope is malformed.
+
+The same call works whether or not Stream is currently compressing payloads for your app, so handlers do not need to change when you flip the dashboard toggle.
+
+You can reach the helpers in three ways:
+
+- `IStreamClientFactory.VerifyAndParseWebhook(byte[], string)` (and the `Sqs`/`Sns` variants) — convenience wrappers on the top-level factory, useful when you only need webhook verification.
+- `IAppClient.VerifyAndParseWebhook(byte[], string)` (and the `Sqs`/`Sns` variants) — the same surface scoped to the app client.
+- `StreamChat.Clients.WebhookHelpers.VerifyAndParseWebhook(byte[], string, string)` — a stateless static for cases where the API secret is not stored on the factory (for example, multi-tenant servers that pick the secret per request).
 
 ### ASP.NET Core handler
 
@@ -117,9 +125,9 @@ The .NET SDK exposes two helpers on `IAppClient` for this. `VerifyAndDecodeWebho
 [Route("webhooks/stream")]
 public class StreamWebhookController : ControllerBase
 {
-    private readonly IAppClient _appClient;
+    private readonly IStreamClientFactory _stream;
 
-    public StreamWebhookController(IAppClient appClient) => _appClient = appClient;
+    public StreamWebhookController(IStreamClientFactory stream) => _stream = stream;
 
     [HttpPost]
     public async Task<IActionResult> ReceiveAsync()
@@ -132,16 +140,10 @@ public class StreamWebhookController : ControllerBase
 
         var signature = HttpContext.Request.Headers["X-Signature"].ToString();
 
-        // ASP.NET Core will normally strip Content-Encoding and decompress for
-        // you. If you have wired up automatic decompression, leave the second
-        // argument null. Otherwise pass the header through:
-        var contentEncoding = HttpContext.Request.Headers["Content-Encoding"].ToString();
-        if (string.IsNullOrEmpty(contentEncoding)) contentEncoding = null;
-
         try
         {
-            var json = _appClient.VerifyAndDecodeWebhook(rawBody, signature, contentEncoding);
-            // ...handle JSON...
+            EventResponse ev = _stream.VerifyAndParseWebhook(rawBody, signature);
+            // ...handle ev.Type, ev.Message, etc...
             return Ok();
         }
         catch (StreamWebhookSignatureException)
@@ -154,17 +156,16 @@ public class StreamWebhookController : ControllerBase
 
 ### SQS / SNS firehose
 
-When events are delivered through SQS or SNS the (possibly gzipped) payload is wrapped in base64 so it stays valid UTF-8 over the queue. Pass `payloadEncoding: "base64"` (and `contentEncoding: "gzip"` when compression is on) and the SDK will unwrap both layers in the right order before checking the signature.
+When events are delivered through SQS or SNS the (possibly gzipped) payload is wrapped in base64 so it stays valid UTF-8 over the queue. Pass the raw message string and the `X-Signature` attribute; the SDK reverses the base64 + optional gzip wrapping in the correct order before checking the signature.
 
 ```csharp
 // Inside your SQS / SNS message handler:
-//   sqsBody     = the message body bytes (Encoding.UTF8.GetBytes(message.Body))
-//   xSignature  = the value of the "x-signature" message attribute
-var json = _appClient.VerifyAndDecodeWebhook(
-    sqsBody,
-    xSignature,
-    contentEncoding: "gzip",     // omit / pass null when compression is off
-    payloadEncoding: "base64");
+//   messageBody = the message body string (message.Body for SQS, the inner
+//                 Message field for SNS notifications)
+//   xSignature  = the value of the "X-Signature" message attribute
+EventResponse ev = _stream.VerifyAndParseSqs(messageBody, xSignature);
+// For SNS firehose, use VerifyAndParseSns with the SNS Message field instead:
+// EventResponse ev = _stream.VerifyAndParseSns(snsMessage, xSignature);
 ```
 
 ## Webhook types
