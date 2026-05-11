@@ -34,7 +34,7 @@ namespace StreamChat.Clients
         /// <exception cref="StreamWebhookSignatureException">
         /// When the body starts with the gzip magic but cannot be inflated.
         /// </exception>
-        public static byte[] UngzipPayload(byte[] body)
+        public static byte[] GunzipPayload(byte[] body)
         {
             if (body == null)
             {
@@ -89,7 +89,7 @@ namespace StreamChat.Clients
                 throw new StreamWebhookSignatureException("failed to base64-decode payload", ex);
             }
 
-            return UngzipPayload(decoded);
+            return GunzipPayload(decoded);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace StreamChat.Clients
         /// When the signature does not match or the gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse VerifyAndParseWebhook(byte[] body, string signature, string secret)
-            => VerifyAndParseInternal(UngzipPayload(body), signature, secret);
+            => VerifyAndParseInternal(GunzipPayload(body), signature, secret);
 
         /// <summary>
         /// Reverses the SQS firehose envelope (base64, then optional gzip),

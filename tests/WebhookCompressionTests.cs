@@ -267,28 +267,28 @@ namespace StreamChatTests
                 + "}";
 
         [Test]
-        public void UngzipPayload_PassthroughPlainBytes()
+        public void GunzipPayload_PassthroughPlainBytes()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
 
-            var output = WebhookHelpers.UngzipPayload(raw);
+            var output = WebhookHelpers.GunzipPayload(raw);
 
             output.Should().Equal(raw);
         }
 
         [Test]
-        public void UngzipPayload_InflatesGzipBytes()
+        public void GunzipPayload_InflatesGzipBytes()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var gzipped = Gzip(raw);
 
-            var output = WebhookHelpers.UngzipPayload(gzipped);
+            var output = WebhookHelpers.GunzipPayload(gzipped);
 
             output.Should().Equal(raw);
         }
 
         [Test]
-        public void UngzipPayload_ThrowsOnInvalidGzipBody()
+        public void GunzipPayload_ThrowsOnInvalidGzipBody()
         {
             // Valid gzip header + deflate flags + bogus payload, so the magic
             // check passes but inflation fails with InvalidDataException.
@@ -298,10 +298,20 @@ namespace StreamChatTests
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
             };
 
-            Action call = () => WebhookHelpers.UngzipPayload(bad);
+            Action call = () => WebhookHelpers.GunzipPayload(bad);
 
             call.Should().Throw<StreamWebhookSignatureException>()
                 .WithMessage("*decompress gzip*");
+        }
+
+        [Test]
+        public void GunzipPayload_HelloWorldFixture()
+        {
+            var gzipped = Convert.FromBase64String("H4sIAGrYAWoAA8tIzcnJL88vykkBAK0g6/kKAAAA");
+
+            var output = WebhookHelpers.GunzipPayload(gzipped);
+
+            output.Should().Equal(Encoding.UTF8.GetBytes("helloworld"));
         }
 
         [Test]
@@ -324,6 +334,22 @@ namespace StreamChatTests
             var output = WebhookHelpers.DecodeSqsPayload(wrapped);
 
             output.Should().Equal(raw);
+        }
+
+        [Test]
+        public void DecodeSqsPayload_HelloWorldBase64Fixture()
+        {
+            var output = WebhookHelpers.DecodeSqsPayload("aGVsbG93b3JsZA==");
+
+            output.Should().Equal(Encoding.UTF8.GetBytes("helloworld"));
+        }
+
+        [Test]
+        public void DecodeSqsPayload_HelloWorldBase64GzipFixture()
+        {
+            var output = WebhookHelpers.DecodeSqsPayload("H4sIAGrYAWoAA8tIzcnJL88vykkBAK0g6/kKAAAA");
+
+            output.Should().Equal(Encoding.UTF8.GetBytes("helloworld"));
         }
 
         [Test]
