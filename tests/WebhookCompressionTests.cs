@@ -322,5 +322,56 @@ namespace StreamChatTests
             call.Should().Throw<StreamWebhookSignatureException>()
                 .WithMessage("*parse webhook event*");
         }
+
+        [Test]
+        public void Factory_VerifyAndParseWebhook_DelegatesToAppClient()
+        {
+            var factory = new StreamClientFactory(API_KEY, API_SECRET);
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var signature = HmacHex(API_SECRET, raw);
+
+            var viaFactory = factory.VerifyAndParseWebhook(Gzip(raw), signature);
+            var viaAppClient = factory.GetAppClient().VerifyAndParseWebhook(Gzip(raw), signature);
+
+            viaFactory.Type.Should().Be(viaAppClient.Type);
+            viaFactory.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void Factory_VerifyAndParseSqs_DelegatesToAppClient()
+        {
+            var factory = new StreamClientFactory(API_KEY, API_SECRET);
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+            var signature = HmacHex(API_SECRET, raw);
+
+            var ev = factory.VerifyAndParseSqs(wrapped, signature);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void Factory_VerifyAndParseSns_DelegatesToAppClient()
+        {
+            var factory = new StreamClientFactory(API_KEY, API_SECRET);
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+            var signature = HmacHex(API_SECRET, raw);
+
+            var ev = factory.VerifyAndParseSns(wrapped, signature);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void Factory_VerifyAndParseWebhook_RejectsMismatchedSignature()
+        {
+            var factory = new StreamClientFactory(API_KEY, API_SECRET);
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+
+            Action call = () => factory.VerifyAndParseWebhook(raw, new string('0', 64));
+
+            call.Should().Throw<StreamWebhookSignatureException>();
+        }
     }
 }

@@ -1,3 +1,5 @@
+using StreamChat.Models;
+
 namespace StreamChat.Clients
 {
     /// <summary>
@@ -11,6 +13,39 @@ namespace StreamChat.Clients
         /// </summary>
         /// <remarks>https://getstream.io/chat/docs/dotnet-csharp/app_setting_overview/?language=csharp</remarks>
         IAppClient GetAppClient();
+
+        /// <summary>
+        /// Verify and parse an HTTP webhook event using this factory's API secret.
+        /// </summary>
+        /// <remarks>
+        /// Convenience wrapper around <see cref="IAppClient.VerifyAndParseWebhook(byte[], string)"/>
+        /// so callers that already hold the top-level factory don't need to reach
+        /// for <see cref="GetAppClient"/> first. See
+        /// https://getstream.io/chat/docs/dotnet-csharp/webhooks_overview/.
+        /// </remarks>
+        /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
+        /// <param name="signature">Value of the <c>X-Signature</c> header.</param>
+        EventResponse VerifyAndParseWebhook(byte[] body, string signature);
+
+        /// <summary>
+        /// Verify and parse an SQS firehose webhook event using this factory's API secret.
+        /// </summary>
+        /// <remarks>
+        /// Convenience wrapper around <see cref="IAppClient.VerifyAndParseSqs(string, string)"/>.
+        /// </remarks>
+        /// <param name="messageBody">SQS message <c>Body</c> string.</param>
+        /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
+        EventResponse VerifyAndParseSqs(string messageBody, string signature);
+
+        /// <summary>
+        /// Verify and parse an SNS firehose webhook event using this factory's API secret.
+        /// </summary>
+        /// <remarks>
+        /// Convenience wrapper around <see cref="IAppClient.VerifyAndParseSns(string, string)"/>.
+        /// </remarks>
+        /// <param name="message">SNS notification <c>Message</c> field.</param>
+        /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
+        EventResponse VerifyAndParseSns(string message, string signature);
 
         /// <summary>
         /// Returns an <see cref="IBlocklistClient"/> instance. The returned client can be used as a singleton in your application.
