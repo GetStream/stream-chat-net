@@ -23,6 +23,17 @@ namespace StreamChat.Clients
     {
         private static readonly byte[] GzipMagic = new byte[] { 0x1f, 0x8b };
 
+        /// <summary>
+        /// Returns <paramref name="body"/> verbatim when it is not gzipped, or the
+        /// inflated bytes when the first two bytes match the RFC 1952 gzip magic
+        /// number (<c>0x1F 0x8B</c>). The check is performed on the bytes themselves
+        /// so it works regardless of the <c>Content-Encoding</c> header.
+        /// </summary>
+        /// <param name="body">Raw payload bytes; never <c>null</c>.</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="body"/> is <c>null</c>.</exception>
+        /// <exception cref="StreamWebhookSignatureException">
+        /// When the body starts with the gzip magic but cannot be inflated.
+        /// </exception>
         public static byte[] UngzipPayload(byte[] body)
         {
             if (body == null)
@@ -51,6 +62,16 @@ namespace StreamChat.Clients
             }
         }
 
+        /// <summary>
+        /// Reverses the SQS firehose envelope: base64-decodes <paramref name="body"/>
+        /// and then inflates the result when it is gzipped. The returned bytes are the
+        /// raw JSON that Stream signed.
+        /// </summary>
+        /// <param name="body">SQS message <c>Body</c> string; never <c>null</c>.</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="body"/> is <c>null</c>.</exception>
+        /// <exception cref="StreamWebhookSignatureException">
+        /// When the body is not valid base64 or the inner payload is malformed gzip.
+        /// </exception>
         public static byte[] DecodeSqsPayload(string body)
         {
             if (body == null)
@@ -71,8 +92,21 @@ namespace StreamChat.Clients
             return UngzipPayload(decoded);
         }
 
+        /// <summary>
+        /// Alias for <see cref="DecodeSqsPayload"/> kept distinct so SNS-specific
+        /// call sites read naturally; the wire format is identical to SQS.
+        /// </summary>
         public static byte[] DecodeSnsPayload(string message) => DecodeSqsPayload(message);
 
+        /// <summary>
+        /// Returns <c>true</c> when the hex-encoded HMAC-SHA256 of <paramref name="body"/>
+        /// keyed by <paramref name="secret"/> matches <paramref name="signature"/>.
+        /// The byte comparison is constant-time.
+        /// </summary>
+        /// <param name="body">Raw bytes the server signed.</param>
+        /// <param name="signature">Hex-encoded HMAC-SHA256 (typically the <c>X-Signature</c> header).</param>
+        /// <param name="secret">Stream Chat API secret.</param>
+        /// <exception cref="ArgumentNullException">When any argument is <c>null</c>.</exception>
         public static bool VerifySignature(byte[] body, string signature, string secret)
         {
             if (body == null)
@@ -101,6 +135,15 @@ namespace StreamChat.Clients
                 && FixedTimeEquals(computed, provided);
         }
 
+        /// <summary>
+        /// Deserialises the JSON in <paramref name="payload"/> into an
+        /// <see cref="EventResponse"/>. Unknown event types still parse — the
+        /// surrounding metadata (e.g. <c>type</c>, <c>cid</c>) is populated and
+        /// future-specific fields land in the <c>CustomData</c> bag.
+        /// </summary>
+        /// <param name="payload">Raw UTF-8 JSON bytes.</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="payload"/> is <c>null</c>.</exception>
+        /// <exception cref="StreamWebhookSignatureException">When the JSON cannot be parsed.</exception>
         public static EventResponse ParseEvent(byte[] payload)
         {
             if (payload == null)
@@ -119,12 +162,46 @@ namespace StreamChat.Clients
             }
         }
 
+        /// <summary>
+        /// Inflates <paramref name="body"/> when gzipped (detected from the body
+        /// bytes, independent of any <c>Content-Encoding</c> header), verifies the
+        /// HMAC-SHA256 signature in constant time, and returns the parsed event.
+        /// </summary>
+        /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
+        /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> header.</param>
+        /// <param name="secret">Stream Chat API secret.</param>
+        /// <exception cref="StreamWebhookSignatureException">
+        /// When the signature does not match or the gzip / JSON envelope is malformed.
+        /// </exception>
         public static EventResponse VerifyAndParseWebhook(byte[] body, string signature, string secret)
             => VerifyAndParseInternal(UngzipPayload(body), signature, secret);
 
+        /// <summary>
+        /// Reverses the SQS firehose envelope (base64, then optional gzip),
+        /// verifies the HMAC-SHA256 signature in constant time against the
+        /// uncompressed JSON, and returns the parsed event.
+        /// </summary>
+        /// <param name="messageBody">SQS message <c>Body</c> string.</param>
+        /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute.</param>
+        /// <param name="secret">Stream Chat API secret.</param>
+        /// <exception cref="StreamWebhookSignatureException">
+        /// When the signature does not match or the base64 / gzip / JSON envelope is malformed.
+        /// </exception>
         public static EventResponse VerifyAndParseSqs(string messageBody, string signature, string secret)
             => VerifyAndParseInternal(DecodeSqsPayload(messageBody), signature, secret);
 
+        /// <summary>
+        /// Reverses the SNS firehose envelope (base64, then optional gzip),
+        /// verifies the HMAC-SHA256 signature in constant time against the
+        /// uncompressed JSON, and returns the parsed event. The wire format
+        /// matches SQS; this overload exists so call sites read naturally.
+        /// </summary>
+        /// <param name="message">SNS notification <c>Message</c> field.</param>
+        /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute.</param>
+        /// <param name="secret">Stream Chat API secret.</param>
+        /// <exception cref="StreamWebhookSignatureException">
+        /// When the signature does not match or the base64 / gzip / JSON envelope is malformed.
+        /// </exception>
         public static EventResponse VerifyAndParseSns(string message, string signature, string secret)
             => VerifyAndParseInternal(DecodeSnsPayload(message), signature, secret);
 
