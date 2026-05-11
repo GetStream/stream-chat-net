@@ -108,7 +108,7 @@ Before enabling compression, make sure that:
 - If you don't use an official SDK, make sure that your code supports receiving compressed payloads
 - The payload signature check is done on the **uncompressed** payload
 
-The .NET SDK exposes three composite helpers — `VerifyAndParseWebhook`, `VerifyAndParseSqs`, `VerifyAndParseSns` — for the HTTP, SQS, and SNS delivery channels. Each one inflates the payload when it is gzipped (detected from the body bytes per RFC 1952, independent of `Content-Encoding`), verifies the `X-Signature` HMAC against the **uncompressed** JSON using a constant-time comparison, and returns the parsed `EventResponse`. They throw `StreamWebhookSignatureException` if the signature does not match or the envelope is malformed.
+The .NET SDK exposes three composite helpers — `VerifyAndParseWebhook`, `VerifyAndParseSqs`, `VerifyAndParseSns` — for the HTTP, SQS, and SNS delivery channels. Each one inflates the payload when it is gzipped (detected from the body bytes per RFC 1952, independent of `Content-Encoding`), verifies the `X-Signature` HMAC against the **uncompressed** JSON, and returns the parsed `EventResponse`. The HTTP webhook path uses a constant-time comparison so the `X-Signature` header — which is exposed on a public endpoint — is not vulnerable to timing attacks; SQS/SNS deliveries arrive over AWS-internal transports where that attack vector is not applicable. All three throw `StreamWebhookSignatureException` if the signature does not match or the envelope is malformed.
 
 The same call works whether or not Stream is currently compressing payloads for your app, so handlers do not need to change when you flip the dashboard toggle.
 

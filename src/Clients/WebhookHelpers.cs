@@ -222,8 +222,8 @@ namespace StreamChat.Clients
 
         /// <summary>
         /// Reverses the SQS firehose envelope (base64, then optional gzip),
-        /// verifies the HMAC-SHA256 signature in constant time against the
-        /// uncompressed JSON, and returns the parsed event.
+        /// verifies the HMAC-SHA256 signature against the uncompressed JSON,
+        /// and returns the parsed event.
         /// </summary>
         /// <param name="messageBody">SQS message <c>Body</c> string.</param>
         /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute.</param>
@@ -236,9 +236,9 @@ namespace StreamChat.Clients
 
         /// <summary>
         /// Reverses the SNS firehose envelope (base64, then optional gzip),
-        /// verifies the HMAC-SHA256 signature in constant time against the
-        /// uncompressed JSON, and returns the parsed event. The wire format
-        /// matches SQS; this overload exists so call sites read naturally.
+        /// verifies the HMAC-SHA256 signature against the uncompressed JSON,
+        /// and returns the parsed event. The wire format matches SQS;
+        /// this overload exists so call sites read naturally.
         /// </summary>
         /// <param name="message">SNS notification <c>Message</c> field.</param>
         /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute.</param>
