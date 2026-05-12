@@ -99,6 +99,19 @@ namespace StreamChat.Clients
         }
 
         public IAppClient GetAppClient() => _appClient;
+
+        /// <inheritdoc/>
+        public EventResponse VerifyAndParseWebhook(byte[] body, string signature)
+            => _appClient.VerifyAndParseWebhook(body, signature);
+
+        /// <inheritdoc/>
+        public EventResponse ParseSqs(string messageBody)
+            => _appClient.ParseSqs(messageBody);
+
+        /// <inheritdoc/>
+        public EventResponse ParseSns(string message)
+            => _appClient.ParseSns(message);
+
         public IBlocklistClient GetBlocklistClient() => _blocklistClient;
         public IChannelClient GetChannelClient() => _channelClient;
         public IChannelTypeClient GetChannelTypeClient() => _channelTypeClient;

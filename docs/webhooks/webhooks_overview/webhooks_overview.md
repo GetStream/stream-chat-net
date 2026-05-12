@@ -96,6 +96,73 @@ All webhook requests contain these headers:
 | X-Api-Key         | Your application’s API key. Should be used to validate request signature                                             | a1b23cdefgh4                                                     |
 | X-Signature       | HMAC signature of the request body. See Signature section                                                            | ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb |
 
+## Compressed webhook bodies
+
+GZIP compression can be enabled for hooks payloads from the Dashboard. Enabling compression reduces the payload size significantly (often 70–90% smaller) reducing your bandwidth usage on Stream. The computation overhead introduced by the decompression step is usually negligible and offset by the much smaller payload.
+
+When payload compression is enabled, webhook HTTP requests will include the `Content-Encoding: gzip` header and the request body will be compressed with GZIP. Some HTTP servers and middleware (Rails, Django, Laravel, Spring Boot, ASP.NET) handle this transparently and strip the header before your handler runs — in that case the body you see is already raw JSON.
+
+Before enabling compression, make sure that:
+
+- Your backend integration is using a recent version of our official SDKs with compression support
+- If you don't use an official SDK, make sure that your code supports receiving compressed payloads
+- The payload signature check is done on the **uncompressed** payload
+
+The .NET SDK exposes three composite helpers — `VerifyAndParseWebhook`, `ParseSqs`, `ParseSns` — for HTTP webhooks and for SQS/SNS payloads. `VerifyAndParseWebhook` inflates the payload when gzipped (detected from the body bytes per RFC 1952), verifies the `X-Signature` HMAC against the **uncompressed** JSON using constant-time comparison, and returns `EventResponse`. **`ParseSqs`** / **`ParseSns`** decode (and for SNS, unwrap the envelope when needed) — **no application-level HMAC**. All failure modes throw `StreamInvalidWebhookException` with message constants on that type (`SignatureMismatch`, `InvalidBase64`, `GzipFailed`, `InvalidJson`).
+
+The same call works whether or not Stream is currently compressing payloads for your app, so handlers do not need to change when you flip the dashboard toggle.
+
+You can reach the helpers in three ways:
+
+- `IStreamClientFactory.VerifyAndParseWebhook` / `ParseSqs` / `ParseSns` — convenience wrappers on the top-level factory.
+- `IAppClient` — the same surface scoped to the app client.
+- `StreamChat.Clients.WebhookHelpers` — stateless statics when the API secret is supplied per call (`VerifyAndParseWebhook` only); **`ParseSqs` / `ParseSns`** take the message body alone.
+
+### ASP.NET Core handler
+
+```csharp
+[ApiController]
+[Route("webhooks/stream")]
+public class StreamWebhookController : ControllerBase
+{
+    private readonly IStreamClientFactory _stream;
+
+    public StreamWebhookController(IStreamClientFactory stream) => _stream = stream;
+
+    [HttpPost]
+    public async Task<IActionResult> ReceiveAsync()
+    {
+        // Read the raw bytes off the wire — do NOT bind to a model, you need the
+        // exact byte stream the server signed.
+        using var ms = new MemoryStream();
+        await HttpContext.Request.Body.CopyToAsync(ms);
+        var rawBody = ms.ToArray();
+
+        var signature = HttpContext.Request.Headers["X-Signature"].ToString();
+
+        try
+        {
+            EventResponse ev = _stream.VerifyAndParseWebhook(rawBody, signature);
+            // ...handle ev.Type, ev.Message, etc...
+            return Ok();
+        }
+        catch (StreamInvalidWebhookException)
+        {
+            return Unauthorized();
+        }
+    }
+}
+```
+
+### SQS / SNS firehose
+
+When events are delivered through SQS or SNS the (possibly gzipped) payload is wrapped in base64 so it stays valid UTF-8 over the queue. Pass the SQS `Body` string, or the SNS notification body (full envelope or pre-extracted `Message`). Stream does **not** attach an application-level `X-Signature` on these channels.
+
+```csharp
+EventResponse ev = _stream.ParseSqs(message.Body);
+// EventResponse sns = _stream.ParseSns(notificationBodyOrMessage);
+```
+
 ## Webhook types
 
 In addition to the above there are 3 special webhooks.
