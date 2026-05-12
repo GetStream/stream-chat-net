@@ -31,10 +31,10 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="body">Raw payload bytes; never <c>null</c>.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="body"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamInvalidWebhookException">
+        /// <exception cref="InvalidWebhookError">
         /// When the body starts with the gzip magic but cannot be inflated.
         /// </exception>
-        public static byte[] UngzipPayload(byte[] body)
+        public static byte[] GunzipPayload(byte[] body)
         {
             if (body == null)
             {
@@ -58,7 +58,7 @@ namespace StreamChat.Clients
             }
             catch (InvalidDataException ex)
             {
-                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.GzipFailed, ex);
+                throw new InvalidWebhookError(InvalidWebhookError.GzipFailed, ex);
             }
         }
 
@@ -69,7 +69,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="body">SQS message <c>Body</c> string; never <c>null</c>.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="body"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamInvalidWebhookException">
+        /// <exception cref="InvalidWebhookError">
         /// When the body is not valid base64 or the inner payload is malformed gzip.
         /// </exception>
         public static byte[] DecodeSqsPayload(string body)
@@ -86,10 +86,10 @@ namespace StreamChat.Clients
             }
             catch (FormatException ex)
             {
-                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.InvalidBase64, ex);
+                throw new InvalidWebhookError(InvalidWebhookError.InvalidBase64, ex);
             }
 
-            return UngzipPayload(decoded);
+            return GunzipPayload(decoded);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted Message string.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="notificationBody"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamInvalidWebhookException">
+        /// <exception cref="InvalidWebhookError">
         /// When the extracted Message is not valid base64 or the inner payload is malformed gzip.
         /// </exception>
         public static byte[] DecodeSnsPayload(string notificationBody)
@@ -187,7 +187,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="payload">Raw UTF-8 JSON bytes.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="payload"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamInvalidWebhookException">When the JSON cannot be parsed.</exception>
+        /// <exception cref="InvalidWebhookError">When the JSON cannot be parsed.</exception>
         public static EventResponse ParseEvent(byte[] payload)
         {
             if (payload == null)
@@ -202,7 +202,7 @@ namespace StreamChat.Clients
             }
             catch (JsonException ex)
             {
-                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.InvalidJson, ex);
+                throw new InvalidWebhookError(InvalidWebhookError.InvalidJson, ex);
             }
         }
 
@@ -214,17 +214,17 @@ namespace StreamChat.Clients
         /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
         /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> header.</param>
         /// <param name="secret">Stream Chat API secret.</param>
-        /// <exception cref="StreamInvalidWebhookException">
+        /// <exception cref="InvalidWebhookError">
         /// When the signature does not match or the gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse VerifyAndParseWebhook(byte[] body, string signature, string secret)
-            => VerifyAndParseInternal(UngzipPayload(body), signature, secret);
+            => VerifyAndParseInternal(GunzipPayload(body), signature, secret);
 
         /// <summary>
         /// Decodes an SQS message body (base64, then optional gzip) and returns the parsed event.
         /// </summary>
         /// <param name="messageBody">SQS message <c>Body</c> string.</param>
-        /// <exception cref="StreamInvalidWebhookException">
+        /// <exception cref="InvalidWebhookError">
         /// When the base64 / gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse ParseSqs(string messageBody)
@@ -234,7 +234,7 @@ namespace StreamChat.Clients
         /// Decodes an SNS notification (unwraps the JSON envelope when needed; same inner format as SQS).
         /// </summary>
         /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted <c>Message</c> string.</param>
-        /// <exception cref="StreamInvalidWebhookException">
+        /// <exception cref="InvalidWebhookError">
         /// When the base64 / gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse ParseSns(string notificationBody)
@@ -244,7 +244,7 @@ namespace StreamChat.Clients
         {
             if (!VerifySignature(payload, signature, secret))
             {
-                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.SignatureMismatch);
+                throw new InvalidWebhookError(InvalidWebhookError.SignatureMismatch);
             }
 
             return ParseEvent(payload);

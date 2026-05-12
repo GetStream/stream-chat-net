@@ -105,8 +105,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseWebhook(raw, bogus);
 
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage(StreamInvalidWebhookException.SignatureMismatch);
+            call.Should().Throw<InvalidWebhookError>()
+                .WithMessage(InvalidWebhookError.SignatureMismatch);
         }
 
         [Test]
@@ -119,8 +119,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseWebhook(gzipped, sigOverCompressed);
 
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage(StreamInvalidWebhookException.SignatureMismatch);
+            call.Should().Throw<InvalidWebhookError>()
+                .WithMessage(InvalidWebhookError.SignatureMismatch);
         }
 
         [Test]
@@ -154,8 +154,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.ParseSqs("@@@-not-base64-@@@");
 
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage(StreamInvalidWebhookException.InvalidBase64);
+            call.Should().Throw<InvalidWebhookError>()
+                .WithMessage(InvalidWebhookError.InvalidBase64);
         }
 
         [Test]
@@ -233,28 +233,28 @@ namespace StreamChatTests
                 + "}";
 
         [Test]
-        public void UngzipPayload_PassthroughPlainBytes()
+        public void GunzipPayload_PassthroughPlainBytes()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
 
-            var output = WebhookHelpers.UngzipPayload(raw);
+            var output = WebhookHelpers.GunzipPayload(raw);
 
             output.Should().Equal(raw);
         }
 
         [Test]
-        public void UngzipPayload_InflatesGzipBytes()
+        public void GunzipPayload_InflatesGzipBytes()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var gzipped = Gzip(raw);
 
-            var output = WebhookHelpers.UngzipPayload(gzipped);
+            var output = WebhookHelpers.GunzipPayload(gzipped);
 
             output.Should().Equal(raw);
         }
 
         [Test]
-        public void UngzipPayload_ThrowsOnInvalidGzipBody()
+        public void GunzipPayload_ThrowsOnInvalidGzipBody()
         {
             // Valid gzip header + deflate flags + bogus payload, so the magic
             // check passes but inflation fails with InvalidDataException.
@@ -264,10 +264,10 @@ namespace StreamChatTests
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
             };
 
-            Action call = () => WebhookHelpers.UngzipPayload(bad);
+            Action call = () => WebhookHelpers.GunzipPayload(bad);
 
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage(StreamInvalidWebhookException.GzipFailed);
+            call.Should().Throw<InvalidWebhookError>()
+                .WithMessage(InvalidWebhookError.GzipFailed);
         }
 
         [Test]
@@ -349,8 +349,8 @@ namespace StreamChatTests
 
             Action call = () => WebhookHelpers.ParseEvent(raw);
 
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage(StreamInvalidWebhookException.InvalidJson);
+            call.Should().Throw<InvalidWebhookError>()
+                .WithMessage(InvalidWebhookError.InvalidJson);
         }
 
         [Test]
@@ -399,7 +399,7 @@ namespace StreamChatTests
 
             Action call = () => factory.VerifyAndParseWebhook(raw, new string('0', 64));
 
-            call.Should().Throw<StreamInvalidWebhookException>();
+            call.Should().Throw<InvalidWebhookError>();
         }
     }
 }

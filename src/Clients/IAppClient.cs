@@ -87,7 +87,7 @@ namespace StreamChat.Clients
         /// </remarks>
         /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
         /// <param name="signature">Value of the <c>X-Signature</c> header.</param>
-        /// <exception cref="StreamChat.Exceptions.StreamInvalidWebhookException">
+        /// <exception cref="StreamChat.Exceptions.InvalidWebhookError">
         /// Thrown when the signature does not match or the gzip envelope is malformed.
         /// </exception>
         EventResponse VerifyAndParseWebhook(byte[] body, string signature);

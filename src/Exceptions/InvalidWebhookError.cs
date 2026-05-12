@@ -28,18 +28,18 @@ namespace StreamChat.Exceptions
 #if !NETCORE
     [Serializable]
 #endif
-    public class StreamInvalidWebhookException : StreamBaseException
+    public class InvalidWebhookError : StreamBaseException
     {
         public const string SignatureMismatch = "signature mismatch";
         public const string InvalidBase64 = "invalid base64 encoding";
         public const string GzipFailed = "gzip decompression failed";
         public const string InvalidJson = "invalid JSON payload";
 
-        public StreamInvalidWebhookException(string message) : base(message)
+        public InvalidWebhookError(string message) : base(message)
         {
         }
 
-        public StreamInvalidWebhookException(string message, Exception innerException) : base(message, innerException)
+        public InvalidWebhookError(string message, Exception innerException) : base(message, innerException)
         {
         }
     }
