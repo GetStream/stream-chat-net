@@ -96,31 +96,39 @@ namespace StreamChat.Clients
         /// Verify and parse an SQS firehose webhook event.
         /// </summary>
         /// <remarks>
-        /// Reverses the base64 (+ optional gzip) wrapping on the SQS <c>Body</c>,
-        /// verifies the <c>X-Signature</c> message attribute against the
-        /// client's API secret, and returns the parsed <see cref="EventResponse"/>.
+        /// Reverses the base64 (+ optional gzip) wrapping on the SQS <c>Body</c>
+        /// and returns the parsed <see cref="EventResponse"/>. Stream does not
+        /// ship an <c>X-Signature</c> on SQS deliveries — those transports ride
+        /// AWS-internal infrastructure (IAM-authenticated queues), so HMAC
+        /// verification on top is optional. Pass <paramref name="signature"/>
+        /// to opt in to verification against the client's API secret; omit it
+        /// (or pass <c>null</c>) to decode-and-parse only.
         /// </remarks>
         /// <param name="messageBody">SQS message <c>Body</c> string.</param>
-        /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
+        /// <param name="signature">Optional <c>X-Signature</c> message attribute. When <c>null</c>, signature verification is skipped.</param>
         /// <exception cref="StreamChat.Exceptions.StreamInvalidWebhookException">
         /// Thrown when the signature does not match or the base64 / gzip envelope is malformed.
         /// </exception>
-        EventResponse VerifyAndParseSqs(string messageBody, string signature);
+        EventResponse VerifyAndParseSqs(string messageBody, string signature = null);
 
         /// <summary>
         /// Verify and parse an SNS firehose webhook event.
         /// </summary>
         /// <remarks>
         /// Reverses the base64 (+ optional gzip) wrapping on the SNS notification
-        /// <c>Message</c>, verifies the <c>X-Signature</c> message attribute
-        /// against the client's API secret, and returns the parsed
-        /// <see cref="EventResponse"/>.
+        /// (full envelope or pre-extracted <c>Message</c> field) and returns the
+        /// parsed <see cref="EventResponse"/>. Stream does not ship an
+        /// <c>X-Signature</c> on SNS deliveries — those transports ride
+        /// AWS-internal infrastructure (AWS-signed SNS notifications), so HMAC
+        /// verification on top is optional. Pass <paramref name="signature"/>
+        /// to opt in to verification against the client's API secret; omit it
+        /// (or pass <c>null</c>) to decode-and-parse only.
         /// </remarks>
-        /// <param name="message">SNS notification <c>Message</c> field.</param>
-        /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
+        /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted <c>Message</c> field.</param>
+        /// <param name="signature">Optional <c>X-Signature</c> message attribute. When <c>null</c>, signature verification is skipped.</param>
         /// <exception cref="StreamChat.Exceptions.StreamInvalidWebhookException">
         /// Thrown when the signature does not match or the base64 / gzip envelope is malformed.
         /// </exception>
-        EventResponse VerifyAndParseSns(string message, string signature);
+        EventResponse VerifyAndParseSns(string notificationBody, string signature = null);
     }
 }

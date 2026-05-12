@@ -502,5 +502,124 @@ namespace StreamChatTests
             call.Should().Throw<StreamInvalidWebhookException>()
                 .WithMessage("*invalid JSON payload*");
         }
+        [Test]
+        public void VerifyAndParseSqs_WithoutSignature_Parses_Plain()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(raw);
+
+            var ev = WebhookHelpers.VerifyAndParseSqs(wrapped);
+
+            ev.Type.Should().Be("message.new");
+            ev.Message.Text.Should().Be("the quick brown fox");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_WithoutSignature_Parses_Base64()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(raw);
+
+            var ev = WebhookHelpers.VerifyAndParseSqs(wrapped);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_WithoutSignature_Parses_Base64Gzip()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+
+            var ev = WebhookHelpers.VerifyAndParseSqs(wrapped);
+
+            ev.Type.Should().Be("message.new");
+            ev.Message.Text.Should().Be("the quick brown fox");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_WithoutSignature_Parses_PreExtractedMessage()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+
+            var ev = WebhookHelpers.VerifyAndParseSns(wrapped);
+
+            ev.Type.Should().Be("message.new");
+            ev.Message.Text.Should().Be("the quick brown fox");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_WithoutSignature_Parses_FullEnvelope()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var envelope = SnsEnvelope(Base64Wrap(Gzip(raw)));
+
+            var ev = WebhookHelpers.VerifyAndParseSns(envelope);
+
+            ev.Type.Should().Be("message.new");
+            ev.Message.Text.Should().Be("the quick brown fox");
+        }
+
+        [Test]
+        public void AppClient_VerifyAndParseSqs_WithoutSignature_Parses()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var wrapped = Base64Wrap(Gzip(raw));
+
+            var ev = appClient.VerifyAndParseSqs(wrapped);
+
+            ev.Type.Should().Be("message.new");
+            ev.Message.Text.Should().Be("the quick brown fox");
+        }
+
+        [Test]
+        public void AppClient_VerifyAndParseSns_WithoutSignature_Parses()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var envelope = SnsEnvelope(Base64Wrap(Gzip(raw)));
+
+            var ev = appClient.VerifyAndParseSns(envelope);
+
+            ev.Type.Should().Be("message.new");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_ThrowsOnPartialCreds_SignatureOnly()
+        {
+            Action call = () => WebhookHelpers.VerifyAndParseSqs("body", "sig", null);
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature and secret must both be provided*");
+        }
+
+        [Test]
+        public void VerifyAndParseSqs_ThrowsOnPartialCreds_SecretOnly()
+        {
+            Action call = () => WebhookHelpers.VerifyAndParseSqs("body", null, "secret");
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature and secret must both be provided*");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_ThrowsOnPartialCreds_SignatureOnly()
+        {
+            Action call = () => WebhookHelpers.VerifyAndParseSns("body", "sig", null);
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature and secret must both be provided*");
+        }
+
+        [Test]
+        public void VerifyAndParseSns_ThrowsOnPartialCreds_SecretOnly()
+        {
+            Action call = () => WebhookHelpers.VerifyAndParseSns("body", null, "secret");
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature and secret must both be provided*");
+        }
     }
 }

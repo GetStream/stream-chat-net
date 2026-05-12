@@ -84,10 +84,14 @@ namespace StreamChat.Clients
         public EventResponse VerifyAndParseWebhook(byte[] body, string signature)
             => WebhookHelpers.VerifyAndParseWebhook(body, signature, _apiSecret);
 
-        public EventResponse VerifyAndParseSqs(string messageBody, string signature)
-            => WebhookHelpers.VerifyAndParseSqs(messageBody, signature, _apiSecret);
+        public EventResponse VerifyAndParseSqs(string messageBody, string signature = null)
+            => signature == null
+                ? WebhookHelpers.VerifyAndParseSqs(messageBody)
+                : WebhookHelpers.VerifyAndParseSqs(messageBody, signature, _apiSecret);
 
-        public EventResponse VerifyAndParseSns(string message, string signature)
-            => WebhookHelpers.VerifyAndParseSns(message, signature, _apiSecret);
+        public EventResponse VerifyAndParseSns(string notificationBody, string signature = null)
+            => signature == null
+                ? WebhookHelpers.VerifyAndParseSns(notificationBody)
+                : WebhookHelpers.VerifyAndParseSns(notificationBody, signature, _apiSecret);
     }
 }
