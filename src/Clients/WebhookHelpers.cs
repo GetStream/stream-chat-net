@@ -17,7 +17,8 @@ namespace StreamChat.Clients
     /// The composite functions (<see cref="VerifyAndParseWebhook"/>,
     /// <see cref="VerifyAndParseSqs"/>, <see cref="VerifyAndParseSns"/>) are the
     /// recommended entry points; the primitives they compose are exposed so callers
-    /// can build custom flows or run individual steps in isolation.
+    /// can build custom flows or run individual steps in isolation. Every failure
+    /// mode is reported through <see cref="StreamInvalidWebhookException"/>.
     /// </remarks>
     public static class WebhookHelpers
     {
@@ -31,7 +32,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="body">Raw payload bytes; never <c>null</c>.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="body"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamWebhookSignatureException">
+        /// <exception cref="StreamInvalidWebhookException">
         /// When the body starts with the gzip magic but cannot be inflated.
         /// </exception>
         public static byte[] GunzipPayload(byte[] body)
@@ -58,7 +59,11 @@ namespace StreamChat.Clients
             }
             catch (InvalidDataException ex)
             {
-                throw new StreamWebhookSignatureException("failed to decompress gzip payload", ex);
+                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.GzipFailed, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.GzipFailed, ex);
             }
         }
 
@@ -69,7 +74,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="body">SQS message <c>Body</c> string; never <c>null</c>.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="body"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamWebhookSignatureException">
+        /// <exception cref="StreamInvalidWebhookException">
         /// When the body is not valid base64 or the inner payload is malformed gzip.
         /// </exception>
         public static byte[] DecodeSqsPayload(string body)
@@ -86,7 +91,7 @@ namespace StreamChat.Clients
             }
             catch (FormatException ex)
             {
-                throw new StreamWebhookSignatureException("failed to base64-decode payload", ex);
+                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.InvalidBase64, ex);
             }
 
             return GunzipPayload(decoded);
@@ -103,7 +108,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted Message string.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="notificationBody"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamWebhookSignatureException">
+        /// <exception cref="StreamInvalidWebhookException">
         /// When the extracted Message is not valid base64 or the inner payload is malformed gzip.
         /// </exception>
         public static byte[] DecodeSnsPayload(string notificationBody)
@@ -187,7 +192,7 @@ namespace StreamChat.Clients
         /// </summary>
         /// <param name="payload">Raw UTF-8 JSON bytes.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="payload"/> is <c>null</c>.</exception>
-        /// <exception cref="StreamWebhookSignatureException">When the JSON cannot be parsed.</exception>
+        /// <exception cref="StreamInvalidWebhookException">When the JSON cannot be parsed.</exception>
         public static EventResponse ParseEvent(byte[] payload)
         {
             if (payload == null)
@@ -202,7 +207,7 @@ namespace StreamChat.Clients
             }
             catch (JsonException ex)
             {
-                throw new StreamWebhookSignatureException($"failed to parse webhook event: {ex.Message}", ex);
+                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.InvalidJson, ex);
             }
         }
 
@@ -214,7 +219,7 @@ namespace StreamChat.Clients
         /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
         /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> header.</param>
         /// <param name="secret">Stream Chat API secret.</param>
-        /// <exception cref="StreamWebhookSignatureException">
+        /// <exception cref="StreamInvalidWebhookException">
         /// When the signature does not match or the gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse VerifyAndParseWebhook(byte[] body, string signature, string secret)
@@ -228,7 +233,7 @@ namespace StreamChat.Clients
         /// <param name="messageBody">SQS message <c>Body</c> string.</param>
         /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute.</param>
         /// <param name="secret">Stream Chat API secret.</param>
-        /// <exception cref="StreamWebhookSignatureException">
+        /// <exception cref="StreamInvalidWebhookException">
         /// When the signature does not match or the base64 / gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse VerifyAndParseSqs(string messageBody, string signature, string secret)
@@ -243,7 +248,7 @@ namespace StreamChat.Clients
         /// <param name="message">SNS notification <c>Message</c> field.</param>
         /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute.</param>
         /// <param name="secret">Stream Chat API secret.</param>
-        /// <exception cref="StreamWebhookSignatureException">
+        /// <exception cref="StreamInvalidWebhookException">
         /// When the signature does not match or the base64 / gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse VerifyAndParseSns(string message, string signature, string secret)
@@ -253,7 +258,7 @@ namespace StreamChat.Clients
         {
             if (!VerifySignature(payload, signature, secret))
             {
-                throw new StreamWebhookSignatureException("invalid webhook signature");
+                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.SignatureMismatch);
             }
 
             return ParseEvent(payload);

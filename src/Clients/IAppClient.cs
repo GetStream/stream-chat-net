@@ -87,7 +87,7 @@ namespace StreamChat.Clients
         /// </remarks>
         /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
         /// <param name="signature">Value of the <c>X-Signature</c> header.</param>
-        /// <exception cref="StreamChat.Exceptions.StreamWebhookSignatureException">
+        /// <exception cref="StreamChat.Exceptions.StreamInvalidWebhookException">
         /// Thrown when the signature does not match or the gzip envelope is malformed.
         /// </exception>
         EventResponse VerifyAndParseWebhook(byte[] body, string signature);
@@ -102,7 +102,7 @@ namespace StreamChat.Clients
         /// </remarks>
         /// <param name="messageBody">SQS message <c>Body</c> string.</param>
         /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
-        /// <exception cref="StreamChat.Exceptions.StreamWebhookSignatureException">
+        /// <exception cref="StreamChat.Exceptions.StreamInvalidWebhookException">
         /// Thrown when the signature does not match or the base64 / gzip envelope is malformed.
         /// </exception>
         EventResponse VerifyAndParseSqs(string messageBody, string signature);
@@ -118,7 +118,7 @@ namespace StreamChat.Clients
         /// </remarks>
         /// <param name="message">SNS notification <c>Message</c> field.</param>
         /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
-        /// <exception cref="StreamChat.Exceptions.StreamWebhookSignatureException">
+        /// <exception cref="StreamChat.Exceptions.StreamInvalidWebhookException">
         /// Thrown when the signature does not match or the base64 / gzip envelope is malformed.
         /// </exception>
         EventResponse VerifyAndParseSns(string message, string signature);

@@ -105,8 +105,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseWebhook(raw, bogus);
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("invalid webhook signature");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature mismatch*");
         }
 
         [Test]
@@ -119,8 +119,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseWebhook(gzipped, sigOverCompressed);
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("invalid webhook signature");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature mismatch*");
         }
 
         [Test]
@@ -159,8 +159,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseSqs(wrapped, sigOverWrapped);
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("invalid webhook signature");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature mismatch*");
         }
 
         [Test]
@@ -170,8 +170,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseSqs("@@@-not-base64-@@@", "ignored");
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("*base64-decode*");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*invalid base64 encoding*");
         }
 
         [Test]
@@ -227,8 +227,8 @@ namespace StreamChatTests
 
             Action call = () => appClient.VerifyAndParseSns(envelope, sigOverEnvelope);
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("invalid webhook signature");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*signature mismatch*");
         }
 
         [Test]
@@ -300,8 +300,8 @@ namespace StreamChatTests
 
             Action call = () => WebhookHelpers.GunzipPayload(bad);
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("*decompress gzip*");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*gzip decompression failed*");
         }
 
         [Test]
@@ -409,8 +409,8 @@ namespace StreamChatTests
 
             Action call = () => WebhookHelpers.ParseEvent(raw);
 
-            call.Should().Throw<StreamWebhookSignatureException>()
-                .WithMessage("*parse webhook event*");
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*invalid JSON payload*");
         }
 
         [Test]
@@ -461,7 +461,46 @@ namespace StreamChatTests
 
             Action call = () => factory.VerifyAndParseWebhook(raw, new string('0', 64));
 
-            call.Should().Throw<StreamWebhookSignatureException>();
+            call.Should().Throw<StreamInvalidWebhookException>();
+        }
+
+        [Test]
+        public void DecodeSqsPayload_ThrowsOnInvalidBase64()
+        {
+            Action call = () => WebhookHelpers.DecodeSqsPayload("@@@-not-base64-@@@");
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*invalid base64 encoding*");
+        }
+
+        [Test]
+        public void GunzipPayload_ThrowsOnCorruptGzip()
+        {
+            // Valid gzip magic + header so the magic check passes, then garbage
+            // so the deflate stream fails.
+            var bad = new byte[]
+            {
+                0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            };
+
+            Action call = () => WebhookHelpers.GunzipPayload(bad);
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*gzip decompression failed*");
+        }
+
+        [Test]
+        public void VerifyAndParseInternal_ThrowsOnInvalidJson()
+        {
+            var appClient = BuildAppClient();
+            var raw = Encoding.UTF8.GetBytes("not json");
+            var signature = HmacHex(API_SECRET, raw);
+
+            Action call = () => appClient.VerifyAndParseWebhook(raw, signature);
+
+            call.Should().Throw<StreamInvalidWebhookException>()
+                .WithMessage("*invalid JSON payload*");
         }
     }
 }
