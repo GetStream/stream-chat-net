@@ -108,19 +108,15 @@ Before enabling compression, make sure that:
 - If you don't use an official SDK, make sure that your code supports receiving compressed payloads
 - The payload signature check is done on the **uncompressed** payload
 
-The .NET SDK exposes three composite helpers — `VerifyAndParseWebhook`, `VerifyAndParseSqs`, `VerifyAndParseSns` — for the HTTP, SQS, and SNS delivery channels. Each one inflates the payload when it is gzipped (detected from the body bytes per RFC 1952, independent of `Content-Encoding`), and returns the parsed `EventResponse`. All three throw `StreamInvalidWebhookException` if the envelope is malformed.
-
-The HTTP webhook helper verifies the `X-Signature` HMAC against the **uncompressed** JSON using a constant-time comparison so the header — which is exposed on a public endpoint — is not vulnerable to timing attacks.
-
-Stream does not ship an `X-Signature` on SQS or SNS deliveries: those transports ride AWS-internal infrastructure (IAM-authenticated queues and AWS-signed SNS notifications), so HMAC verification on top is redundant. The SQS / SNS helpers therefore take an **optional** signature — pass it to opt in to verification, or omit it to decode-and-parse only.
+The .NET SDK exposes three composite helpers — `VerifyAndParseWebhook`, `ParseSqs`, `ParseSns` — for HTTP webhooks and for SQS/SNS payloads. `VerifyAndParseWebhook` inflates the payload when gzipped (detected from the body bytes per RFC 1952), verifies the `X-Signature` HMAC against the **uncompressed** JSON using constant-time comparison, and returns `EventResponse`. **`ParseSqs`** / **`ParseSns`** decode (and for SNS, unwrap the envelope when needed) — **no application-level HMAC**. All failure modes throw `StreamInvalidWebhookException` with message constants on that type (`SignatureMismatch`, `InvalidBase64`, `GzipFailed`, `InvalidJson`).
 
 The same call works whether or not Stream is currently compressing payloads for your app, so handlers do not need to change when you flip the dashboard toggle.
 
 You can reach the helpers in three ways:
 
-- `IStreamClientFactory.VerifyAndParseWebhook(byte[], string)` (and the `Sqs`/`Sns` variants) — convenience wrappers on the top-level factory, useful when you only need webhook verification.
-- `IAppClient.VerifyAndParseWebhook(byte[], string)` (and the `Sqs`/`Sns` variants) — the same surface scoped to the app client.
-- `StreamChat.Clients.WebhookHelpers.VerifyAndParseWebhook(byte[], string, string)` — a stateless static for cases where the API secret is not stored on the factory (for example, multi-tenant servers that pick the secret per request).
+- `IStreamClientFactory.VerifyAndParseWebhook` / `ParseSqs` / `ParseSns` — convenience wrappers on the top-level factory.
+- `IAppClient` — the same surface scoped to the app client.
+- `StreamChat.Clients.WebhookHelpers` — stateless statics when the API secret is supplied per call (`VerifyAndParseWebhook` only); **`ParseSqs` / `ParseSns`** take the message body alone.
 
 ### ASP.NET Core handler
 
@@ -160,21 +156,12 @@ public class StreamWebhookController : ControllerBase
 
 ### SQS / SNS firehose
 
-When events are delivered through SQS or SNS the (possibly gzipped) payload is wrapped in base64 so it stays valid UTF-8 over the queue. Pass the raw message string; the SDK reverses the base64 + optional gzip wrapping in the correct order and returns the parsed event.
+When events are delivered through SQS or SNS the (possibly gzipped) payload is wrapped in base64 so it stays valid UTF-8 over the queue. Pass the SQS `Body` string, or the SNS notification body (full envelope or pre-extracted `Message`). Stream does **not** attach an application-level `X-Signature` on these channels.
 
 ```csharp
-// Inside your SQS / SNS message handler:
-//   messageBody  = the SQS Body string
-//   envelopeBody = either the full SNS HTTP POST body, or just the inner Message field
-var appClient = _stream.GetAppClient();
-EventResponse ev = appClient.VerifyAndParseSqs(messageBody);
-// For SNS firehose, use VerifyAndParseSns — it accepts either the full envelope
-// or a pre-extracted Message field:
-// EventResponse ev = appClient.VerifyAndParseSns(envelopeBody);
+EventResponse ev = _stream.ParseSqs(message.Body);
+// EventResponse sns = _stream.ParseSns(notificationBodyOrMessage);
 ```
-
-> [!NOTE]
-> Stream does not include an `X-Signature` for SQS or SNS deliveries because those transports ride AWS-internal infrastructure (IAM-authenticated queues and AWS-signed SNS notifications). HMAC verification on top is redundant in that environment, so the signature argument on `VerifyAndParseSqs` / `VerifyAndParseSns` is optional. If you do receive a signature (e.g. from a custom relay), pass it as the second argument and the SDK will verify it against the client's API secret.
 
 ## Webhook types
 

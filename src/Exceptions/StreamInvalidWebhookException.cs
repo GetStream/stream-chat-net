@@ -5,7 +5,9 @@ namespace StreamChat.Exceptions
     /// <summary>
     /// Unified exception for every webhook verification and parsing failure
     /// surfaced by <see cref="StreamChat.Clients.IAppClient.VerifyAndParseWebhook(byte[], string)"/>,
-    /// the SQS / SNS variants, the equivalent helpers on
+    /// <see cref="StreamChat.Clients.IAppClient.ParseSqs(string)"/>,
+    /// <see cref="StreamChat.Clients.IAppClient.ParseSns(string)"/>,
+    /// the equivalent helpers on
     /// <see cref="StreamChat.Clients.IStreamClientFactory"/>, and the stateless
     /// primitives in <see cref="StreamChat.Clients.WebhookHelpers"/>. A single
     /// exception type is thrown for every failure mode so handlers only need

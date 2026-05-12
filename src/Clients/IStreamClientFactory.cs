@@ -27,25 +27,11 @@ namespace StreamChat.Clients
         /// <param name="signature">Value of the <c>X-Signature</c> header.</param>
         EventResponse VerifyAndParseWebhook(byte[] body, string signature);
 
-        /// <summary>
-        /// Verify and parse an SQS firehose webhook event using this factory's API secret.
-        /// </summary>
-        /// <remarks>
-        /// Convenience wrapper around <see cref="IAppClient.VerifyAndParseSqs(string, string)"/>.
-        /// </remarks>
-        /// <param name="messageBody">SQS message <c>Body</c> string.</param>
-        /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
-        EventResponse VerifyAndParseSqs(string messageBody, string signature);
+        /// <inheritdoc cref="IAppClient.ParseSqs(string)"/>
+        EventResponse ParseSqs(string messageBody);
 
-        /// <summary>
-        /// Verify and parse an SNS firehose webhook event using this factory's API secret.
-        /// </summary>
-        /// <remarks>
-        /// Convenience wrapper around <see cref="IAppClient.VerifyAndParseSns(string, string)"/>.
-        /// </remarks>
-        /// <param name="message">SNS notification <c>Message</c> field.</param>
-        /// <param name="signature">Value of the <c>X-Signature</c> message attribute.</param>
-        EventResponse VerifyAndParseSns(string message, string signature);
+        /// <inheritdoc cref="IAppClient.ParseSns(string)"/>
+        EventResponse ParseSns(string message);
 
         /// <summary>
         /// Returns an <see cref="IBlocklistClient"/> instance. The returned client can be used as a singleton in your application.

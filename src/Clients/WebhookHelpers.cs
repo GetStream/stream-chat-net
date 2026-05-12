@@ -15,16 +15,12 @@ namespace StreamChat.Clients
     /// </summary>
     /// <remarks>
     /// The composite functions (<see cref="VerifyAndParseWebhook"/>,
-    /// <see cref="VerifyAndParseSqs"/>, <see cref="VerifyAndParseSns"/>) are the
-    /// recommended entry points; the primitives they compose are exposed so callers
-    /// can build custom flows or run individual steps in isolation. Every failure
-    /// mode is reported through <see cref="StreamInvalidWebhookException"/>.
+    /// <see cref="ParseSqs"/>, <see cref="ParseSns"/>) are the recommended
+    /// entry points; the primitives they compose are exposed so callers can
+    /// build custom flows or run individual steps in isolation.
     /// </remarks>
     public static class WebhookHelpers
     {
-        internal const string PartialSqsSnsCredentials =
-            "signature and secret must both be provided to verify the SQS/SNS payload";
-
         private static readonly byte[] GzipMagic = new byte[] { 0x1f, 0x8b };
 
         /// <summary>
@@ -38,7 +34,7 @@ namespace StreamChat.Clients
         /// <exception cref="StreamInvalidWebhookException">
         /// When the body starts with the gzip magic but cannot be inflated.
         /// </exception>
-        public static byte[] GunzipPayload(byte[] body)
+        public static byte[] UngzipPayload(byte[] body)
         {
             if (body == null)
             {
@@ -61,10 +57,6 @@ namespace StreamChat.Clients
                 }
             }
             catch (InvalidDataException ex)
-            {
-                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.GzipFailed, ex);
-            }
-            catch (IOException ex)
             {
                 throw new StreamInvalidWebhookException(StreamInvalidWebhookException.GzipFailed, ex);
             }
@@ -97,7 +89,7 @@ namespace StreamChat.Clients
                 throw new StreamInvalidWebhookException(StreamInvalidWebhookException.InvalidBase64, ex);
             }
 
-            return GunzipPayload(decoded);
+            return UngzipPayload(decoded);
         }
 
         /// <summary>
@@ -226,64 +218,27 @@ namespace StreamChat.Clients
         /// When the signature does not match or the gzip / JSON envelope is malformed.
         /// </exception>
         public static EventResponse VerifyAndParseWebhook(byte[] body, string signature, string secret)
-            => VerifyAndParseInternal(GunzipPayload(body), signature, secret);
+            => VerifyAndParseInternal(UngzipPayload(body), signature, secret);
 
         /// <summary>
-        /// Reverses the SQS firehose envelope (base64, then optional gzip),
-        /// optionally verifies the HMAC-SHA256 signature against the
-        /// uncompressed JSON, and returns the parsed event.
+        /// Decodes an SQS message body (base64, then optional gzip) and returns the parsed event.
         /// </summary>
-        /// <remarks>
-        /// Stream does not ship an <c>X-Signature</c> on SQS deliveries because
-        /// those transports ride AWS-internal infrastructure
-        /// (IAM-authenticated queues), so HMAC verification on top is optional.
-        /// Pass both <paramref name="signature"/> and <paramref name="secret"/>
-        /// to opt in to verification; pass neither to decode-and-parse only.
-        /// Passing exactly one of the two throws
-        /// <see cref="StreamInvalidWebhookException"/>.
-        /// </remarks>
         /// <param name="messageBody">SQS message <c>Body</c> string.</param>
-        /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute. Optional.</param>
-        /// <param name="secret">Stream Chat API secret. Required when <paramref name="signature"/> is provided.</param>
         /// <exception cref="StreamInvalidWebhookException">
-        /// When only one of <paramref name="signature"/> / <paramref name="secret"/>
-        /// is supplied, the signature does not match, or the base64 / gzip / JSON
-        /// envelope is malformed.
+        /// When the base64 / gzip / JSON envelope is malformed.
         /// </exception>
-        public static EventResponse VerifyAndParseSqs(string messageBody, string signature = null, string secret = null)
-        {
-            EnsureSqsSnsCredentialsConsistent(signature, secret);
-            return VerifyAndParseOptional(DecodeSqsPayload(messageBody), signature, secret);
-        }
+        public static EventResponse ParseSqs(string messageBody)
+            => ParseEvent(DecodeSqsPayload(messageBody));
 
         /// <summary>
-        /// Reverses the SNS firehose envelope (base64, then optional gzip),
-        /// optionally verifies the HMAC-SHA256 signature against the
-        /// uncompressed JSON, and returns the parsed event. The wire format
-        /// matches SQS; this overload exists so call sites read naturally.
+        /// Decodes an SNS notification (unwraps the JSON envelope when needed; same inner format as SQS).
         /// </summary>
-        /// <remarks>
-        /// Stream does not ship an <c>X-Signature</c> on SNS deliveries because
-        /// those transports ride AWS-internal infrastructure (AWS-signed SNS
-        /// notifications), so HMAC verification on top is optional. Pass both
-        /// <paramref name="signature"/> and <paramref name="secret"/> to opt in
-        /// to verification; pass neither to decode-and-parse only. Passing
-        /// exactly one of the two throws
-        /// <see cref="StreamInvalidWebhookException"/>.
-        /// </remarks>
-        /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted <c>Message</c> field.</param>
-        /// <param name="signature">Hex-encoded HMAC-SHA256 from the <c>X-Signature</c> message attribute. Optional.</param>
-        /// <param name="secret">Stream Chat API secret. Required when <paramref name="signature"/> is provided.</param>
+        /// <param name="notificationBody">SNS HTTP POST body, or a pre-extracted <c>Message</c> string.</param>
         /// <exception cref="StreamInvalidWebhookException">
-        /// When only one of <paramref name="signature"/> / <paramref name="secret"/>
-        /// is supplied, the signature does not match, or the base64 / gzip / JSON
-        /// envelope is malformed.
+        /// When the base64 / gzip / JSON envelope is malformed.
         /// </exception>
-        public static EventResponse VerifyAndParseSns(string notificationBody, string signature = null, string secret = null)
-        {
-            EnsureSqsSnsCredentialsConsistent(signature, secret);
-            return VerifyAndParseOptional(DecodeSnsPayload(notificationBody), signature, secret);
-        }
+        public static EventResponse ParseSns(string notificationBody)
+            => ParseEvent(DecodeSnsPayload(notificationBody));
 
         private static EventResponse VerifyAndParseInternal(byte[] payload, string signature, string secret)
         {
@@ -293,26 +248,6 @@ namespace StreamChat.Clients
             }
 
             return ParseEvent(payload);
-        }
-
-        private static EventResponse VerifyAndParseOptional(byte[] payload, string signature, string secret)
-        {
-            if (!string.IsNullOrEmpty(signature) && !VerifySignature(payload, signature, secret))
-            {
-                throw new StreamInvalidWebhookException(StreamInvalidWebhookException.SignatureMismatch);
-            }
-
-            return ParseEvent(payload);
-        }
-
-        private static void EnsureSqsSnsCredentialsConsistent(string signature, string secret)
-        {
-            var hasSig = !string.IsNullOrEmpty(signature);
-            var hasSecret = !string.IsNullOrEmpty(secret);
-            if (hasSig != hasSecret)
-            {
-                throw new StreamInvalidWebhookException(PartialSqsSnsCredentials);
-            }
         }
 
         private static bool TryHexToBytes(string hex, out byte[] result)

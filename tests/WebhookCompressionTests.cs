@@ -106,7 +106,7 @@ namespace StreamChatTests
             Action call = () => appClient.VerifyAndParseWebhook(raw, bogus);
 
             call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature mismatch*");
+                .WithMessage(StreamInvalidWebhookException.SignatureMismatch);
         }
 
         [Test]
@@ -120,115 +120,81 @@ namespace StreamChatTests
             Action call = () => appClient.VerifyAndParseWebhook(gzipped, sigOverCompressed);
 
             call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature mismatch*");
+                .WithMessage(StreamInvalidWebhookException.SignatureMismatch);
         }
 
         [Test]
-        public void VerifyAndParseSqs_Base64Only()
+        public void ParseSqs_Base64Only()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var signature = HmacHex(API_SECRET, raw);
             var wrapped = Base64Wrap(raw);
 
-            var ev = appClient.VerifyAndParseSqs(wrapped, signature);
+            var ev = appClient.ParseSqs(wrapped);
 
             ev.Type.Should().Be("message.new");
         }
 
         [Test]
-        public void VerifyAndParseSqs_Base64PlusGzip()
+        public void ParseSqs_Base64PlusGzip()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var signature = HmacHex(API_SECRET, raw);
             var wrapped = Base64Wrap(Gzip(raw));
 
-            var ev = appClient.VerifyAndParseSqs(wrapped, signature);
+            var ev = appClient.ParseSqs(wrapped);
 
             ev.Type.Should().Be("message.new");
         }
 
         [Test]
-        public void VerifyAndParseSqs_RejectsSignatureOverWrappedBytes()
+        public void ParseSqs_ThrowsOnInvalidBase64()
         {
             var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-            var sigOverWrapped = HmacHex(API_SECRET, Encoding.ASCII.GetBytes(wrapped));
 
-            Action call = () => appClient.VerifyAndParseSqs(wrapped, sigOverWrapped);
+            Action call = () => appClient.ParseSqs("@@@-not-base64-@@@");
 
             call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature mismatch*");
+                .WithMessage(StreamInvalidWebhookException.InvalidBase64);
         }
 
         [Test]
-        public void VerifyAndParseSqs_ThrowsOnInvalidBase64()
-        {
-            var appClient = BuildAppClient();
-
-            Action call = () => appClient.VerifyAndParseSqs("@@@-not-base64-@@@", "ignored");
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*invalid base64 encoding*");
-        }
-
-        [Test]
-        public void VerifyAndParseSns_PreExtractedMessage_Base64PlusGzip()
+        public void ParseSns_PreExtractedMessage_Base64PlusGzip()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var signature = HmacHex(API_SECRET, raw);
             var wrapped = Base64Wrap(Gzip(raw));
 
-            var ev = appClient.VerifyAndParseSns(wrapped, signature);
+            var ev = appClient.ParseSns(wrapped);
 
             ev.Type.Should().Be("message.new");
         }
 
         [Test]
-        public void VerifyAndParseSns_PreExtractedMessage_MatchesSqs()
+        public void ParseSns_PreExtractedMessage_MatchesSqs()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var signature = HmacHex(API_SECRET, raw);
             var wrapped = Base64Wrap(Gzip(raw));
 
-            var sns = appClient.VerifyAndParseSns(wrapped, signature);
-            var sqs = appClient.VerifyAndParseSqs(wrapped, signature);
+            var sns = appClient.ParseSns(wrapped);
+            var sqs = appClient.ParseSqs(wrapped);
 
             sns.Type.Should().Be(sqs.Type);
             sns.Message.Text.Should().Be(sqs.Message.Text);
         }
 
         [Test]
-        public void VerifyAndParseSns_FullEnvelope()
+        public void ParseSns_FullEnvelope()
         {
             var appClient = BuildAppClient();
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var signature = HmacHex(API_SECRET, raw);
             var wrapped = Base64Wrap(Gzip(raw));
             var envelope = SnsEnvelope(wrapped);
 
-            var ev = appClient.VerifyAndParseSns(envelope, signature);
+            var ev = appClient.ParseSns(envelope);
 
             ev.Type.Should().Be("message.new");
-        }
-
-        [Test]
-        public void VerifyAndParseSns_RejectsSignatureOverEnvelope()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-            var envelope = SnsEnvelope(wrapped);
-            var sigOverEnvelope = HmacHex(API_SECRET, Encoding.UTF8.GetBytes(envelope));
-
-            Action call = () => appClient.VerifyAndParseSns(envelope, sigOverEnvelope);
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature mismatch*");
         }
 
         [Test]
@@ -267,28 +233,28 @@ namespace StreamChatTests
                 + "}";
 
         [Test]
-        public void GunzipPayload_PassthroughPlainBytes()
+        public void UngzipPayload_PassthroughPlainBytes()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
 
-            var output = WebhookHelpers.GunzipPayload(raw);
+            var output = WebhookHelpers.UngzipPayload(raw);
 
             output.Should().Equal(raw);
         }
 
         [Test]
-        public void GunzipPayload_InflatesGzipBytes()
+        public void UngzipPayload_InflatesGzipBytes()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var gzipped = Gzip(raw);
 
-            var output = WebhookHelpers.GunzipPayload(gzipped);
+            var output = WebhookHelpers.UngzipPayload(gzipped);
 
             output.Should().Equal(raw);
         }
 
         [Test]
-        public void GunzipPayload_ThrowsOnInvalidGzipBody()
+        public void UngzipPayload_ThrowsOnInvalidGzipBody()
         {
             // Valid gzip header + deflate flags + bogus payload, so the magic
             // check passes but inflation fails with InvalidDataException.
@@ -298,20 +264,10 @@ namespace StreamChatTests
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
             };
 
-            Action call = () => WebhookHelpers.GunzipPayload(bad);
+            Action call = () => WebhookHelpers.UngzipPayload(bad);
 
             call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*gzip decompression failed*");
-        }
-
-        [Test]
-        public void GunzipPayload_HelloWorldFixture()
-        {
-            var gzipped = Convert.FromBase64String("H4sIAGrYAWoAA8tIzcnJL88vykkBAK0g6/kKAAAA");
-
-            var output = WebhookHelpers.GunzipPayload(gzipped);
-
-            output.Should().Equal(Encoding.UTF8.GetBytes("helloworld"));
+                .WithMessage(StreamInvalidWebhookException.GzipFailed);
         }
 
         [Test]
@@ -334,22 +290,6 @@ namespace StreamChatTests
             var output = WebhookHelpers.DecodeSqsPayload(wrapped);
 
             output.Should().Equal(raw);
-        }
-
-        [Test]
-        public void DecodeSqsPayload_HelloWorldBase64Fixture()
-        {
-            var output = WebhookHelpers.DecodeSqsPayload("aGVsbG93b3JsZA==");
-
-            output.Should().Equal(Encoding.UTF8.GetBytes("helloworld"));
-        }
-
-        [Test]
-        public void DecodeSqsPayload_HelloWorldBase64GzipFixture()
-        {
-            var output = WebhookHelpers.DecodeSqsPayload("H4sIAGrYAWoAA8tIzcnJL88vykkBAK0g6/kKAAAA");
-
-            output.Should().Equal(Encoding.UTF8.GetBytes("helloworld"));
         }
 
         [Test]
@@ -410,7 +350,7 @@ namespace StreamChatTests
             Action call = () => WebhookHelpers.ParseEvent(raw);
 
             call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*invalid JSON payload*");
+                .WithMessage(StreamInvalidWebhookException.InvalidJson);
         }
 
         [Test]
@@ -428,27 +368,25 @@ namespace StreamChatTests
         }
 
         [Test]
-        public void Factory_VerifyAndParseSqs_DelegatesToAppClient()
+        public void Factory_ParseSqs_DelegatesToAppClient()
         {
             var factory = new StreamClientFactory(API_KEY, API_SECRET);
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var wrapped = Base64Wrap(Gzip(raw));
-            var signature = HmacHex(API_SECRET, raw);
 
-            var ev = factory.VerifyAndParseSqs(wrapped, signature);
+            var ev = factory.ParseSqs(wrapped);
 
             ev.Type.Should().Be("message.new");
         }
 
         [Test]
-        public void Factory_VerifyAndParseSns_DelegatesToAppClient()
+        public void Factory_ParseSns_DelegatesToAppClient()
         {
             var factory = new StreamClientFactory(API_KEY, API_SECRET);
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
             var wrapped = Base64Wrap(Gzip(raw));
-            var signature = HmacHex(API_SECRET, raw);
 
-            var ev = factory.VerifyAndParseSns(wrapped, signature);
+            var ev = factory.ParseSns(wrapped);
 
             ev.Type.Should().Be("message.new");
         }
@@ -462,164 +400,6 @@ namespace StreamChatTests
             Action call = () => factory.VerifyAndParseWebhook(raw, new string('0', 64));
 
             call.Should().Throw<StreamInvalidWebhookException>();
-        }
-
-        [Test]
-        public void DecodeSqsPayload_ThrowsOnInvalidBase64()
-        {
-            Action call = () => WebhookHelpers.DecodeSqsPayload("@@@-not-base64-@@@");
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*invalid base64 encoding*");
-        }
-
-        [Test]
-        public void GunzipPayload_ThrowsOnCorruptGzip()
-        {
-            // Valid gzip magic + header so the magic check passes, then garbage
-            // so the deflate stream fails.
-            var bad = new byte[]
-            {
-                0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-            };
-
-            Action call = () => WebhookHelpers.GunzipPayload(bad);
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*gzip decompression failed*");
-        }
-
-        [Test]
-        public void VerifyAndParseInternal_ThrowsOnInvalidJson()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes("not json");
-            var signature = HmacHex(API_SECRET, raw);
-
-            Action call = () => appClient.VerifyAndParseWebhook(raw, signature);
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*invalid JSON payload*");
-        }
-        [Test]
-        public void VerifyAndParseSqs_WithoutSignature_Parses_Plain()
-        {
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(raw);
-
-            var ev = WebhookHelpers.VerifyAndParseSqs(wrapped);
-
-            ev.Type.Should().Be("message.new");
-            ev.Message.Text.Should().Be("the quick brown fox");
-        }
-
-        [Test]
-        public void VerifyAndParseSqs_WithoutSignature_Parses_Base64()
-        {
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(raw);
-
-            var ev = WebhookHelpers.VerifyAndParseSqs(wrapped);
-
-            ev.Type.Should().Be("message.new");
-        }
-
-        [Test]
-        public void VerifyAndParseSqs_WithoutSignature_Parses_Base64Gzip()
-        {
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-
-            var ev = WebhookHelpers.VerifyAndParseSqs(wrapped);
-
-            ev.Type.Should().Be("message.new");
-            ev.Message.Text.Should().Be("the quick brown fox");
-        }
-
-        [Test]
-        public void VerifyAndParseSns_WithoutSignature_Parses_PreExtractedMessage()
-        {
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-
-            var ev = WebhookHelpers.VerifyAndParseSns(wrapped);
-
-            ev.Type.Should().Be("message.new");
-            ev.Message.Text.Should().Be("the quick brown fox");
-        }
-
-        [Test]
-        public void VerifyAndParseSns_WithoutSignature_Parses_FullEnvelope()
-        {
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var envelope = SnsEnvelope(Base64Wrap(Gzip(raw)));
-
-            var ev = WebhookHelpers.VerifyAndParseSns(envelope);
-
-            ev.Type.Should().Be("message.new");
-            ev.Message.Text.Should().Be("the quick brown fox");
-        }
-
-        [Test]
-        public void AppClient_VerifyAndParseSqs_WithoutSignature_Parses()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var wrapped = Base64Wrap(Gzip(raw));
-
-            var ev = appClient.VerifyAndParseSqs(wrapped);
-
-            ev.Type.Should().Be("message.new");
-            ev.Message.Text.Should().Be("the quick brown fox");
-        }
-
-        [Test]
-        public void AppClient_VerifyAndParseSns_WithoutSignature_Parses()
-        {
-            var appClient = BuildAppClient();
-            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
-            var envelope = SnsEnvelope(Base64Wrap(Gzip(raw)));
-
-            var ev = appClient.VerifyAndParseSns(envelope);
-
-            ev.Type.Should().Be("message.new");
-        }
-
-        [Test]
-        public void VerifyAndParseSqs_ThrowsOnPartialCreds_SignatureOnly()
-        {
-            Action call = () => WebhookHelpers.VerifyAndParseSqs("body", "sig", null);
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature and secret must both be provided*");
-        }
-
-        [Test]
-        public void VerifyAndParseSqs_ThrowsOnPartialCreds_SecretOnly()
-        {
-            Action call = () => WebhookHelpers.VerifyAndParseSqs("body", null, "secret");
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature and secret must both be provided*");
-        }
-
-        [Test]
-        public void VerifyAndParseSns_ThrowsOnPartialCreds_SignatureOnly()
-        {
-            Action call = () => WebhookHelpers.VerifyAndParseSns("body", "sig", null);
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature and secret must both be provided*");
-        }
-
-        [Test]
-        public void VerifyAndParseSns_ThrowsOnPartialCreds_SecretOnly()
-        {
-            Action call = () => WebhookHelpers.VerifyAndParseSns("body", null, "secret");
-
-            call.Should().Throw<StreamInvalidWebhookException>()
-                .WithMessage("*signature and secret must both be provided*");
         }
     }
 }

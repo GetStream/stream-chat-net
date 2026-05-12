@@ -105,12 +105,12 @@ namespace StreamChat.Clients
             => _appClient.VerifyAndParseWebhook(body, signature);
 
         /// <inheritdoc/>
-        public EventResponse VerifyAndParseSqs(string messageBody, string signature)
-            => _appClient.VerifyAndParseSqs(messageBody, signature);
+        public EventResponse ParseSqs(string messageBody)
+            => _appClient.ParseSqs(messageBody);
 
         /// <inheritdoc/>
-        public EventResponse VerifyAndParseSns(string message, string signature)
-            => _appClient.VerifyAndParseSns(message, signature);
+        public EventResponse ParseSns(string message)
+            => _appClient.ParseSns(message);
 
         public IBlocklistClient GetBlocklistClient() => _blocklistClient;
         public IChannelClient GetChannelClient() => _channelClient;
