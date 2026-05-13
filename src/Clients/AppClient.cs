@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using StreamChat.Models;
@@ -77,13 +76,18 @@ namespace StreamChat.Clients
                     HttpStatusCode.OK);
 
         public bool VerifyWebhook(string requestBody, string xSignature)
-        {
-            using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(_apiSecret)))
-            {
-                var sigBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(requestBody));
-                var sig = BitConverter.ToString(sigBytes).Replace("-", string.Empty).ToLowerInvariant();
-                return sig == xSignature;
-            }
-        }
+            => requestBody != null
+                && xSignature != null
+                && WebhookHelpers.VerifySignature(
+                    Encoding.UTF8.GetBytes(requestBody), xSignature, _apiSecret);
+
+        public EventResponse VerifyAndParseWebhook(byte[] body, string signature)
+            => WebhookHelpers.VerifyAndParseWebhook(body, signature, _apiSecret);
+
+        public EventResponse ParseSqs(string messageBody)
+            => WebhookHelpers.ParseSqs(messageBody);
+
+        public EventResponse ParseSns(string message)
+            => WebhookHelpers.ParseSns(message);
     }
 }

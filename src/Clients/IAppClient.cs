@@ -73,5 +73,35 @@ namespace StreamChat.Clients
         /// <param name="requestBody">The request body to validate.</param>
         /// <param name="xSignature">The signature provided in X-Signature header.</param>
         bool VerifyWebhook(string requestBody, string xSignature);
+
+        /// <summary>
+        /// Verify and parse an HTTP webhook event.
+        /// </summary>
+        /// <remarks>
+        /// Decompresses <paramref name="body"/> when gzipped (detected from the
+        /// body bytes), verifies the <c>X-Signature</c> header against the
+        /// client's API secret, and returns the parsed <see cref="EventResponse"/>.
+        /// The same call works whether or not Stream is currently compressing
+        /// payloads for this app, and stays correct behind middleware that
+        /// auto-decompresses the request.
+        /// </remarks>
+        /// <param name="body">Raw HTTP request body bytes Stream signed.</param>
+        /// <param name="signature">Value of the <c>X-Signature</c> header.</param>
+        /// <exception cref="StreamChat.Exceptions.InvalidWebhookError">
+        /// Thrown when the signature does not match or the gzip envelope is malformed.
+        /// </exception>
+        EventResponse VerifyAndParseWebhook(byte[] body, string signature);
+
+        /// <summary>
+        /// Parse an SQS-delivered event (decode only; no HMAC).
+        /// </summary>
+        /// <param name="messageBody">SQS message <c>Body</c> string.</param>
+        EventResponse ParseSqs(string messageBody);
+
+        /// <summary>
+        /// Parse an SNS-delivered event (unwrap envelope when needed; no HMAC).
+        /// </summary>
+        /// <param name="message">Raw SNS POST body or pre-extracted <c>Message</c> string.</param>
+        EventResponse ParseSns(string message);
     }
 }
