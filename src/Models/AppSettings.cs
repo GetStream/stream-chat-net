@@ -179,6 +179,10 @@ namespace StreamChat.Models
         public List<string> WebhookEvents { get; set; }
         public List<string> UserSearchDisallowedRoles { get; set; }
         public string BeforeMessageSendHookUrl { get; set; }
+
+        [JsonProperty("before_message_send_hook_attempt_timeout_ms")]
+        public int? BeforeMessageSendHookAttemptTimeoutMs { get; set; }
+
         public List<string> ImageModerationLabels { get; set; }
         public bool? ImageModerationEnabled { get; set; }
         public bool? AutoTranslationEnabled { get; set; }
