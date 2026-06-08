@@ -17,13 +17,15 @@ namespace StreamChat.Clients
         /// <param name="moderationPayload">Content to be checked for moderation. E.g., texts, images, videos</param>
         /// <param name="configKey">Configuration key for moderation</param>
         /// <param name="options">Additional options for moderation check</param>
+        /// <param name="testMode">When true, runs the moderation check without persisting a review queue item.</param>
         Task<ModerationCheckResponse> CheckAsync(
             string entityType,
             string entityId,
             string entityCreatorId,
             ModerationPayload moderationPayload,
             string configKey,
-            ModerationCheckOptions options = null);
+            ModerationCheckOptions options = null,
+            bool? testMode = null);
 
         /// <summary>
         /// Experimental: Check user profile for moderation.
