@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.22.0](https://github.com/GetStream/stream-chat-net/compare/2.21.0...2.22.0) (2026-06-08)
+
+
+### Features
+
+* **app:** expose before_message_send_hook_attempt_timeout_ms (CHA-3267) ([#211](https://github.com/GetStream/stream-chat-net/issues/211)) ([69462bf](https://github.com/GetStream/stream-chat-net/commit/69462bff865fba9f4ab9b69872dc0ea2f77618dc)), closes [GetStream/chat#13541](https://github.com/GetStream/chat/issues/13541)
+
 ## [2.21.0](https://github.com/GetStream/stream-chat-net/compare/2.20.0...2.21.0) (2026-03-26)
 
 ## [2.20.0](https://github.com/GetStream/stream-chat-net/compare/2.19.1...2.20.0) (2026-02-27)
