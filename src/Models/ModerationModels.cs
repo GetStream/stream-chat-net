@@ -13,7 +13,6 @@ namespace StreamChat.Models
     public class ModerationCheckOptions
     {
         public bool? ForceSync { get; set; }
-        public bool? TestMode { get; set; }
     }
 
     public class UserProfileCheckRequest

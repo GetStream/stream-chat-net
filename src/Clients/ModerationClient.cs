@@ -19,7 +19,8 @@ namespace StreamChat.Clients
             string entityCreatorId,
             ModerationPayload moderationPayload,
             string configKey,
-            ModerationCheckOptions options = null)
+            ModerationCheckOptions options = null,
+            bool? testMode = null)
         {
             var request = new
             {
@@ -29,6 +30,7 @@ namespace StreamChat.Clients
                 moderation_payload = moderationPayload,
                 config_key = configKey,
                 options,
+                test_mode = testMode,
             };
 
             return await ExecuteRequestAsync<ModerationCheckResponse>(
@@ -60,8 +62,8 @@ namespace StreamChat.Clients
                 new ModerationCheckOptions
                 {
                     ForceSync = true,
-                    TestMode = true,
-                });
+                },
+                testMode: true);
         }
     }
 }
