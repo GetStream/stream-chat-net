@@ -6,6 +6,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
 jobs:
   basic:
     name: 🧪 Run tests
