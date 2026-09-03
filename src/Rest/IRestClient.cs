@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StreamChat.Rest
@@ -12,6 +13,6 @@ namespace StreamChat.Rest
             IEnumerable<KeyValuePair<string, string>> queryParams = null,
             MultipartFormDataContent multipartBody = null);
 
-        Task<RestResponse> ExecuteAsync(RestRequest request);
+        Task<RestResponse> ExecuteAsync(RestRequest request, CancellationToken cancellationToken = default);
     }
 }
