@@ -1,8 +1,5 @@
-> **Note:** [`getstream-net`](https://github.com/GetStream/getstream-net) is the new full-product SDK for Stream, covering Chat, Video, Moderation, and Feeds with long-term support.
->
-> **`stream-chat-net` is now in maintenance mode.** It will continue to receive critical fixes and requested features, so it is safe to keep using. However, we encourage existing users to migrate when convenient and strongly recommend that new projects start with `getstream-net`.
->
-> Check out the [Migration Guide](https://github.com/GetStream/getstream-net/blob/89e82ac2116092e588c15628cf326e46496e23e1/docs/migration-from-stream-chat-net/README.md) for side-by-side examples covering common use cases.
+> [!WARNING]
+> **`stream-chat-net` is deprecated.** New projects should use [`getstream-net`](https://github.com/GetStream/getstream-net) (NuGet `getstream-net`), which covers Chat, Video, Moderation and Feeds. To move existing code, see the [migration guide](https://github.com/GetStream/getstream-net/tree/master/docs/migration-from-stream-chat-net).
 
 # Official .NET SDK for [Stream Chat](https://getstream.io/chat/)
 
