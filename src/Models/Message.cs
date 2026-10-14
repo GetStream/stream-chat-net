@@ -64,6 +64,7 @@ namespace StreamChat.Models
         public bool? SkipPush { get; set; }
         public bool? IsPendingMessage { get; set; }
         public bool? ForceModeration { get; set; }
+        public DateTimeOffset? ScheduledAt { get; set; }
     }
 
     public class MessageSearchResponse : ApiResponse
@@ -91,6 +92,12 @@ namespace StreamChat.Models
     public class GenericMessageResponse : ApiResponse
     {
         public Message Message { get; set; }
+
+        /// <summary>
+        /// The scheduled message. Only set when the message was sent with a scheduled_at;
+        /// <see cref="Message"/> then holds the content as it will be sent and is not in the channel.
+        /// </summary>
+        public ScheduledMessage ScheduledMessage { get; set; }
     }
 
     public class MessagePartialUpdateResponse : GenericMessageResponse
