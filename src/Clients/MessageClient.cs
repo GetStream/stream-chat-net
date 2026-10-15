@@ -38,8 +38,10 @@ namespace StreamChat.Clients
                 ScheduledAt = options.ScheduledAt,
             };
 
-            // The API rejects scheduled_at combined with any pending field, even false,
-            // so leave out the default instead of sending is_pending_message: false.
+            // Older API versions rejected scheduled_at combined with any pending field,
+            // even false, so the default is left out. Current versions accept false.
+            // Without it the channel type's mark_messages_pending setting applies when
+            // the message is sent, as it does for a request that omits the field.
             if (options.ScheduledAt.HasValue && !options.IsPendingMessage)
             {
                 req.IsPendingMessage = null;

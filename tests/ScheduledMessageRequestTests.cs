@@ -68,7 +68,7 @@ namespace StreamChatTests
             body["message"]["text"].Value<string>().Should().Be("later");
             body["message"]["user_id"].Value<string>().Should().Be("jane");
             body["skip_push"].Value<bool>().Should().BeTrue();
-            body.ContainsKey("is_pending_message").Should().BeFalse("the API rejects scheduled_at with any pending field");
+            body.ContainsKey("is_pending_message").Should().BeFalse("older API versions reject scheduled_at with any pending field, even false");
             DateTimeOffset.Parse(body["scheduled_at"].Value<string>()).Should().Be(scheduledAt);
             resp.ScheduledMessage.Id.Should().Be("sm-1");
         }
