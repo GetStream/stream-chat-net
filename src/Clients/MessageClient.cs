@@ -37,15 +37,6 @@ namespace StreamChat.Clients
                 ForceModeration = options.ForceModeration,
                 ScheduledAt = options.ScheduledAt,
             };
-
-            // Older API versions rejected scheduled_at combined with any pending field,
-            // even false, so the default is left out. Current versions accept false.
-            // Without it the channel type's mark_messages_pending setting applies when
-            // the message is sent, as it does for a request that omits the field.
-            if (options.ScheduledAt.HasValue && !options.IsPendingMessage)
-            {
-                req.IsPendingMessage = null;
-            }
             req.Message.UserId = userId;
 
             return await ExecuteRequestAsync<GenericMessageResponse>($"channels/{channelType}/{channelId}/message",
