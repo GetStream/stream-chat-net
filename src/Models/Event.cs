@@ -61,12 +61,6 @@ namespace StreamChat.Models
         /// </summary>
         [JsonProperty("scheduled_message")]
         public ScheduledMessage ScheduledMessage { get; set; }
-
-        /// <summary>
-        /// The ID of the message a scheduled message was sent as. Only set on scheduled_message.sent.
-        /// </summary>
-        [JsonProperty("message_id")]
-        public string MessageId { get; set; }
     }
 
     public class UserCustomEvent : CustomDataBase

@@ -252,7 +252,7 @@ namespace StreamChat.Clients
         /// <param name="msg">The message to send</param>
         /// <param name="userId">The ID of the user the message is sent as</param>
         /// <param name="scheduledAt">When to send the message. Must be at least 1 minute and at most the app's maximum lead time from now</param>
-        /// <param name="options">Other send options. Its <see cref="SendMessageOptions.ScheduledAt"/> is replaced by <paramref name="scheduledAt"/></param>
+        /// <param name="options">Other send options. Their <see cref="SendMessageOptions.ScheduledAt"/> is ignored in favor of <paramref name="scheduledAt"/>; the object passed in is not changed</param>
         Task<GenericMessageResponse> ScheduleMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, DateTimeOffset scheduledAt, SendMessageOptions options = null);
 
         /// <summary>

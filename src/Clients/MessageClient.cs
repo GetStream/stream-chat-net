@@ -300,9 +300,16 @@ namespace StreamChat.Clients
 
         public async Task<GenericMessageResponse> ScheduleMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, DateTimeOffset scheduledAt, SendMessageOptions options = null)
         {
-            options = options ?? new SendMessageOptions();
-            options.ScheduledAt = scheduledAt;
-            return await SendMessageAsync(channelType, channelId, msg, userId, options);
+            // Copy instead of setting ScheduledAt on the caller's options: a reused options object
+            // would otherwise schedule every later send made with it.
+            var opts = new SendMessageOptions
+            {
+                SkipPush = options?.SkipPush ?? false,
+                IsPendingMessage = options?.IsPendingMessage ?? false,
+                ForceModeration = options?.ForceModeration,
+                ScheduledAt = scheduledAt,
+            };
+            return await SendMessageAsync(channelType, channelId, msg, userId, opts);
         }
 
         public async Task<ScheduledMessageResponse> UpdateScheduledMessageAsync(string scheduledMessageId, UpdateScheduledMessageRequest request)

@@ -205,9 +205,43 @@ namespace StreamChatTests
             var ev = WebhookHelpers.ParseEvent(payload);
 
             ev.Type.Should().Be("scheduled_message.sent");
-            ev.MessageId.Should().Be("m-1");
+            ev.GetData<string>("message_id").Should().Be("m-1");
             ev.ScheduledMessage.Id.Should().Be("sm-1");
             ev.ScheduledMessage.Status.Should().Be(ScheduledMessageStatus.Sent);
+        }
+
+        [Test]
+        public void TestNonScheduledEventMessageIdStaysInExtraData()
+        {
+            var payload = Encoding.UTF8.GetBytes(@"{
+                ""type"": ""reminder.created"",
+                ""cid"": ""messaging:general"",
+                ""message_id"": ""msg_12345""
+            }");
+
+            var ev = WebhookHelpers.ParseEvent(payload);
+
+            ev.Type.Should().Be("reminder.created");
+            ev.GetData<string>("message_id").Should().Be("msg_12345");
+        }
+
+        [Test]
+        public async Task TestScheduleMessageDoesNotChangeCallerOptionsAsync()
+        {
+            var shared = new SendMessageOptions { SkipPush = true };
+
+            _handler.Respond(HttpStatusCode.Created, ScheduledMessageJson);
+            await _client.ScheduleMessageAsync("messaging", "general", new MessageRequest { Text = "later" }, "jane",
+                new DateTimeOffset(2030, 1, 2, 3, 4, 5, TimeSpan.Zero), shared);
+
+            shared.ScheduledAt.Should().BeNull();
+
+            _handler.Respond(HttpStatusCode.Created, @"{ ""message"": { ""id"": ""m-1"" } }");
+            await _client.SendMessageAsync("messaging", "general", new MessageRequest { Text = "now" }, "jane", shared);
+
+            var body = ParseBody(_handler.Body);
+            body.ContainsKey("scheduled_at").Should().BeFalse("a reused options object must not schedule later sends");
+            body["skip_push"].Value<bool>().Should().BeTrue();
         }
 
         // Keeps dates as the strings that were sent instead of converting them to local DateTime.

@@ -77,4 +77,4 @@ When a scheduled message cannot be sent, its `Status` becomes `failed` and `Fail
 
 ## Webhooks
 
-The `scheduled_message.sent` and `scheduled_message.failed` events are sent to webhooks. `EventResponse.ScheduledMessage` holds the scheduled message, and on `scheduled_message.sent`, `EventResponse.MessageId` is the ID of the sent message.
+The `scheduled_message.sent` and `scheduled_message.failed` events are sent to webhooks. `EventResponse.ScheduledMessage` holds the scheduled message, and on `scheduled_message.sent`, `GetData<string>("message_id")` returns the ID of the sent message.
