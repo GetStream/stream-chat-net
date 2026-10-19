@@ -1,15 +1,18 @@
-> [!WARNING]
-> **`stream-chat-net` is deprecated.** New projects should use [`getstream-net`](https://github.com/GetStream/getstream-net) (NuGet `getstream-net`), which covers Chat, Video, Moderation and Feeds. To move existing code, see the [migration guide](https://github.com/GetStream/getstream-net/tree/master/docs/migration-from-stream-chat-net).
+> [!CAUTION]
+> ## ⚠️ This is a legacy SDK. It is deprecated.
+>
+> 🚫 **Do not start new projects with `stream-chat-net`.**
+>
+> ✅ **Use [`getstream-net`](https://github.com/GetStream/getstream-net) (NuGet `getstream-net`) instead.** It covers Chat, Video, Moderation and Feeds in one SDK.
+>
+> 🔁 **Already using `stream-chat-net`?** Follow the [migration guide](https://github.com/GetStream/getstream-net/tree/master/docs/migration-from-stream-chat-net) to move your code.
 
-# Official .NET SDK for [Stream Chat](https://getstream.io/chat/)
+# Legacy .NET SDK for [Stream Chat](https://getstream.io/chat/)
 
 [![.github/workflows/ci.yaml](https://github.com/GetStream/stream-chat-net/actions/workflows/ci.yaml/badge.svg)](https://github.com/GetStream/stream-chat-net/actions/workflows/ci.yaml) [![NuGet Badge](https://buildstats.info/nuget/stream-chat-net)](https://www.nuget.org/packages/stream-chat-net/)
 
 <p align="center">
-    <img src="./assets/logo.svg" width="50%" height="50%">
-</p>
-<p align="center">
-    Official .NET API client for Stream Chat, a service for building chat applications.
+    Legacy .NET API client for Stream Chat, a service for building chat applications.
     <br />
     <a href="https://getstream.io/chat/docs/"><strong>Explore the docs »</strong></a>
     <br />
