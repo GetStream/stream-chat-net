@@ -1,18 +1,18 @@
-> **Note:** [`getstream-net`](https://github.com/GetStream/getstream-net) is the new full-product SDK for Stream, covering Chat, Video, Moderation, and Feeds with long-term support.
+> [!CAUTION]
+> ## ⚠️ This is a legacy SDK. It is deprecated.
 >
-> **`stream-chat-net` is now in maintenance mode.** It will continue to receive critical fixes and requested features, so it is safe to keep using. However, we encourage existing users to migrate when convenient and strongly recommend that new projects start with `getstream-net`.
+> 🚫 **Do not start new projects with `stream-chat-net`.**
 >
-> Check out the [Migration Guide](https://github.com/GetStream/getstream-net/blob/89e82ac2116092e588c15628cf326e46496e23e1/docs/migration-from-stream-chat-net/README.md) for side-by-side examples covering common use cases.
+> ✅ **Use [`getstream-net`](https://github.com/GetStream/getstream-net) (NuGet `getstream-net`) instead.** It covers Chat, Video, Moderation and Feeds in one SDK.
+>
+> 🔁 **Already using `stream-chat-net`?** Follow the [migration guide](https://github.com/GetStream/getstream-net/tree/master/docs/migration-from-stream-chat-net) to move your code.
 
-# Official .NET SDK for [Stream Chat](https://getstream.io/chat/)
+# Legacy .NET SDK for [Stream Chat](https://getstream.io/chat/)
 
 [![.github/workflows/ci.yaml](https://github.com/GetStream/stream-chat-net/actions/workflows/ci.yaml/badge.svg)](https://github.com/GetStream/stream-chat-net/actions/workflows/ci.yaml) [![NuGet Badge](https://buildstats.info/nuget/stream-chat-net)](https://www.nuget.org/packages/stream-chat-net/)
 
 <p align="center">
-    <img src="./assets/logo.svg" width="50%" height="50%">
-</p>
-<p align="center">
-    Official .NET API client for Stream Chat, a service for building chat applications.
+    Legacy .NET API client for Stream Chat, a service for building chat applications.
     <br />
     <a href="https://getstream.io/chat/docs/"><strong>Explore the docs »</strong></a>
     <br />
