@@ -35,6 +35,7 @@ namespace StreamChat.Clients
                 SkipPush = options.SkipPush,
                 IsPendingMessage = options.IsPendingMessage,
                 ForceModeration = options.ForceModeration,
+                ScheduledAt = options.ScheduledAt,
             };
             req.Message.UserId = userId;
 
@@ -296,5 +297,41 @@ namespace StreamChat.Clients
                 HttpStatusCode.Created,
                 data);
         }
+
+        public async Task<GenericMessageResponse> ScheduleMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, DateTimeOffset scheduledAt, SendMessageOptions options = null)
+        {
+            // Copy instead of setting ScheduledAt on the caller's options: a reused options object
+            // would otherwise schedule every later send made with it.
+            var opts = new SendMessageOptions
+            {
+                SkipPush = options?.SkipPush ?? false,
+                IsPendingMessage = options?.IsPendingMessage ?? false,
+                ForceModeration = options?.ForceModeration,
+                ScheduledAt = scheduledAt,
+            };
+            return await SendMessageAsync(channelType, channelId, msg, userId, opts);
+        }
+
+        public async Task<ScheduledMessageResponse> UpdateScheduledMessageAsync(string scheduledMessageId, UpdateScheduledMessageRequest request)
+            => await ExecuteRequestAsync<ScheduledMessageResponse>($"scheduled_messages/{scheduledMessageId}",
+                HttpMethod.PATCH,
+                HttpStatusCode.OK,
+                request);
+
+        public async Task<ScheduledMessageResponse> DeleteScheduledMessageAsync(string scheduledMessageId)
+            => await ExecuteRequestAsync<ScheduledMessageResponse>($"scheduled_messages/{scheduledMessageId}",
+                HttpMethod.DELETE,
+                HttpStatusCode.OK);
+
+        public async Task<ScheduledMessageResponse> SendScheduledMessageNowAsync(string scheduledMessageId)
+            => await ExecuteRequestAsync<ScheduledMessageResponse>($"scheduled_messages/{scheduledMessageId}/send_now",
+                HttpMethod.POST,
+                HttpStatusCode.Created);
+
+        public async Task<QueryScheduledMessagesResponse> QueryScheduledMessagesAsync(QueryScheduledMessagesRequest request)
+            => await ExecuteRequestAsync<QueryScheduledMessagesResponse>("scheduled_messages/query",
+                HttpMethod.POST,
+                HttpStatusCode.Created,
+                request);
     }
 }

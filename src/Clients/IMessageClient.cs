@@ -241,5 +241,49 @@ namespace StreamChat.Clients
         /// <param name="options">Additional query options like limit, offset</param>
         /// <returns>API response with reminders</returns>
         Task<QueryRemindersResponse> QueryRemindersAsync(string userId, Dictionary<string, object> filterConditions = null, List<Dictionary<string, object>> sort = null, Dictionary<string, object> options = null);
+
+        /// <summary>
+        /// Schedules a message to be sent to a channel at a later time, on behalf of <paramref name="userId"/>.
+        /// The message is not sent now; the response carries <see cref="GenericMessageResponse.ScheduledMessage"/>,
+        /// whose ID is used to update, delete or send the scheduled message now.
+        /// </summary>
+        /// <param name="channelType">The type of the channel</param>
+        /// <param name="channelId">The ID of the channel</param>
+        /// <param name="msg">The message to send</param>
+        /// <param name="userId">The ID of the user the message is sent as</param>
+        /// <param name="scheduledAt">When to send the message. Must be at least 1 minute and at most the app's maximum lead time from now</param>
+        /// <param name="options">Other send options. Their <see cref="SendMessageOptions.ScheduledAt"/> is ignored in favor of <paramref name="scheduledAt"/>; the object passed in is not changed</param>
+        Task<GenericMessageResponse> ScheduleMessageAsync(string channelType, string channelId, MessageRequest msg, string userId, DateTimeOffset scheduledAt, SendMessageOptions options = null);
+
+        /// <summary>
+        /// Updates the message and/or the send time of a scheduled message.
+        /// The message, when set, replaces the scheduled message as a whole.
+        /// </summary>
+        /// <param name="scheduledMessageId">The ID of the scheduled message</param>
+        /// <param name="request">The changes. At least one of message or scheduled_at is required</param>
+        /// <returns>API response with the updated scheduled message</returns>
+        Task<ScheduledMessageResponse> UpdateScheduledMessageAsync(string scheduledMessageId, UpdateScheduledMessageRequest request);
+
+        /// <summary>
+        /// Deletes a scheduled message: cancels it so it is never sent, or removes a failed one.
+        /// </summary>
+        /// <param name="scheduledMessageId">The ID of the scheduled message</param>
+        /// <returns>API response with the deleted scheduled message</returns>
+        Task<ScheduledMessageResponse> DeleteScheduledMessageAsync(string scheduledMessageId);
+
+        /// <summary>
+        /// Sends a scheduled message right away.
+        /// </summary>
+        /// <param name="scheduledMessageId">The ID of the scheduled message</param>
+        /// <returns>API response with the scheduled message</returns>
+        Task<ScheduledMessageResponse> SendScheduledMessageNowAsync(string scheduledMessageId);
+
+        /// <summary>
+        /// Queries the scheduled messages of one user across channels: pending ones first,
+        /// then failed ones, each by scheduled_at.
+        /// </summary>
+        /// <param name="request">The query. <see cref="QueryScheduledMessagesRequest.UserId"/> is required</param>
+        /// <returns>API response with a page of scheduled messages</returns>
+        Task<QueryScheduledMessagesResponse> QueryScheduledMessagesAsync(QueryScheduledMessagesRequest request);
     }
 }

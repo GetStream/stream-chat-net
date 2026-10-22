@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace StreamChat.Models
 {
@@ -54,6 +55,12 @@ namespace StreamChat.Models
         public string ParentId { get; set; }
         public string Team { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
+
+        /// <summary>
+        /// The scheduled message of a scheduled_message.* event.
+        /// </summary>
+        [JsonProperty("scheduled_message")]
+        public ScheduledMessage ScheduledMessage { get; set; }
     }
 
     public class UserCustomEvent : CustomDataBase
