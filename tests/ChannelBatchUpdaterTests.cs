@@ -172,11 +172,13 @@ namespace StreamChatTests
             response.TaskId.Should().NotBeNullOrEmpty();
             await WaitUntilTaskSucceedsAsync(response.TaskId);
 
-            var ch1State = await _channelClient.GetOrCreateAsync(ch1.Type, ch1.Id, new ChannelGetRequest());
-            var ch1Member = ch1State.Members.FirstOrDefault(m => m.UserId == user1.Id);
-
-            ch1Member.Should().NotBeNull();
-            ch1Member.ArchivedAt.Should().NotBeNull();
+            // The batch task reports success before its per-channel subtasks finish, so poll.
+            await WaitForAsync(async () =>
+            {
+                var ch1State = await _channelClient.GetOrCreateAsync(ch1.Type, ch1.Id, new ChannelGetRequest());
+                var ch1Member = ch1State.Members.FirstOrDefault(m => m.UserId == user1.Id);
+                return ch1Member?.ArchivedAt != null;
+            }, timeout: 20000, delay: 1000);
         }
     }
 }
