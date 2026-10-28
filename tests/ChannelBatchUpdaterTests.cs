@@ -74,24 +74,27 @@ namespace StreamChatTests
             response.TaskId.Should().NotBeNullOrEmpty();
             await WaitUntilTaskSucceedsAsync(response.TaskId);
 
-            var ch1Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+            // The batch task reports success before its per-channel subtasks finish, so poll.
+            await WaitForAsync(async () =>
             {
-                Type = ch1.Type,
-                Id = ch1.Id,
-                FilterConditions = new Dictionary<string, object>(),
-            });
+                var ch1Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+                {
+                    Type = ch1.Type,
+                    Id = ch1.Id,
+                    FilterConditions = new Dictionary<string, object>(),
+                });
 
-            var ch2Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
-            {
-                Type = ch2.Type,
-                Id = ch2.Id,
-                FilterConditions = new Dictionary<string, object>(),
-            });
+                var ch2Members = await _channelClient.QueryMembersAsync(new QueryMembersRequest
+                {
+                    Type = ch2.Type,
+                    Id = ch2.Id,
+                    FilterConditions = new Dictionary<string, object>(),
+                });
 
-            ch1Members.Members.Should().Contain(m => m.UserId == user2.Id);
-            ch1Members.Members.Should().Contain(m => m.UserId == user3.Id);
-            ch2Members.Members.Should().Contain(m => m.UserId == user2.Id);
-            ch2Members.Members.Should().Contain(m => m.UserId == user3.Id);
+                return new[] { user2.Id, user3.Id }.All(id =>
+                    ch1Members.Members.Any(m => m.UserId == id)
+                    && ch2Members.Members.Any(m => m.UserId == id));
+            }, timeout: 20000, delay: 1000);
         }
 
         [Test]
@@ -172,11 +175,13 @@ namespace StreamChatTests
             response.TaskId.Should().NotBeNullOrEmpty();
             await WaitUntilTaskSucceedsAsync(response.TaskId);
 
-            var ch1State = await _channelClient.GetOrCreateAsync(ch1.Type, ch1.Id, new ChannelGetRequest());
-            var ch1Member = ch1State.Members.FirstOrDefault(m => m.UserId == user1.Id);
-
-            ch1Member.Should().NotBeNull();
-            ch1Member.ArchivedAt.Should().NotBeNull();
+            // The batch task reports success before its per-channel subtasks finish, so poll.
+            await WaitForAsync(async () =>
+            {
+                var ch1State = await _channelClient.GetOrCreateAsync(ch1.Type, ch1.Id, new ChannelGetRequest());
+                var ch1Member = ch1State.Members.FirstOrDefault(m => m.UserId == user1.Id);
+                return ch1Member?.ArchivedAt != null;
+            }, timeout: 20000, delay: 1000);
         }
     }
 }

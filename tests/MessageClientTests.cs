@@ -661,5 +661,96 @@ namespace StreamChatTests
                 await DisableUserMessageRemindersAsync();
             }
         }
+
+        /// <summary>
+        /// Schedules a message an hour from now. The CI app has scheduled messages enabled, so a
+        /// rejection or a response without scheduled_message fails the test instead of skipping it.
+        /// </summary>
+        private async Task<ScheduledMessage> ScheduleAsync(string text)
+        {
+            var resp = await _messageClient.ScheduleMessageAsync(_channel.Type, _channel.Id, new MessageRequest { Text = text }, _user.Id,
+                DateTimeOffset.UtcNow.AddHours(1));
+
+            resp.ScheduledMessage.Should().NotBeNull("the app has scheduled messages enabled, so the response must carry scheduled_message");
+            return resp.ScheduledMessage;
+        }
+
+        [Test]
+        public async Task TestScheduleMessageAsync()
+        {
+            var scheduled = await ScheduleAsync("scheduled hello");
+
+            scheduled.Cid.Should().Be($"{_channel.Type}:{_channel.Id}");
+            scheduled.Status.Should().Be(ScheduledMessageStatus.Scheduled);
+            scheduled.User.Id.Should().Be(_user.Id);
+            scheduled.Message.Text.Should().Be("scheduled hello");
+
+            await _messageClient.DeleteScheduledMessageAsync(scheduled.Id);
+        }
+
+        [Test]
+        public async Task TestQueryScheduledMessagesAsync()
+        {
+            var scheduled = await ScheduleAsync("scheduled for query");
+
+            var resp = await _messageClient.QueryScheduledMessagesAsync(new QueryScheduledMessagesRequest
+            {
+                UserId = _user.Id,
+                Filter = new ScheduledMessagesFilter { Cid = scheduled.Cid },
+                Limit = 10,
+            });
+
+            resp.ScheduledMessages.Select(sm => sm.Id).Should().Contain(scheduled.Id);
+
+            await _messageClient.DeleteScheduledMessageAsync(scheduled.Id);
+        }
+
+        [Test]
+        public async Task TestUpdateScheduledMessageAsync()
+        {
+            var scheduled = await ScheduleAsync("scheduled to edit");
+
+            // The server rounds scheduled_at up to the next whole minute; a time already on a
+            // whole minute (and at least a minute ahead) is stored unchanged.
+            var inTwoHours = DateTimeOffset.UtcNow.AddHours(2);
+            var scheduledAt = new DateTimeOffset(inTwoHours.Year, inTwoHours.Month, inTwoHours.Day, inTwoHours.Hour, inTwoHours.Minute, 0, TimeSpan.Zero);
+
+            var resp = await _messageClient.UpdateScheduledMessageAsync(scheduled.Id, new UpdateScheduledMessageRequest
+            {
+                Message = new MessageRequest { Text = "edited" },
+                ScheduledAt = scheduledAt,
+            });
+
+            resp.ScheduledMessage.Message.Text.Should().Be("edited");
+            resp.ScheduledMessage.ScheduledAt.Should().Be(scheduledAt);
+
+            await _messageClient.DeleteScheduledMessageAsync(scheduled.Id);
+        }
+
+        [Test]
+        public async Task TestSendScheduledMessageNowAsync()
+        {
+            var scheduled = await ScheduleAsync("scheduled to send now");
+
+            var resp = await _messageClient.SendScheduledMessageNowAsync(scheduled.Id);
+
+            resp.ScheduledMessage.Id.Should().Be(scheduled.Id);
+        }
+
+        [Test]
+        public async Task TestDeleteScheduledMessageAsync()
+        {
+            var scheduled = await ScheduleAsync("scheduled to delete");
+
+            var resp = await _messageClient.DeleteScheduledMessageAsync(scheduled.Id);
+
+            resp.ScheduledMessage.Id.Should().Be(scheduled.Id);
+            var remaining = await _messageClient.QueryScheduledMessagesAsync(new QueryScheduledMessagesRequest
+            {
+                UserId = _user.Id,
+                Filter = new ScheduledMessagesFilter { Cid = scheduled.Cid },
+            });
+            remaining.ScheduledMessages.Select(sm => sm.Id).Should().NotContain(scheduled.Id);
+        }
     }
 }

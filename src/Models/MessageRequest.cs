@@ -47,4 +47,12 @@ public class SendMessageOptions
     public bool SkipPush { get; set; }
     public bool IsPendingMessage { get; set; }
     public bool? ForceModeration { get; set; }
+
+    /// <summary>
+    /// When set, the message is not sent now: it is stored and sent at this time.
+    /// The response then carries the scheduled message in GenericMessageResponse.ScheduledMessage.
+    /// Must be at least 1 minute and at most the app's maximum lead time from now.
+    /// <see cref="IsPendingMessage"/> must be false: pending messages cannot be scheduled.
+    /// </summary>
+    public DateTimeOffset? ScheduledAt { get; set; }
 }

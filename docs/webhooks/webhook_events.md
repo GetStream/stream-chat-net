@@ -50,6 +50,8 @@ When applicable, the following attributes are included to the event user and to 
 | reminder.updated             | when a message reminder is updated.                                 |
 | reminder.deleted             | when a message reminder is deleted.                                 |
 | notification.reminder_due    | when a message reminder's due time is reached.                      |
+| scheduled_message.sent       | when a scheduled message is sent; message_id is the sent message.   |
+| scheduled_message.failed     | when a scheduled message fails to send (see failure_reason).        |
 
 ### `message.new`
 
