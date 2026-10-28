@@ -663,37 +663,22 @@ namespace StreamChatTests
         }
 
         /// <summary>
-        /// Schedules a message an hour from now, or ignores the test when the app cannot schedule.
-        /// Scheduled messages are behind a per-app flag: an app without it rejects scheduled_at
-        /// (scheduled_messages_disabled), and a backend that predates the feature ignores
-        /// scheduled_at and sends the message right away.
+        /// Schedules a message an hour from now. The CI app has scheduled messages enabled, so a
+        /// rejection or a response without scheduled_message fails the test instead of skipping it.
         /// </summary>
-        private async Task<ScheduledMessage> ScheduleOrIgnoreAsync(string text)
+        private async Task<ScheduledMessage> ScheduleAsync(string text)
         {
-            GenericMessageResponse resp;
-            try
-            {
-                resp = await _messageClient.ScheduleMessageAsync(_channel.Type, _channel.Id, new MessageRequest { Text = text }, _user.Id,
-                    DateTimeOffset.UtcNow.AddHours(1));
-            }
-            catch (StreamChatException ex) when (ex.Message.Contains("scheduled messages are not enabled"))
-            {
-                Assert.Ignore($"Scheduled messages are not enabled for this Stream app: {ex.Message}");
-                throw;
-            }
+            var resp = await _messageClient.ScheduleMessageAsync(_channel.Type, _channel.Id, new MessageRequest { Text = text }, _user.Id,
+                DateTimeOffset.UtcNow.AddHours(1));
 
-            if (resp.ScheduledMessage == null)
-            {
-                Assert.Ignore("Scheduled messages are not supported by this Stream app (no scheduled_message in the response)");
-            }
-
+            resp.ScheduledMessage.Should().NotBeNull("the app has scheduled messages enabled, so the response must carry scheduled_message");
             return resp.ScheduledMessage;
         }
 
         [Test]
         public async Task TestScheduleMessageAsync()
         {
-            var scheduled = await ScheduleOrIgnoreAsync("scheduled hello");
+            var scheduled = await ScheduleAsync("scheduled hello");
 
             scheduled.Cid.Should().Be($"{_channel.Type}:{_channel.Id}");
             scheduled.Status.Should().Be(ScheduledMessageStatus.Scheduled);
@@ -706,7 +691,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestQueryScheduledMessagesAsync()
         {
-            var scheduled = await ScheduleOrIgnoreAsync("scheduled for query");
+            var scheduled = await ScheduleAsync("scheduled for query");
 
             var resp = await _messageClient.QueryScheduledMessagesAsync(new QueryScheduledMessagesRequest
             {
@@ -723,8 +708,12 @@ namespace StreamChatTests
         [Test]
         public async Task TestUpdateScheduledMessageAsync()
         {
-            var scheduled = await ScheduleOrIgnoreAsync("scheduled to edit");
-            var scheduledAt = DateTimeOffset.UtcNow.AddHours(2);
+            var scheduled = await ScheduleAsync("scheduled to edit");
+
+            // The server rounds scheduled_at up to the next whole minute; a time already on a
+            // whole minute (and at least a minute ahead) is stored unchanged.
+            var inTwoHours = DateTimeOffset.UtcNow.AddHours(2);
+            var scheduledAt = new DateTimeOffset(inTwoHours.Year, inTwoHours.Month, inTwoHours.Day, inTwoHours.Hour, inTwoHours.Minute, 0, TimeSpan.Zero);
 
             var resp = await _messageClient.UpdateScheduledMessageAsync(scheduled.Id, new UpdateScheduledMessageRequest
             {
@@ -733,7 +722,7 @@ namespace StreamChatTests
             });
 
             resp.ScheduledMessage.Message.Text.Should().Be("edited");
-            resp.ScheduledMessage.ScheduledAt.Should().BeCloseTo(scheduledAt, TimeSpan.FromSeconds(1));
+            resp.ScheduledMessage.ScheduledAt.Should().Be(scheduledAt);
 
             await _messageClient.DeleteScheduledMessageAsync(scheduled.Id);
         }
@@ -741,7 +730,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestSendScheduledMessageNowAsync()
         {
-            var scheduled = await ScheduleOrIgnoreAsync("scheduled to send now");
+            var scheduled = await ScheduleAsync("scheduled to send now");
 
             var resp = await _messageClient.SendScheduledMessageNowAsync(scheduled.Id);
 
@@ -751,7 +740,7 @@ namespace StreamChatTests
         [Test]
         public async Task TestDeleteScheduledMessageAsync()
         {
-            var scheduled = await ScheduleOrIgnoreAsync("scheduled to delete");
+            var scheduled = await ScheduleAsync("scheduled to delete");
 
             var resp = await _messageClient.DeleteScheduledMessageAsync(scheduled.Id);
 
