@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.23.0](https://github.com/GetStream/stream-chat-net/compare/2.22.0...2.23.0) (2026-10-29)
+
+
+### Features
+
+* add scheduled messages support (CHA-5933) ([#219](https://github.com/GetStream/stream-chat-net/issues/219)) ([655bcfd](https://github.com/GetStream/stream-chat-net/commit/655bcfd64fef19994042e5525801cc11131e3414))
+
+
+### Other
+
+* add least-privilege permissions to GitHub Actions workflows ([#216](https://github.com/GetStream/stream-chat-net/issues/216)) ([5c0bc9e](https://github.com/GetStream/stream-chat-net/commit/5c0bc9e596417fd21113de7e27b27ebfcb52f125))
+* add deprecation notice to README ([#218](https://github.com/GetStream/stream-chat-net/issues/218)) ([8546b6b](https://github.com/GetStream/stream-chat-net/commit/8546b6bfc167d868878795051b4dd473f4da2341))
+
 ## [2.22.0](https://github.com/GetStream/stream-chat-net/compare/2.21.0...2.22.0) (2026-06-08)
 
 
