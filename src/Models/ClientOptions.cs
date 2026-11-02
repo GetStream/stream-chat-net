@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using StreamChat.Exceptions;
 
@@ -9,7 +10,10 @@ namespace StreamChat.Models
     /// </summary>
     public class ClientOptions
     {
-        private static readonly HttpClient DefaultHttpClient = new HttpClient();
+        private static readonly HttpClient DefaultHttpClient = new HttpClient(new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.GZip,
+        });
 
         /// <summary>The <see cref="System.Net.Http.HttpClient"/> instance used for underlying HTTP calls.</summary>
         public HttpClient HttpClient { get; set; } = DefaultHttpClient;
@@ -29,6 +33,7 @@ namespace StreamChat.Models
             // AWS load balancer disconnects in 60 seconds, so let's make it 59
             var socketsHandler = new SocketsHttpHandler();
             socketsHandler.PooledConnectionLifetime = TimeSpan.FromSeconds(59);
+            socketsHandler.AutomaticDecompression = DecompressionMethods.GZip;
             DefaultHttpClient = new HttpClient(socketsHandler);
         }
 #endif
