@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using StreamChat.Exceptions;
 using StreamChat.Models;
@@ -26,11 +27,12 @@ namespace StreamChat.Clients
             HttpStatusCode expectedStatusCode,
             object body = null,
             IEnumerable<KeyValuePair<string, string>> queryParams = null,
-            MultipartFormDataContent multipartBody = null) where T : ApiResponse
+            MultipartFormDataContent multipartBody = null,
+            CancellationToken cancellationToken = default) where T : ApiResponse
         {
             var req = _client.BuildRestRequest(relativeUri, method, body, queryParams, multipartBody);
 
-            var resp = await _client.ExecuteAsync(req);
+            var resp = await _client.ExecuteAsync(req, cancellationToken);
 
             if (resp.StatusCode == expectedStatusCode)
             {

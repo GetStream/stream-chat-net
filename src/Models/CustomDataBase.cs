@@ -10,6 +10,11 @@ namespace StreamChat.Models
         private IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
 
         /// <summary>
+        /// Gets the list of all keys which are present at the custom data.
+        /// </summary>
+        public IEnumerable<string> GetKeys() => _data.Keys;
+
+        /// <summary>
         /// Gets a custom data value.
         /// </summary>
         public T GetData<T>(string name) => _data.TryGetValue(name, out var val) ? val.ToObject<T>() : default(T);

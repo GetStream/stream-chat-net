@@ -53,6 +53,7 @@ namespace StreamChat.Models
     public class UpdateChannelResponse : ApiResponse
     {
         public ChannelWithConfig Channel { get; set; }
+        public bool? Hidden { get; set; }
         public Message Message { get; set; }
         public List<ChannelMember> Members { get; set; }
     }

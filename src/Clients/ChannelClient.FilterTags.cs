@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using StreamChat.Models;
 using StreamChat.Rest;
@@ -21,7 +22,7 @@ namespace StreamChat.Clients
         /// Adds filter tags to the channel.
         /// </summary>
         public async Task<UpdateChannelResponse> AddFilterTagsAsync(string channelType, string channelId,
-            IEnumerable<string> filterTags, MessageRequest msg = null) => await ExecuteRequestAsync<UpdateChannelResponse>(
+            IEnumerable<string> filterTags, MessageRequest msg = null, CancellationToken cancellationToken = default) => await ExecuteRequestAsync<UpdateChannelResponse>(
             $"channels/{channelType}/{channelId}",
             HttpMethod.POST,
             HttpStatusCode.Created,
@@ -41,7 +42,8 @@ namespace StreamChat.Clients
         /// Removes filter tags from the channel.
         /// </summary>
         public async Task<ApiResponse> RemoveFilterTagsAsync(string channelType, string channelId,
-            IEnumerable<string> filterTags, MessageRequest msg = null) => await ExecuteRequestAsync<ApiResponse>(
+            IEnumerable<string> filterTags, MessageRequest msg = null,
+            CancellationToken cancellationToken = default) => await ExecuteRequestAsync<ApiResponse>(
             $"channels/{channelType}/{channelId}",
             HttpMethod.POST,
             HttpStatusCode.Created,
@@ -49,6 +51,7 @@ namespace StreamChat.Clients
             {
                 RemoveFilterTags = filterTags,
                 Message = msg,
-            });
+            },
+            cancellationToken: cancellationToken);
     }
 }
