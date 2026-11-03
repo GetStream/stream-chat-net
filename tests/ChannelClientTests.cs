@@ -534,7 +534,8 @@ namespace StreamChatTests
                 return channelMember.NotificationsMuted;
             }
 
-            (await GetUserNotificationsMuted()).Should().BeFalse();
+            // Another API pod can serve this offline user's mute state from its 5s user cache.
+            await WaitForAsync(async () => await GetUserNotificationsMuted() == false, timeout: 7000);
 
             await _channelClient.MuteChannelAsync(new ChannelMuteRequest
             {
@@ -542,7 +543,7 @@ namespace StreamChatTests
                 UserId = _user1.Id,
             });
 
-            (await GetUserNotificationsMuted()).Should().BeTrue();
+            await WaitForAsync(async () => await GetUserNotificationsMuted() == true, timeout: 7000);
 
             await _channelClient.UnmuteChannelAsync(new ChannelUnmuteRequest
             {
@@ -550,7 +551,7 @@ namespace StreamChatTests
                 UserId = _user1.Id,
             });
 
-            (await GetUserNotificationsMuted()).Should().BeFalse();
+            await WaitForAsync(async () => await GetUserNotificationsMuted() == false, timeout: 7000);
         }
 
         [Test]
