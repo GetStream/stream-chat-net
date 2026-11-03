@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.24.0](https://github.com/GetStream/stream-chat-net/compare/2.23.0...2.24.0) (2026-11-03)
+
+
+### Features
+
+* request gzip-compressed API responses ([#220](https://github.com/GetStream/stream-chat-net/issues/220)) ([6b68771](https://github.com/GetStream/stream-chat-net/commit/6b68771b82a5106ef526132f33051027f414054d))
+
 ## [2.23.0](https://github.com/GetStream/stream-chat-net/compare/2.22.0...2.23.0) (2026-10-29)
 
 
