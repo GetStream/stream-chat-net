@@ -211,7 +211,7 @@ Campaign status have following possible values:
 
 - `stopped` - Campaign has been stopped manually or using stop_at option
 
-- `completed` - Campaign has succesfully completed
+- `completed` - Campaign has successfully completed
 
 - `in_progress` - Campaign is running at the moment
 
