@@ -2,7 +2,7 @@ name: Release
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened, synchronize, closed]
     branches:
       - master
 
@@ -11,6 +11,15 @@ permissions:
   id-token: write
 
 jobs:
+  LoginCheck:
+    name: Trusted publishing login check (temporary)
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: NuGet/login@v1
+        with:
+          user: yunwang_stream
+
   Release:
     name: 🚀 Release
     if: github.event.pull_request.merged && startsWith(github.head_ref, 'release-')
