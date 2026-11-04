@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   Release:
@@ -41,8 +42,15 @@ jobs:
       - name: Create the package
         run: dotnet pack --configuration Release ./src
 
+      # Trusted publishing: exchanges the GitHub OIDC token for a 1-hour NuGet key.
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: yunwang_stream
+
       - name: Publish the package
-        run: dotnet nuget push "./src/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push "./src/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ steps.login.outputs.NUGET_API_KEY }}
 
       - name: Create release on GitHub
         uses: ncipollo/release-action@v1
