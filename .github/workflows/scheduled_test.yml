@@ -23,7 +23,7 @@ jobs:
       - name: Run Tests
         env:
           STREAM_SECRET: ${{ secrets.STREAM_API_SECRET }}
-          STREAM_KEY: ${{ secrets.STREAM_API_KEY }}
+          STREAM_KEY: ${{ vars.STREAM_API_KEY }}
         run: |
           # Retry 3 times because tests can be flaky
           for _ in 1 2 3;
