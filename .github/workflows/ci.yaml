@@ -44,4 +44,4 @@ jobs:
         run: dotnet test /p:CollectCoverage=true
         env:
           STREAM_SECRET: ${{ secrets.STREAM_API_SECRET }}
-          STREAM_KEY: ${{ secrets.STREAM_API_KEY }}
+          STREAM_KEY: ${{ vars.STREAM_API_KEY }}
