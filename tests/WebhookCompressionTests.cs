@@ -271,6 +271,58 @@ namespace StreamChatTests
         }
 
         [Test]
+        public void GunzipPayload_InflatesBodyAtDefaultLimit()
+        {
+            var limit = WebhookHelpers.MaxPayloadBytes;
+            var gzipped = Gzip(new byte[limit]);
+
+            var output = WebhookHelpers.GunzipPayload(gzipped);
+
+            limit.Should().Be(10 * 1024 * 1024);
+            output.Length.Should().Be((int)limit);
+        }
+
+        [Test]
+        public void GzipBomb_RejectedBeforeSignatureCheck()
+        {
+            var appClient = BuildAppClient();
+            var limit = WebhookHelpers.MaxPayloadBytes;
+            var bomb = Gzip(new byte[limit + 1]);
+            var expected = $"{InvalidWebhookError.GzipFailed}: payload exceeds {limit} bytes";
+
+            Action webhook = () => appClient.VerifyAndParseWebhook(bomb, "deadbeef");
+            Action sqs = () => appClient.ParseSqs(Base64Wrap(bomb));
+
+            webhook.Should().Throw<InvalidWebhookError>().WithMessage(expected);
+            sqs.Should().Throw<InvalidWebhookError>().WithMessage(expected);
+        }
+
+        [Test]
+        [NonParallelizable]
+        public void GunzipPayload_HonoursCustomLimit()
+        {
+            var raw = Encoding.UTF8.GetBytes(JSON_BODY);
+            var original = WebhookHelpers.MaxPayloadBytes;
+            try
+            {
+                WebhookHelpers.MaxPayloadBytes = raw.Length - 1;
+                Action over = () => WebhookHelpers.GunzipPayload(Gzip(raw));
+                over.Should().Throw<InvalidWebhookError>()
+                    .WithMessage($"{InvalidWebhookError.GzipFailed}: payload exceeds {raw.Length - 1} bytes");
+
+                WebhookHelpers.MaxPayloadBytes = raw.Length;
+                WebhookHelpers.GunzipPayload(Gzip(raw)).Should().Equal(raw);
+
+                WebhookHelpers.MaxPayloadBytes = 1;
+                WebhookHelpers.GunzipPayload(raw).Should().Equal(raw);
+            }
+            finally
+            {
+                WebhookHelpers.MaxPayloadBytes = original;
+            }
+        }
+
+        [Test]
         public void DecodeSqsPayload_Base64Only()
         {
             var raw = Encoding.UTF8.GetBytes(JSON_BODY);
