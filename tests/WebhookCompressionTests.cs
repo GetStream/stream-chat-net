@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using FluentAssertions;
@@ -315,6 +316,68 @@ namespace StreamChatTests
 
                 WebhookHelpers.MaxPayloadBytes = 1;
                 WebhookHelpers.GunzipPayload(raw).Should().Equal(raw);
+            }
+            finally
+            {
+                WebhookHelpers.MaxPayloadBytes = original;
+            }
+        }
+
+        [Test]
+        [NonParallelizable]
+        public void GunzipPayload_StopsReadingAtLimitPlusOne()
+        {
+            // A non-final stored block of 200 bytes followed by an invalid block type:
+            // a bounded read throws "payload exceeds", a full inflate reaches the bad block.
+            var body = new byte[] { 0x1f, 0x8b, 8, 0, 0, 0, 0, 0, 0, 0xff, 0x00, 200, 0, 0x37, 0xff }
+                .Concat(new byte[200]).Concat(new byte[] { 0x07 }).ToArray();
+            var original = WebhookHelpers.MaxPayloadBytes;
+            try
+            {
+                WebhookHelpers.MaxPayloadBytes = 100;
+
+                Action call = () => WebhookHelpers.GunzipPayload(body);
+
+                call.Should().Throw<InvalidWebhookError>()
+                    .WithMessage($"{InvalidWebhookError.GzipFailed}: payload exceeds 100 bytes");
+            }
+            finally
+            {
+                WebhookHelpers.MaxPayloadBytes = original;
+            }
+        }
+
+        [Test]
+        [NonParallelizable]
+        public void MaxPayloadBytes_RejectsNegative()
+        {
+            var original = WebhookHelpers.MaxPayloadBytes;
+            try
+            {
+                Action set = () => WebhookHelpers.MaxPayloadBytes = -1;
+
+                set.Should().Throw<ArgumentOutOfRangeException>();
+                WebhookHelpers.MaxPayloadBytes.Should().Be(original);
+            }
+            finally
+            {
+                WebhookHelpers.MaxPayloadBytes = original;
+            }
+        }
+
+        [Test]
+        [NonParallelizable]
+        public void GunzipPayload_ZeroLimitAllowsOnlyEmptyBody()
+        {
+            var original = WebhookHelpers.MaxPayloadBytes;
+            try
+            {
+                WebhookHelpers.MaxPayloadBytes = 0;
+
+                WebhookHelpers.GunzipPayload(Gzip(new byte[0])).Should().BeEmpty();
+                Action over = () => WebhookHelpers.GunzipPayload(Gzip(new byte[1]));
+                over.Should().Throw<InvalidWebhookError>()
+                    .WithMessage($"{InvalidWebhookError.GzipFailed}: payload exceeds 0 bytes");
             }
             finally
             {
