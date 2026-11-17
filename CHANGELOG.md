@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.24.1](https://github.com/GetStream/stream-chat-net/compare/2.24.0...2.24.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* limit decompressed webhook payloads to 10 MiB ([#226](https://github.com/GetStream/stream-chat-net/issues/226)) ([46458f1](https://github.com/GetStream/stream-chat-net/commit/46458f1d97c4589ebf67786ecbf2b84bc94078c7))
+
 ## [2.24.0](https://github.com/GetStream/stream-chat-net/compare/2.23.0...2.24.0) (2026-11-03)
 
 
