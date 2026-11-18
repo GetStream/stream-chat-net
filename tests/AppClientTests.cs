@@ -164,8 +164,19 @@ namespace StreamChatTests
                 Id = "95fa9371-38d8-4ddb-b099-d9ed86e7c9bc",
                 HookType = HookType.Webhook,
                 Enabled = true,
+                Product = Product.All,
                 EventTypes = new List<string> { "message.new", "message.updated" },
                 WebhookUrl = "https://example.com/webhook",
+            };
+
+            var chatWebhookHook = new EventHook
+            {
+                Id = "c3eff852-1194-47c2-8e1c-42a0b1dc1151",
+                HookType = HookType.Webhook,
+                Enabled = true,
+                Product = Product.Chat,
+                EventTypes = new List<string> { "message.new", "message.updated" },
+                WebhookUrl = "https://example.com/webhook-chat",
             };
 
             var sqsHook = new EventHook
@@ -173,6 +184,7 @@ namespace StreamChatTests
                 Id = "4eaa795f-77d2-4b72-8f7e-11de0327121c",
                 HookType = HookType.SQS,
                 Enabled = true,
+                Product = Product.All,
                 EventTypes = new List<string> { "user.updated" },
                 SqsQueueUrl = "https://sqs.region.amazonaws.com/123456789012/queue-name",
                 SqsRegion = "us-east-1",
@@ -184,19 +196,19 @@ namespace StreamChatTests
                 Id = "7b2c6590-7b61-490a-8987-96c5f8a353ca",
                 HookType = HookType.SNS,
                 Enabled = true,
+                Product = Product.All,
                 EventTypes = new List<string> { "channel.updated" },
                 SnsTopicArn = "arn:aws:sns:us-east-1:123456789012:topic-name",
                 SnsRegion = "us-east-1",
                 SnsAuthType = AuthType.Resource,
             };
 
-            var eventHooks = new List<EventHook> { webhookHook, sqsHook, snsHook };
+            var eventHooks = new List<EventHook> { webhookHook, chatWebhookHook, sqsHook, snsHook };
 
-            await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { EventHooks = eventHooks });
-
+            var updateResponse = await _appClient.UpdateAppSettingsAsync(new AppSettingsRequest { EventHooks = eventHooks });
             var getAppResponse = await _appClient.GetAppSettingsAsync();
             getAppResponse.App.EventHooks.Should().NotBeNull();
-            getAppResponse.App.EventHooks.Should().HaveCount(3);
+            getAppResponse.App.EventHooks.Should().HaveCount(4);
             getAppResponse.App.EventHooks.Should().BeEquivalentTo(eventHooks, options => options.Excluding(e => e.CreatedAt).Excluding(e => e.UpdatedAt));
         }
     }
