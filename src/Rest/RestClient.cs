@@ -57,11 +57,12 @@ namespace StreamChat.Rest
                 .AddQueryParametersIfNotNull(queryParams);
         }
 
-        public async Task<RestResponse> ExecuteAsync(RestRequest request)
+        public async Task<RestResponse> ExecuteAsync(RestRequest request, CancellationToken cancellationToken = default)
         {
             var uri = BuildUriWithQueryString(request);
 
-            using (var cancelTokenSource = new CancellationTokenSource(_timeout))
+            using (var cancelTokenSourceTimeout = new CancellationTokenSource(_timeout))
+            using (var cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cancelTokenSourceTimeout.Token))
             using (var req = GenerateRequestMessage(request, uri))
             {
                 var response = await _httpClient.SendAsync(req, cancelTokenSource.Token);
