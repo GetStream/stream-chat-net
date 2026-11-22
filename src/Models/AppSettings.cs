@@ -78,6 +78,30 @@ namespace StreamChat.Models
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
+    public enum Product
+    {
+        /// <summary>Stream Chat product</summary>
+        [EnumMember(Value = "chat")]
+        Chat,
+
+        /// <summary>Stream Video product</summary>
+        [EnumMember(Value = "video")]
+        Video,
+
+        /// <summary>Stream Moderation product</summary>
+        [EnumMember(Value = "moderation")]
+        Moderation,
+
+        /// <summary>Stream Feeds product</summary>
+        [EnumMember(Value = "feeds")]
+        Feeds,
+
+        /// <summary>All Stream products (default)</summary>
+        [EnumMember(Value = "all")]
+        All,
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CallbackMode
     {
         [EnumMember(Value = "CALLBACK_MODE_NONE")]
@@ -108,6 +132,9 @@ namespace StreamChat.Models
 
         /// <summary>Whether this event hook is currently active</summary>
         public bool Enabled { get; set; }
+
+        /// <summary>Product scope for this event hook</summary>
+        public Product? Product { get; set; }
 
         /// <summary>List of event types this hook will respond to</summary>
         public List<string> EventTypes { get; set; }
