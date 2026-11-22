@@ -45,6 +45,7 @@ namespace StreamChat.Models
         public bool? Reactions { get; set; }
         public bool? Replies { get; set; }
         public bool? Reminders { get; set; }
+        public bool? UserMessageReminders { get; set; }
         public bool? Uploads { get; set; }
         public bool? MarkMessagesPending { get; set; }
         public bool? Mutes { get; set; }
@@ -92,6 +93,7 @@ namespace StreamChat.Models
         public bool? Search { get; set; }
         public bool? Reactions { get; set; }
         public bool? Replies { get; set; }
+        public bool? UserMessageReminders { get; set; }
         public bool? Uploads { get; set; }
         public bool? Mutes { get; set; }
         public string MessageRetention { get; set; }
