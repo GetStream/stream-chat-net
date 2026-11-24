@@ -13,7 +13,7 @@ permissions:
 jobs:
   basic:
     name: 🧪 Run tests
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-ubuntu-static }
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
